@@ -11,10 +11,10 @@
   body { margin: 0; padding: 0; }
   #map { position: absolute; top: 0; bottom: 0; width: 100%; }
   #legend {
-    position: absolute; bottom: 20px; left: 10px;
+    position: absolute; bottom: 30px; left: 10px;
     background: rgba(255,255,255,0.92); padding: 10px 14px;
     border-radius: 6px; font: 12px/1.6 system-ui, sans-serif;
-    max-height: 60vh; overflow-y: auto; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    max-height: 55vh; overflow-y: auto; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
   }
   #legend h3 { margin: 0 0 6px; font-size: 13px; }
   .legend-row { display: flex; align-items: center; gap: 6px; }
@@ -25,10 +25,24 @@
     border-radius: 6px; font: 12px/1.5 system-ui, sans-serif;
     display: none; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
   }
+  #controls {
+    position: absolute; top: 10px; left: 10px;
+    background: rgba(255,255,255,0.92); padding: 8px 14px;
+    border-radius: 6px; font: 12px/1.5 system-ui, sans-serif;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px;
+    z-index: 1;
+  }
+  #controls label { white-space: nowrap; }
+  #opacity-slider { width: 120px; cursor: pointer; }
 </style>
 </head>
 <body>
 <div id="map"></div>
+<div id="controls">
+  <label for="opacity-slider">CROME opacity:</label>
+  <input id="opacity-slider" type="range" min="0" max="100" value="75">
+  <span id="opacity-val">75%</span>
+</div>
 <div id="legend">
   <h3>Crop Map of England 2020</h3>
 </div>
@@ -65,16 +79,12 @@ const LUCODE_LABELS = {
   "WO12":"Trees/Scrubs/Hedgerows"
 };
 
-// Colour palette grouped by category
 const LUCODE_COLORS = {
-  // Cereal / arable crops – yellows, oranges, golds
   "AC01":"#e6b800","AC63":"#ccaa00","AC32":"#f0d000","AC66":"#d4a017",
   "AC19":"#e8c840","AC65":"#c9a830","AC24":"#d4aa50","AC68":"#b89830",
   "AC30":"#c8a848","AC69":"#a89030","AC17":"#f5c71a","AC03":"#e07020",
   "AC07":"#ff8c00","AC44":"#cd853f","AC20":"#daa520",
-  // Oilseed – bright yellows
   "AC36":"#ffe135","AC67":"#ffd700","AC16":"#e8d44d","AC64":"#d4c030",
-  // Other arable – warm tones
   "AC04":"#d2691e","AC05":"#bc8f8f","AC06":"#deb887","AC09":"#8fbc8f",
   "AC10":"#ffff00","AC14":"#9acd32","AC15":"#90ee90","AC18":"#f4a460",
   "AC22":"#3cb371","AC23":"#ffdab9","AC26":"#2e8b57","AC27":"#ff6347",
@@ -85,32 +95,25 @@ const LUCODE_COLORS = {
   "AC94":"#c71585","AC100":"#98fb98","CA02":"#bdb76b",
   "AC58":"#d2b48c","AC59":"#c4a882","AC60":"#b69a76","AC61":"#a88c6a",
   "AC62":"#9a7e5e","AC00":"#808080",
-  // Leguminous – greens, teals
   "LG01":"#556b2f","LG02":"#6b8e23","LG03":"#228b22","LG20":"#006400",
   "LG04":"#32cd32","LG06":"#00fa9a","LG07":"#00ff7f","LG21":"#008b45",
   "LG08":"#3cb371","LG09":"#20b2aa","LG11":"#2e8b57","LG13":"#66cdaa",
   "LG14":"#00cd66","LG15":"#4f7942","LG16":"#3a6b35",
-  // Energy
   "SR01":"#8b4513",
-  // Grassland
   "PG01":"#7cfc00","FA01":"#f5deb3","HE02":"#9370db","HEAT":"#8b668b",
-  // Non-ag
   "NA01":"#a9a9a9","WA00":"#4682b4",
-  // Trees
   "TC01":"#006400","NU01":"#228b22","WO12":"#2f4f4f"
 };
 
-// Categories for legend grouping
 const CATEGORIES = [
   { name: "Cereal / Arable", codes: ["AC66","AC63","AC32","AC01","AC19","AC65","AC24","AC68","AC30","AC69","AC17","AC67","AC36","AC64","AC16","AC03","AC07","AC44","AC20"] },
-  { name: "Other Arable", codes: ["AC04","AC14","AC27","AC44","AC81","AC88","AC00"] },
+  { name: "Other Arable", codes: ["AC04","AC14","AC27","AC81","AC88","AC00"] },
   { name: "Leguminous", codes: ["LG03","LG20","LG07","LG21","LG14","LG11"] },
   { name: "Grassland", codes: ["PG01","FA01","HE02","HEAT"] },
   { name: "Trees / Woodland", codes: ["WO12","TC01","NU01","SR01"] },
   { name: "Other", codes: ["NA01","WA00","CA02"] },
 ];
 
-// Detect the base URL for the PMTiles file
 const base = window.location.href.replace(/\/[^/]*$/, '');
 const PMTILES_URL = base + '/crome2020.pmtiles';
 
@@ -121,7 +124,15 @@ const map = new maplibregl.Map({
   container: 'map',
   style: {
     version: 8,
+    glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
     sources: {
+      osm: {
+        type: 'raster',
+        tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+        tileSize: 256,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxzoom: 19
+      },
       crome: {
         type: 'vector',
         url: 'pmtiles://' + PMTILES_URL,
@@ -130,9 +141,10 @@ const map = new maplibregl.Map({
     },
     layers: [
       {
-        id: 'background',
-        type: 'background',
-        paint: { 'background-color': '#f8f4f0' }
+        id: 'osm-basemap',
+        type: 'raster',
+        source: 'osm',
+        paint: { 'raster-opacity': 1 }
       },
       {
         id: 'crome-fill',
@@ -145,7 +157,7 @@ const map = new maplibregl.Map({
             ...Object.entries(LUCODE_COLORS).flat(),
             '#cccccc'
           ],
-          'fill-opacity': 0.8
+          'fill-opacity': 0.75
         }
       },
       {
@@ -166,7 +178,21 @@ const map = new maplibregl.Map({
   maxZoom: 14
 });
 
-map.addControl(new maplibregl.NavigationControl());
+// Navigation controls — top-right to avoid overlap with opacity slider
+map.addControl(new maplibregl.NavigationControl(), 'top-right');
+
+// Scale bar
+map.addControl(new maplibregl.ScaleControl({ maxWidth: 200, unit: 'metric' }), 'bottom-right');
+
+// Opacity slider
+const slider = document.getElementById('opacity-slider');
+const opacityVal = document.getElementById('opacity-val');
+slider.addEventListener('input', () => {
+  const v = slider.value / 100;
+  opacityVal.textContent = slider.value + '%';
+  map.setPaintProperty('crome-fill', 'fill-opacity', v);
+  map.setPaintProperty('crome-outline', 'line-opacity', v * 0.4);
+});
 
 // Build legend
 const legendEl = document.getElementById('legend');
