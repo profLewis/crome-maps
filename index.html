@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CROME 2020 - Crop Map of England</title>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="https://unpkg.com/pmtiles@3.2.1/dist/pmtiles.js"></script>
+<style>
+  body { margin: 0; padding: 0; }
+  #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+  #legend {
+    position: absolute; bottom: 20px; left: 10px;
+    background: rgba(255,255,255,0.92); padding: 10px 14px;
+    border-radius: 6px; font: 12px/1.6 system-ui, sans-serif;
+    max-height: 60vh; overflow-y: auto; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  }
+  #legend h3 { margin: 0 0 6px; font-size: 13px; }
+  .legend-row { display: flex; align-items: center; gap: 6px; }
+  .legend-swatch { width: 14px; height: 14px; border-radius: 2px; flex-shrink: 0; }
+  #info {
+    position: absolute; top: 10px; right: 10px;
+    background: rgba(255,255,255,0.92); padding: 8px 12px;
+    border-radius: 6px; font: 12px/1.5 system-ui, sans-serif;
+    display: none; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="legend">
+  <h3>Crop Map of England 2020</h3>
+</div>
+<div id="info"></div>
+<script>
+const LUCODE_LABELS = {
+  "AC01":"Spring Barley","AC03":"Beet","AC04":"Borage","AC05":"Buckwheat",
+  "AC06":"Canary Seed","AC07":"Carrot","AC09":"Chicory","AC10":"Daffodil",
+  "AC14":"Hemp","AC15":"Lettuce","AC16":"Spring Linseed","AC17":"Maize",
+  "AC18":"Millet","AC19":"Spring Oats","AC20":"Onions","AC22":"Parsley",
+  "AC23":"Parsnips","AC24":"Spring Rye","AC26":"Spinach","AC27":"Strawberry",
+  "AC30":"Spring Triticale","AC32":"Spring Wheat","AC34":"Spring Cabbage",
+  "AC35":"Turnip","AC36":"Spring Oilseed","AC37":"Brown Mustard",
+  "AC38":"Mustard","AC41":"Radish","AC44":"Potato","AC45":"Tomato",
+  "AC50":"Squash","AC52":"Siam Pumpkin","AC58":"Mixed Crop 1",
+  "AC59":"Mixed Crop 2","AC60":"Mixed Crop 3","AC61":"Mixed Crop 4",
+  "AC62":"Mixed Crop 5","AC63":"Winter Barley","AC64":"Winter Linseed",
+  "AC65":"Winter Oats","AC66":"Winter Wheat","AC67":"Winter Oilseed",
+  "AC68":"Winter Rye","AC69":"Winter Triticale","AC70":"Winter Cabbage",
+  "AC71":"Coriander","AC72":"Corn Gromwell","AC74":"Phacelia","AC81":"Poppy",
+  "AC88":"Sunflower","AC90":"Gladioli","AC92":"Sorghum","AC94":"Sweet William",
+  "AC100":"Italian Ryegrass","AC00":"Unknown/Mixed Vegetation",
+  "CA02":"Cover Crop",
+  "LG01":"Chickpea","LG02":"Fenugreek","LG03":"Spring Field Beans",
+  "LG04":"Green Beans","LG06":"Lupins","LG07":"Spring Peas","LG08":"Soya",
+  "LG09":"Cowpea","LG11":"Lucerne","LG13":"Sainfoin","LG14":"Clover",
+  "LG15":"Mixed Leguminous 1","LG16":"Mixed Leguminous 2",
+  "LG20":"Winter Field Beans","LG21":"Winter Peas",
+  "SR01":"Short Rotation Coppice",
+  "FA01":"Fallow Land","HE02":"Heathland/Bracken","HEAT":"Heather",
+  "PG01":"Grass",
+  "NA01":"Non-vegetated Land","WA00":"Water",
+  "TC01":"Perennial Crops/Trees","NU01":"Nursery Crops",
+  "WO12":"Trees/Scrubs/Hedgerows"
+};
+
+// Colour palette grouped by category
+const LUCODE_COLORS = {
+  // Cereal / arable crops – yellows, oranges, golds
+  "AC01":"#e6b800","AC63":"#ccaa00","AC32":"#f0d000","AC66":"#d4a017",
+  "AC19":"#e8c840","AC65":"#c9a830","AC24":"#d4aa50","AC68":"#b89830",
+  "AC30":"#c8a848","AC69":"#a89030","AC17":"#f5c71a","AC03":"#e07020",
+  "AC07":"#ff8c00","AC44":"#cd853f","AC20":"#daa520",
+  // Oilseed – bright yellows
+  "AC36":"#ffe135","AC67":"#ffd700","AC16":"#e8d44d","AC64":"#d4c030",
+  // Other arable – warm tones
+  "AC04":"#d2691e","AC05":"#bc8f8f","AC06":"#deb887","AC09":"#8fbc8f",
+  "AC10":"#ffff00","AC14":"#9acd32","AC15":"#90ee90","AC18":"#f4a460",
+  "AC22":"#3cb371","AC23":"#ffdab9","AC26":"#2e8b57","AC27":"#ff6347",
+  "AC34":"#66cdaa","AC70":"#5f9ea0","AC35":"#dda0dd","AC37":"#f0e68c",
+  "AC38":"#eee8aa","AC41":"#ff7f7f","AC45":"#ff4500","AC50":"#ff8c69",
+  "AC52":"#ffa07a","AC71":"#7fff00","AC72":"#6b8e23","AC74":"#8a2be2",
+  "AC81":"#ff1493","AC88":"#ffa500","AC90":"#ff69b4","AC92":"#b8860b",
+  "AC94":"#c71585","AC100":"#98fb98","CA02":"#bdb76b",
+  "AC58":"#d2b48c","AC59":"#c4a882","AC60":"#b69a76","AC61":"#a88c6a",
+  "AC62":"#9a7e5e","AC00":"#808080",
+  // Leguminous – greens, teals
+  "LG01":"#556b2f","LG02":"#6b8e23","LG03":"#228b22","LG20":"#006400",
+  "LG04":"#32cd32","LG06":"#00fa9a","LG07":"#00ff7f","LG21":"#008b45",
+  "LG08":"#3cb371","LG09":"#20b2aa","LG11":"#2e8b57","LG13":"#66cdaa",
+  "LG14":"#00cd66","LG15":"#4f7942","LG16":"#3a6b35",
+  // Energy
+  "SR01":"#8b4513",
+  // Grassland
+  "PG01":"#7cfc00","FA01":"#f5deb3","HE02":"#9370db","HEAT":"#8b668b",
+  // Non-ag
+  "NA01":"#a9a9a9","WA00":"#4682b4",
+  // Trees
+  "TC01":"#006400","NU01":"#228b22","WO12":"#2f4f4f"
+};
+
+// Categories for legend grouping
+const CATEGORIES = [
+  { name: "Cereal / Arable", codes: ["AC66","AC63","AC32","AC01","AC19","AC65","AC24","AC68","AC30","AC69","AC17","AC67","AC36","AC64","AC16","AC03","AC07","AC44","AC20"] },
+  { name: "Other Arable", codes: ["AC04","AC14","AC27","AC44","AC81","AC88","AC00"] },
+  { name: "Leguminous", codes: ["LG03","LG20","LG07","LG21","LG14","LG11"] },
+  { name: "Grassland", codes: ["PG01","FA01","HE02","HEAT"] },
+  { name: "Trees / Woodland", codes: ["WO12","TC01","NU01","SR01"] },
+  { name: "Other", codes: ["NA01","WA00","CA02"] },
+];
+
+// Detect the base URL for the PMTiles file
+const base = window.location.href.replace(/\/[^/]*$/, '');
+const PMTILES_URL = base + '/crome2020.pmtiles';
+
+const protocol = new pmtiles.Protocol();
+maplibregl.addProtocol('pmtiles', protocol.tile);
+
+const map = new maplibregl.Map({
+  container: 'map',
+  style: {
+    version: 8,
+    sources: {
+      crome: {
+        type: 'vector',
+        url: 'pmtiles://' + PMTILES_URL,
+        attribution: '&copy; Rural Payments Agency (CROME 2020). Open Government Licence.'
+      }
+    },
+    layers: [
+      {
+        id: 'background',
+        type: 'background',
+        paint: { 'background-color': '#f8f4f0' }
+      },
+      {
+        id: 'crome-fill',
+        type: 'fill',
+        source: 'crome',
+        'source-layer': 'crome2020',
+        paint: {
+          'fill-color': [
+            'match', ['get', 'lucode'],
+            ...Object.entries(LUCODE_COLORS).flat(),
+            '#cccccc'
+          ],
+          'fill-opacity': 0.8
+        }
+      },
+      {
+        id: 'crome-outline',
+        type: 'line',
+        source: 'crome',
+        'source-layer': 'crome2020',
+        paint: {
+          'line-color': '#333',
+          'line-width': ['interpolate', ['linear'], ['zoom'], 10, 0, 14, 0.5],
+          'line-opacity': 0.3
+        }
+      }
+    ]
+  },
+  center: [-1.5, 52.5],
+  zoom: 6,
+  maxZoom: 14
+});
+
+map.addControl(new maplibregl.NavigationControl());
+
+// Build legend
+const legendEl = document.getElementById('legend');
+CATEGORIES.forEach(cat => {
+  const h = document.createElement('div');
+  h.style.fontWeight = 'bold';
+  h.style.marginTop = '6px';
+  h.textContent = cat.name;
+  legendEl.appendChild(h);
+  cat.codes.forEach(code => {
+    const row = document.createElement('div');
+    row.className = 'legend-row';
+    const sw = document.createElement('div');
+    sw.className = 'legend-swatch';
+    sw.style.background = LUCODE_COLORS[code] || '#ccc';
+    row.appendChild(sw);
+    const lbl = document.createElement('span');
+    lbl.textContent = LUCODE_LABELS[code] || code;
+    row.appendChild(lbl);
+    legendEl.appendChild(row);
+  });
+});
+
+// Hover info
+const infoEl = document.getElementById('info');
+map.on('mousemove', 'crome-fill', e => {
+  if (e.features.length) {
+    const code = e.features[0].properties.lucode;
+    infoEl.style.display = 'block';
+    infoEl.textContent = (LUCODE_LABELS[code] || code) + ' (' + code + ')';
+    map.getCanvas().style.cursor = 'pointer';
+  }
+});
+map.on('mouseleave', 'crome-fill', () => {
+  infoEl.style.display = 'none';
+  map.getCanvas().style.cursor = '';
+});
+</script>
+</body>
+</html>
