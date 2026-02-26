@@ -186,7 +186,7 @@ const LAYERS = [
   {
     id: 'eurocrops', label: 'EU Field Boundaries (EuroCrops)', type: 'vector-remote',
     legendType: 'eurocrops',
-    years: null, defaultYear: null,
+    years: null, defaultYear: null, dataYear: '2018-2021',
     pmtilesUrl: 'https://data.source.coop/cholmes/eurocrops/eurocrops-all.pmtiles',
     sourceLayer: 'eurocrops',
     attribution: '&copy; <a href="https://github.com/maja601/EuroCrops">EuroCrops</a> CC-BY 4.0'
@@ -211,7 +211,7 @@ const LAYERS = [
   {
     id: 'netherlands', label: 'Netherlands (BRP)', type: 'raster',
     legendType: 'image', minZoom: 12, countryNum: 528, indicatorColor: '#FF9800',
-    years: null, defaultYear: null,
+    years: null, defaultYear: null, dataYear: '2024',
     tileUrl: () => wms11('https://service.pdok.nl/rvo/brpgewaspercelen/wms/v1_0', 'BrpGewas'),
     legendImg: 'https://service.pdok.nl/rvo/brpgewaspercelen/wms/v1_0?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=BrpGewas&format=image/png',
     attribution: '&copy; <a href="https://www.pdok.nl/">PDOK</a>/RVO CC0'
@@ -283,7 +283,7 @@ const LAYERS = [
   {
     id: 'switzerland', label: 'Switzerland (BLW)', type: 'raster',
     legendType: 'image',
-    years: null, defaultYear: null,
+    years: null, defaultYear: null, dataYear: '2025',
     tileUrl: () => wms13('https://wms.geo.admin.ch/', 'ch.blw.landwirtschaftliche-nutzungsflaechen'),
     legendImg: 'https://wms.geo.admin.ch/?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=ch.blw.landwirtschaftliche-nutzungsflaechen&format=image/png',
     attribution: '&copy; <a href="https://geo.admin.ch">swisstopo</a>/BLW'
@@ -291,7 +291,7 @@ const LAYERS = [
   {
     id: 'norway', label: 'Norway (NIBIO AR5)', type: 'raster',
     legendType: 'image', minZoom: 15, countryNum: 578, indicatorColor: '#2196F3',
-    years: null, defaultYear: null,
+    years: null, defaultYear: null, dataYear: 'current',
     tileUrl: () => wms11('https://wms.nibio.no/cgi-bin/ar5', 'Arealtype'),
     legendImg: 'https://wms.nibio.no/cgi-bin/ar5?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=Arealtype&format=image/png',
     attribution: '&copy; <a href="https://nibio.no">NIBIO</a> Norway'
@@ -527,6 +527,11 @@ LAYERS.forEach(L => {
     const sp = document.createElement('span');
     sp.style.cssText = 'font-size:10px;color:#888;';
     sp.textContent = L.years[0];
+    row.appendChild(sp);
+  } else if (L.dataYear) {
+    const sp = document.createElement('span');
+    sp.style.cssText = 'font-size:10px;color:#888;';
+    sp.textContent = L.dataYear;
     row.appendChild(sp);
   }
 
