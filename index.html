@@ -251,14 +251,6 @@ const LAYERS = [
     attribution: '&copy; AMA/BML Austria INVEKOS'
   },
   {
-    id: 'czechia', label: 'Czech Republic (LPIS)', type: 'raster',
-    legendType: 'image', minZoom: 12, countryNum: 203, indicatorColor: '#3F51B5',
-    years: null, defaultYear: null,
-    tileUrl: () => wms13('https://mze.gov.cz/public/app/wms/public_DPB_PB_OPV.fcgi', 'DPB_A0'),
-    legendImg: 'https://mze.gov.cz/public/app/wms/public_DPB_PB_OPV.fcgi?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=DPB_A0&format=image/png',
-    attribution: '&copy; MZe Czech Republic LPIS'
-  },
-  {
     id: 'denmark', label: 'Denmark (FVM Marker)', type: 'raster',
     legendType: 'image',
     years: Array.from({length:18}, (_,i) => 2008+i), defaultYear: 2025,
@@ -289,14 +281,6 @@ const LAYERS = [
     attribution: '&copy; IFAP Portugal iSIP'
   },
   {
-    id: 'slovenia', label: 'Slovenia (MKGP GERK)', type: 'raster',
-    legendType: 'image', minZoom: 12, countryNum: 705, indicatorColor: '#4CAF50',
-    years: null, defaultYear: null,
-    tileUrl: () => wms13('https://storitve.eprostor.gov.si/ows-pub-wms/SI.MKGP.GERK/ows', 'RKG_BLOK_GERK'),
-    legendImg: 'https://storitve.eprostor.gov.si/ows-pub-wms/SI.MKGP.GERK/ows?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=RKG_BLOK_GERK&format=image/png',
-    attribution: '&copy; MKGP Slovenia'
-  },
-  {
     id: 'switzerland', label: 'Switzerland (BLW)', type: 'raster',
     legendType: 'image',
     years: null, defaultYear: null,
@@ -306,7 +290,7 @@ const LAYERS = [
   },
   {
     id: 'norway', label: 'Norway (NIBIO AR5)', type: 'raster',
-    legendType: 'image', minZoom: 12, countryNum: 578, indicatorColor: '#2196F3',
+    legendType: 'image', minZoom: 15, countryNum: 578, indicatorColor: '#2196F3',
     years: null, defaultYear: null,
     tileUrl: () => wms11('https://wms.nibio.no/cgi-bin/ar5', 'Arealtype'),
     legendImg: 'https://wms.nibio.no/cgi-bin/ar5?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=Arealtype&format=image/png',
