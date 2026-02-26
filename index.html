@@ -3,51 +3,106 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CROME 2020 - Crop Map of England</title>
+<title>European Crop Maps</title>
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script src="https://unpkg.com/pmtiles@3.2.1/dist/pmtiles.js"></script>
 <style>
   body { margin: 0; padding: 0; }
   #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+
+  #controls {
+    position: absolute; top: 10px; left: 10px;
+    background: rgba(255,255,255,0.94); padding: 10px 14px;
+    border-radius: 6px; font: 12px/1.6 system-ui, sans-serif;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.25); z-index: 1;
+    max-height: 80vh; overflow-y: auto; min-width: 200px;
+  }
+  #controls h3 { margin: 0 0 6px; font-size: 13px; }
+  .layer-group { margin-bottom: 8px; border-bottom: 1px solid #e0e0e0; padding-bottom: 8px; }
+  .layer-group:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .layer-group h4 { margin: 0 0 4px; font-size: 12px; color: #555; }
+  .layer-toggle { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
+  .layer-toggle input[type="checkbox"] { margin: 0; }
+  .layer-toggle label { cursor: pointer; white-space: nowrap; }
+  .opacity-row { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+  .opacity-row input[type="range"] { width: 100px; cursor: pointer; }
+  .opacity-row span { min-width: 30px; text-align: right; }
+
   #legend {
     position: absolute; bottom: 30px; left: 10px;
     background: rgba(255,255,255,0.92); padding: 10px 14px;
     border-radius: 6px; font: 12px/1.6 system-ui, sans-serif;
-    max-height: 55vh; overflow-y: auto; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    max-height: 40vh; overflow-y: auto; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
   }
   #legend h3 { margin: 0 0 6px; font-size: 13px; }
   .legend-row { display: flex; align-items: center; gap: 6px; }
   .legend-swatch { width: 14px; height: 14px; border-radius: 2px; flex-shrink: 0; }
+
   #info {
-    position: absolute; top: 10px; right: 10px;
+    position: absolute; top: 10px; right: 50px;
     background: rgba(255,255,255,0.92); padding: 8px 12px;
     border-radius: 6px; font: 12px/1.5 system-ui, sans-serif;
     display: none; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    max-width: 250px;
   }
-  #controls {
-    position: absolute; top: 10px; left: 10px;
-    background: rgba(255,255,255,0.92); padding: 8px 14px;
-    border-radius: 6px; font: 12px/1.5 system-ui, sans-serif;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px;
-    z-index: 1;
-  }
-  #controls label { white-space: nowrap; }
-  #opacity-slider { width: 120px; cursor: pointer; }
 </style>
 </head>
 <body>
 <div id="map"></div>
+
 <div id="controls">
-  <label for="opacity-slider">CROME opacity:</label>
-  <input id="opacity-slider" type="range" min="0" max="100" value="75">
-  <span id="opacity-val">75%</span>
+  <h3>European Crop Maps</h3>
+
+  <div class="layer-group">
+    <h4>England (CROME 2020)</h4>
+    <div class="layer-toggle">
+      <input type="checkbox" id="toggle-crome" checked>
+      <label for="toggle-crome">Crop Map of England</label>
+    </div>
+  </div>
+
+  <div class="layer-group">
+    <h4>Germany (DLR EOC)</h4>
+    <div class="layer-toggle">
+      <input type="checkbox" id="toggle-germany">
+      <label for="toggle-germany">CropTypes Germany</label>
+    </div>
+  </div>
+
+  <div class="layer-group">
+    <h4>France (RPG)</h4>
+    <div class="layer-toggle">
+      <input type="checkbox" id="toggle-france">
+      <label for="toggle-france">RPG Agriculture</label>
+    </div>
+  </div>
+
+  <div class="layer-group">
+    <h4>Netherlands (BRP)</h4>
+    <div class="layer-toggle">
+      <input type="checkbox" id="toggle-netherlands">
+      <label for="toggle-netherlands">Crop Parcels</label>
+    </div>
+  </div>
+
+  <div class="layer-group">
+    <h4>Overlay opacity</h4>
+    <div class="opacity-row">
+      <input id="opacity-slider" type="range" min="0" max="100" value="75">
+      <span id="opacity-val">75%</span>
+    </div>
+  </div>
 </div>
+
 <div id="legend">
-  <h3>Crop Map of England 2020</h3>
+  <h3>CROME 2020 Legend</h3>
 </div>
+
 <div id="info"></div>
+
 <script>
+// === CROME lookup tables ===
 const LUCODE_LABELS = {
   "AC01":"Spring Barley","AC03":"Beet","AC04":"Borage","AC05":"Buckwheat",
   "AC06":"Canary Seed","AC07":"Carrot","AC09":"Chicory","AC10":"Daffodil",
@@ -114,6 +169,7 @@ const CATEGORIES = [
   { name: "Other", codes: ["NA01","WA00","CA02"] },
 ];
 
+// === Map setup ===
 const base = window.location.href.replace(/\/[^/]*$/, '');
 const PMTILES_URL = base + '/crome2020.pmtiles';
 
@@ -136,7 +192,40 @@ const map = new maplibregl.Map({
       crome: {
         type: 'vector',
         url: 'pmtiles://' + PMTILES_URL,
-        attribution: '&copy; Rural Payments Agency (CROME 2020). Open Government Licence.'
+        attribution: '&copy; Rural Payments Agency (CROME 2020). OGL v3.0.'
+      },
+      germany: {
+        type: 'raster',
+        tiles: [
+          'https://geoservice.dlr.de/eoc/land/wms?service=WMS&version=1.1.1&request=GetMap'
+          + '&layers=CROPTYPES_DE_P1Y&styles=&srs=EPSG:3857'
+          + '&bbox={bbox-epsg-3857}&width=256&height=256'
+          + '&format=image/png&transparent=true'
+        ],
+        tileSize: 256,
+        attribution: '&copy; <a href="https://geoservice.dlr.de/web/datasets/croptypes_de">DLR EOC</a> CropTypes. CC-BY 4.0.'
+      },
+      france: {
+        type: 'raster',
+        tiles: [
+          'https://data.geopf.fr/wms-r/wms?service=WMS&version=1.3.0&request=GetMap'
+          + '&layers=LANDUSE.AGRICULTURE.LATEST&styles=&crs=EPSG:3857'
+          + '&bbox={bbox-epsg-3857}&width=256&height=256'
+          + '&format=image/png&transparent=true'
+        ],
+        tileSize: 256,
+        attribution: '&copy; <a href="https://geoservices.ign.fr/">IGN</a> RPG. Licence Ouverte.'
+      },
+      netherlands: {
+        type: 'raster',
+        tiles: [
+          'https://service.pdok.nl/rvo/brpgewaspercelen/wms/v1_0?service=WMS&version=1.1.1&request=GetMap'
+          + '&layers=BrpGewas&styles=&srs=EPSG:3857'
+          + '&bbox={bbox-epsg-3857}&width=256&height=256'
+          + '&format=image/png&transparent=true'
+        ],
+        tileSize: 256,
+        attribution: '&copy; <a href="https://www.pdok.nl/">PDOK</a> / RVO BRP. CC0.'
       }
     },
     layers: [
@@ -170,31 +259,90 @@ const map = new maplibregl.Map({
           'line-width': ['interpolate', ['linear'], ['zoom'], 10, 0, 14, 0.5],
           'line-opacity': 0.3
         }
+      },
+      {
+        id: 'germany-wms',
+        type: 'raster',
+        source: 'germany',
+        paint: { 'raster-opacity': 0 },
+        layout: { visibility: 'none' }
+      },
+      {
+        id: 'france-wms',
+        type: 'raster',
+        source: 'france',
+        paint: { 'raster-opacity': 0 },
+        layout: { visibility: 'none' }
+      },
+      {
+        id: 'netherlands-wms',
+        type: 'raster',
+        source: 'netherlands',
+        paint: { 'raster-opacity': 0 },
+        layout: { visibility: 'none' }
       }
     ]
   },
-  center: [-1.5, 52.5],
-  zoom: 6,
-  maxZoom: 14
+  center: [2.0, 50.0],
+  zoom: 5,
+  maxZoom: 16
 });
 
-// Navigation controls — top-right to avoid overlap with opacity slider
+// Navigation + scale
 map.addControl(new maplibregl.NavigationControl(), 'top-right');
-
-// Scale bar
 map.addControl(new maplibregl.ScaleControl({ maxWidth: 200, unit: 'metric' }), 'bottom-right');
+
+// === Layer toggle logic ===
+const CROP_LAYERS = {
+  'toggle-crome':       { layers: ['crome-fill', 'crome-outline'], type: 'vector' },
+  'toggle-germany':     { layers: ['germany-wms'], type: 'raster' },
+  'toggle-france':      { layers: ['france-wms'], type: 'raster' },
+  'toggle-netherlands': { layers: ['netherlands-wms'], type: 'raster' },
+};
+
+let currentOpacity = 0.75;
+
+function applyOpacity() {
+  for (const [toggleId, info] of Object.entries(CROP_LAYERS)) {
+    const on = document.getElementById(toggleId).checked;
+    for (const layerId of info.layers) {
+      if (!on) continue;
+      if (info.type === 'raster') {
+        map.setPaintProperty(layerId, 'raster-opacity', currentOpacity);
+      } else if (layerId.includes('fill')) {
+        map.setPaintProperty(layerId, 'fill-opacity', currentOpacity);
+      } else if (layerId.includes('outline')) {
+        map.setPaintProperty(layerId, 'line-opacity', currentOpacity * 0.4);
+      }
+    }
+  }
+}
+
+for (const [toggleId, info] of Object.entries(CROP_LAYERS)) {
+  document.getElementById(toggleId).addEventListener('change', function() {
+    for (const layerId of info.layers) {
+      if (this.checked) {
+        map.setLayoutProperty(layerId, 'visibility', 'visible');
+        if (info.type === 'raster') {
+          map.setPaintProperty(layerId, 'raster-opacity', currentOpacity);
+        }
+      } else {
+        map.setLayoutProperty(layerId, 'visibility', 'none');
+      }
+    }
+  });
+}
 
 // Opacity slider
 const slider = document.getElementById('opacity-slider');
 const opacityVal = document.getElementById('opacity-val');
 slider.addEventListener('input', () => {
-  const v = slider.value / 100;
+  currentOpacity = slider.value / 100;
   opacityVal.textContent = slider.value + '%';
-  map.setPaintProperty('crome-fill', 'fill-opacity', v);
-  map.setPaintProperty('crome-outline', 'line-opacity', v * 0.4);
+  applyOpacity();
 });
 
-// Build legend
+// === CROME legend ===
 const legendEl = document.getElementById('legend');
 CATEGORIES.forEach(cat => {
   const h = document.createElement('div');
@@ -216,7 +364,7 @@ CATEGORIES.forEach(cat => {
   });
 });
 
-// Hover info
+// === Hover info (CROME only) ===
 const infoEl = document.getElementById('info');
 map.on('mousemove', 'crome-fill', e => {
   if (e.features.length) {
