@@ -33,7 +33,7 @@
   .panel.collapsed .panel-body { display: none; }
   .panel.collapsed .panel-header { border-bottom: none; }
 
-  #controls { top: 10px; left: 10px; min-width: 230px; }
+  #controls { top: 10px; left: 10px; min-width: 250px; }
   #controls .panel-body { max-height: 70vh; overflow-y: auto; }
   .layer-row {
     display: flex; align-items: center; gap: 5px; margin: 3px 0;
@@ -224,6 +224,84 @@ const LAYERS = [
     legendImg: (yr) => 'https://geoservices.wallonie.be/arcgis/services/AGRICULTURE/SIGEC_PARC_AGRI_ANON__' + yr
       + '/MapServer/WMSServer?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=1&format=image/png',
     attribution: '&copy; SPW Wallonie SIGEC'
+  },
+  {
+    id: 'austria', label: 'Austria (INVEKOS)', type: 'raster',
+    legendType: 'image', minZoom: 12,
+    years: Array.from({length:11}, (_,i) => 2015+i), defaultYear: 2024,
+    tileUrl: (yr) => {
+      const lyr = yr <= 2021 ? 'inspire_schlaege_' + yr + '_polygon'
+                             : 'inspire_schlaege_' + yr + '-2_polygon';
+      return wms13('https://inspire.lfrz.gv.at/009501/wms', lyr);
+    },
+    legendImg: (yr) => {
+      const lyr = yr <= 2021 ? 'inspire_schlaege_' + yr + '_polygon'
+                             : 'inspire_schlaege_' + yr + '-2_polygon';
+      return 'https://inspire.lfrz.gv.at/009501/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=' + lyr + '&format=image/png';
+    },
+    attribution: '&copy; AMA/BML Austria INVEKOS'
+  },
+  {
+    id: 'czechia', label: 'Czech Republic (LPIS)', type: 'raster',
+    legendType: 'image', minZoom: 12,
+    years: null, defaultYear: null,
+    tileUrl: () => wms13('https://mze.gov.cz/public/app/wms/public_DPB_PB_OPV.fcgi', 'DPB_A0'),
+    legendImg: 'https://mze.gov.cz/public/app/wms/public_DPB_PB_OPV.fcgi?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=DPB_A0&format=image/png',
+    attribution: '&copy; MZe Czech Republic LPIS'
+  },
+  {
+    id: 'denmark', label: 'Denmark (FVM Marker)', type: 'raster',
+    legendType: 'image',
+    years: Array.from({length:18}, (_,i) => 2008+i), defaultYear: 2025,
+    tileUrl: (yr) => wms11('https://geodata.fvm.dk/geoserver/Marker/wms', 'Marker_' + yr),
+    legendImg: (yr) => 'https://geodata.fvm.dk/geoserver/Marker/wms?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=Marker_' + yr + '&format=image/png',
+    attribution: '&copy; <a href="https://fvm.dk">FVM Denmark</a>'
+  },
+  {
+    id: 'luxembourg', label: 'Luxembourg (ASTA LPIS)', type: 'raster',
+    legendType: 'image', minZoom: 12,
+    years: Array.from({length:10}, (_,i) => 2016+i), defaultYear: 2025,
+    tileUrl: (yr) => wms13('https://wms.inspire.geoportail.lu/geoserver/af/wms',
+      'LU.ExistingLandUseObject_LPIS_' + yr),
+    legendImg: (yr) => 'https://wms.inspire.geoportail.lu/geoserver/af/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=LU.ExistingLandUseObject_LPIS_' + yr + '&format=image/png',
+    attribution: '&copy; ASTA Luxembourg'
+  },
+  {
+    id: 'portugal', label: 'Portugal (IFAP iSIP)', type: 'raster',
+    legendType: 'image', minZoom: 12,
+    years: [2017,2018,2019], defaultYear: 2019,
+    tileUrl: (yr) => {
+      const regions = ['AML','Algarve','Centro','Norte',
+        yr <= 2017 ? 'alentejo' : 'Alentejo','RAA','RAM'];
+      const layers = regions.map(r => 'isip.data:parcelas.' + r + '.' + yr + 'jun10').join(',');
+      return wms11('https://www.ifap.pt/isip/ows/isip.data/wms', layers);
+    },
+    legendImg: (yr) => 'https://www.ifap.pt/isip/ows/isip.data/wms?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=isip.data:parcelas.AML.' + yr + 'jun10&format=image/png',
+    attribution: '&copy; IFAP Portugal iSIP'
+  },
+  {
+    id: 'slovenia', label: 'Slovenia (MKGP GERK)', type: 'raster',
+    legendType: 'image', minZoom: 12,
+    years: null, defaultYear: null,
+    tileUrl: () => wms13('https://storitve.eprostor.gov.si/ows-pub-wms/SI.MKGP.GERK/ows', 'RKG_BLOK_GERK'),
+    legendImg: 'https://storitve.eprostor.gov.si/ows-pub-wms/SI.MKGP.GERK/ows?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=RKG_BLOK_GERK&format=image/png',
+    attribution: '&copy; MKGP Slovenia'
+  },
+  {
+    id: 'switzerland', label: 'Switzerland (BLW)', type: 'raster',
+    legendType: 'image',
+    years: null, defaultYear: null,
+    tileUrl: () => wms13('https://wms.geo.admin.ch/', 'ch.blw.landwirtschaftliche-nutzungsflaechen'),
+    legendImg: 'https://wms.geo.admin.ch/?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=ch.blw.landwirtschaftliche-nutzungsflaechen&format=image/png',
+    attribution: '&copy; <a href="https://geo.admin.ch">swisstopo</a>/BLW'
+  },
+  {
+    id: 'norway', label: 'Norway (NIBIO AR5)', type: 'raster',
+    legendType: 'image', minZoom: 12,
+    years: null, defaultYear: null,
+    tileUrl: () => wms11('https://wms.nibio.no/cgi-bin/ar5', 'Arealtype'),
+    legendImg: 'https://wms.nibio.no/cgi-bin/ar5?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=Arealtype&format=image/png',
+    attribution: '&copy; <a href="https://nibio.no">NIBIO</a> Norway'
   }
 ];
 
