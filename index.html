@@ -675,11 +675,15 @@ map.on('mouseleave', 'crome-fill', () => {
   infoEl.style.display = 'none';
   map.getCanvas().style.cursor = '';
 });
-// EuroCrops hover
+// EuroCrops hover — clean up underscore-delimited names to readable English
+function cleanCropName(s) {
+  if (!s) return '';
+  return s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
 map.on('mousemove', 'eurocrops-fill', e => {
   if (e.features.length) {
     const p = e.features[0].properties;
-    const name = p.EC_trans_n || p.EC_hcat_n || '(unknown)';
+    const name = cleanCropName(p.EC_hcat_n) || p.EC_trans_n || '(unknown)';
     infoEl.style.display = 'block';
     infoEl.textContent = name;
     map.getCanvas().style.cursor = 'pointer';
