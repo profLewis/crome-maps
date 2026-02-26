@@ -11,92 +11,97 @@
   body { margin: 0; padding: 0; }
   #map { position: absolute; top: 0; bottom: 0; width: 100%; }
 
-  #controls {
-    position: absolute; top: 10px; left: 10px;
-    background: rgba(255,255,255,0.94); padding: 10px 14px;
+  /* === Shared panel styles === */
+  .panel {
+    position: absolute;
+    background: rgba(255,255,255,0.94);
     border-radius: 6px; font: 12px/1.6 system-ui, sans-serif;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.25); z-index: 1;
-    max-height: 80vh; overflow-y: auto; min-width: 200px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.25); z-index: 2;
   }
-  #controls h3 { margin: 0 0 6px; font-size: 13px; }
-  .layer-group { margin-bottom: 8px; border-bottom: 1px solid #e0e0e0; padding-bottom: 8px; }
-  .layer-group:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-  .layer-group h4 { margin: 0 0 4px; font-size: 12px; color: #555; }
-  .layer-toggle { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
-  .layer-toggle input[type="checkbox"] { margin: 0; }
-  .layer-toggle label { cursor: pointer; white-space: nowrap; }
-  .opacity-row { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
-  .opacity-row input[type="range"] { width: 100px; cursor: pointer; }
-  .opacity-row span { min-width: 30px; text-align: right; }
+  .panel-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 12px; cursor: grab; user-select: none;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .panel-header:active { cursor: grabbing; }
+  .panel-header h3 { margin: 0; font-size: 13px; flex: 1; }
+  .panel-toggle {
+    background: none; border: none; cursor: pointer;
+    font-size: 14px; color: #666; padding: 0 0 0 8px; line-height: 1;
+  }
+  .panel-toggle:hover { color: #333; }
+  .panel-body { padding: 8px 12px; }
+  .panel.collapsed .panel-body { display: none; }
+  .panel.collapsed .panel-header { border-bottom: none; }
 
-  #legend {
-    position: absolute; bottom: 30px; left: 10px;
-    background: rgba(255,255,255,0.92); padding: 10px 14px;
-    border-radius: 6px; font: 12px/1.6 system-ui, sans-serif;
-    max-height: 40vh; overflow-y: auto; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  /* === Controls panel === */
+  #controls { top: 10px; left: 10px; min-width: 210px; }
+  #controls .panel-body { max-height: 70vh; overflow-y: auto; }
+  .layer-toggle { display: flex; align-items: center; gap: 6px; margin: 3px 0; }
+  .layer-toggle input[type="checkbox"] { margin: 0; }
+  .layer-toggle label { cursor: pointer; white-space: nowrap; font-size: 11.5px; }
+  .opacity-row {
+    display: flex; align-items: center; gap: 6px;
+    margin-top: 6px; padding-top: 6px; border-top: 1px solid #e0e0e0;
   }
-  #legend h3 { margin: 0 0 6px; font-size: 13px; }
+  .opacity-row label { white-space: nowrap; }
+  .opacity-row input[type="range"] { width: 90px; cursor: pointer; }
+  .opacity-row span { min-width: 30px; text-align: right; font-size: 11px; }
+
+  /* === Legend panel === */
+  #legend { bottom: 30px; left: 10px; max-width: 260px; }
+  #legend .panel-body { max-height: 45vh; overflow-y: auto; }
   .legend-row { display: flex; align-items: center; gap: 6px; }
   .legend-swatch { width: 14px; height: 14px; border-radius: 2px; flex-shrink: 0; }
+  .legend-section { margin-bottom: 8px; }
+  .legend-section h4 { margin: 6px 0 2px; font-size: 11.5px; color: #555; }
+  .legend-section img { max-width: 230px; display: block; }
+  .legend-empty { color: #999; font-style: italic; }
 
+  /* === Info panel === */
   #info {
     position: absolute; top: 10px; right: 50px;
     background: rgba(255,255,255,0.92); padding: 8px 12px;
     border-radius: 6px; font: 12px/1.5 system-ui, sans-serif;
     display: none; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-    max-width: 250px;
+    max-width: 250px; z-index: 2;
   }
 </style>
 </head>
 <body>
 <div id="map"></div>
 
-<div id="controls">
-  <h3>European Crop Maps</h3>
-
-  <div class="layer-group">
-    <h4>England (CROME 2020)</h4>
-    <div class="layer-toggle">
-      <input type="checkbox" id="toggle-crome" checked>
-      <label for="toggle-crome">Crop Map of England</label>
-    </div>
+<div id="controls" class="panel">
+  <div class="panel-header">
+    <h3>European Crop Maps</h3>
+    <button class="panel-toggle" title="Collapse/expand">&#9650;</button>
   </div>
-
-  <div class="layer-group">
-    <h4>Germany (DLR EOC)</h4>
-    <div class="layer-toggle">
-      <input type="checkbox" id="toggle-germany">
-      <label for="toggle-germany">CropTypes Germany</label>
-    </div>
-  </div>
-
-  <div class="layer-group">
-    <h4>France (RPG)</h4>
-    <div class="layer-toggle">
-      <input type="checkbox" id="toggle-france">
-      <label for="toggle-france">RPG Agriculture</label>
-    </div>
-  </div>
-
-  <div class="layer-group">
-    <h4>Netherlands (BRP)</h4>
-    <div class="layer-toggle">
-      <input type="checkbox" id="toggle-netherlands">
-      <label for="toggle-netherlands">Crop Parcels</label>
-    </div>
-  </div>
-
-  <div class="layer-group">
-    <h4>Overlay opacity</h4>
+  <div class="panel-body">
+    <div class="layer-toggle"><input type="checkbox" id="toggle-crome" checked><label for="toggle-crome">England (CROME 2020)</label></div>
+    <div class="layer-toggle"><input type="checkbox" id="toggle-germany"><label for="toggle-germany">Germany (DLR CropTypes)</label></div>
+    <div class="layer-toggle"><input type="checkbox" id="toggle-france"><label for="toggle-france">France (RPG)</label></div>
+    <div class="layer-toggle"><input type="checkbox" id="toggle-netherlands"><label for="toggle-netherlands">Netherlands (BRP)</label></div>
+    <div class="layer-toggle"><input type="checkbox" id="toggle-belgium-fl"><label for="toggle-belgium-fl">Belgium - Flanders (ALV)</label></div>
+    <div class="layer-toggle"><input type="checkbox" id="toggle-belgium-wa"><label for="toggle-belgium-wa">Belgium - Wallonia (SIGEC)</label></div>
+    <div class="layer-toggle"><input type="checkbox" id="toggle-spain"><label for="toggle-spain">Spain (SIGPAC)</label></div>
+    <div class="layer-toggle"><input type="checkbox" id="toggle-ireland"><label for="toggle-ireland">Ireland (DAFM GSAA)</label></div>
+    <div class="layer-toggle"><input type="checkbox" id="toggle-jrc"><label for="toggle-jrc">EU-wide (JRC EUCropMap)</label></div>
     <div class="opacity-row">
+      <label for="opacity-slider">Opacity:</label>
       <input id="opacity-slider" type="range" min="0" max="100" value="75">
       <span id="opacity-val">75%</span>
     </div>
   </div>
 </div>
 
-<div id="legend">
-  <h3>CROME 2020 Legend</h3>
+<div id="legend" class="panel">
+  <div class="panel-header">
+    <h3>Legend</h3>
+    <button class="panel-toggle" title="Collapse/expand">&#9650;</button>
+  </div>
+  <div class="panel-body">
+    <div id="legend-content"><span class="legend-empty">Enable a layer to see its legend</span></div>
+  </div>
 </div>
 
 <div id="info"></div>
@@ -169,6 +174,93 @@ const CATEGORIES = [
   { name: "Other", codes: ["NA01","WA00","CA02"] },
 ];
 
+// === WMS source helpers ===
+function wms11(base, layers) {
+  return base + '?service=WMS&version=1.1.1&request=GetMap'
+    + '&layers=' + encodeURIComponent(layers) + '&styles=&srs=EPSG:3857'
+    + '&bbox={bbox-epsg-3857}&width=256&height=256&format=image/png&transparent=true';
+}
+function wms13(base, layers) {
+  return base + '?service=WMS&version=1.3.0&request=GetMap'
+    + '&layers=' + encodeURIComponent(layers) + '&styles=&crs=EPSG:3857'
+    + '&bbox={bbox-epsg-3857}&width=256&height=256&format=image/png&transparent=true';
+}
+function legendUrl11(base, layer) {
+  return base + '?service=WMS&version=1.1.1&request=GetLegendGraphic'
+    + '&layer=' + encodeURIComponent(layer) + '&format=image/png';
+}
+function legendUrl13(base, layer) {
+  return base + '?service=WMS&version=1.3.0&request=GetLegendGraphic'
+    + '&layer=' + encodeURIComponent(layer) + '&format=image/png';
+}
+
+// === Layer definitions ===
+const LAYER_DEFS = {
+  'toggle-crome': {
+    label: 'England (CROME 2020)',
+    mapLayers: ['crome-fill', 'crome-outline'],
+    type: 'vector',
+    legendType: 'crome'
+  },
+  'toggle-germany': {
+    label: 'Germany (DLR CropTypes)',
+    mapLayers: ['germany-wms'],
+    type: 'raster',
+    legendType: 'image',
+    legendImg: legendUrl11('https://geoservice.dlr.de/eoc/land/wms', 'CROPTYPES_DE_P1Y')
+  },
+  'toggle-france': {
+    label: 'France (RPG)',
+    mapLayers: ['france-wms'],
+    type: 'raster',
+    legendType: 'image',
+    legendImg: legendUrl13('https://data.geopf.fr/wms-r/wms', 'LANDUSE.AGRICULTURE.LATEST')
+  },
+  'toggle-netherlands': {
+    label: 'Netherlands (BRP)',
+    mapLayers: ['netherlands-wms'],
+    type: 'raster',
+    legendType: 'image',
+    legendImg: legendUrl11('https://service.pdok.nl/rvo/brpgewaspercelen/wms/v1_0', 'BrpGewas')
+  },
+  'toggle-belgium-fl': {
+    label: 'Belgium - Flanders',
+    mapLayers: ['belgium-fl-wms'],
+    type: 'raster',
+    legendType: 'image',
+    legendImg: legendUrl13('https://geo.api.vlaanderen.be/ALV/wms', 'LbGebrPerc2024')
+  },
+  'toggle-belgium-wa': {
+    label: 'Belgium - Wallonia',
+    mapLayers: ['belgium-wa-wms'],
+    type: 'raster',
+    legendType: 'image',
+    legendImg: 'https://geoservices.wallonie.be/arcgis/services/AGRICULTURE/SIGEC_PARC_AGRI_ANON__2022/MapServer/WMSServer'
+      + '?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=1&format=image/png'
+  },
+  'toggle-spain': {
+    label: 'Spain (SIGPAC)',
+    mapLayers: ['spain-wms'],
+    type: 'raster',
+    legendType: 'image',
+    legendImg: legendUrl11('https://wms.mapa.gob.es/sigpac/wms', 'AU.Sigpac:linea_declaracion')
+  },
+  'toggle-ireland': {
+    label: 'Ireland (DAFM GSAA)',
+    mapLayers: ['ireland-wms'],
+    type: 'raster',
+    legendType: 'image',
+    legendImg: legendUrl13('https://www.inspire.gov.ie/geoserver/inspire_iacsdata/wms', 'LU.IE.GSAA.2024')
+  },
+  'toggle-jrc': {
+    label: 'EU-wide (JRC EUCropMap)',
+    mapLayers: ['jrc-wms'],
+    type: 'raster',
+    legendType: 'image',
+    legendImg: legendUrl11('https://jeodpp.jrc.ec.europa.eu/jeodpp/services/ows/wms/landcover/eucropmap', 'LC.EUCROPMAP')
+  }
+};
+
 // === Map setup ===
 const base = window.location.href.replace(/\/[^/]*$/, '');
 const PMTILES_URL = base + '/crome2020.pmtiles';
@@ -186,101 +278,84 @@ const map = new maplibregl.Map({
         type: 'raster',
         tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
         tileSize: 256,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         maxzoom: 19
       },
       crome: {
         type: 'vector',
         url: 'pmtiles://' + PMTILES_URL,
-        attribution: '&copy; Rural Payments Agency (CROME 2020). OGL v3.0.'
+        attribution: 'CROME 2020 &copy; RPA. OGL v3.0.'
       },
       germany: {
-        type: 'raster',
-        tiles: [
-          'https://geoservice.dlr.de/eoc/land/wms?service=WMS&version=1.1.1&request=GetMap'
-          + '&layers=CROPTYPES_DE_P1Y&styles=&srs=EPSG:3857'
-          + '&bbox={bbox-epsg-3857}&width=256&height=256'
-          + '&format=image/png&transparent=true'
-        ],
-        tileSize: 256,
-        attribution: '&copy; <a href="https://geoservice.dlr.de/web/datasets/croptypes_de">DLR EOC</a> CropTypes. CC-BY 4.0.'
+        type: 'raster', tileSize: 256,
+        tiles: [wms11('https://geoservice.dlr.de/eoc/land/wms', 'CROPTYPES_DE_P1Y')],
+        attribution: '&copy; <a href="https://geoservice.dlr.de">DLR EOC</a> CC-BY 4.0'
       },
       france: {
-        type: 'raster',
-        tiles: [
-          'https://data.geopf.fr/wms-r/wms?service=WMS&version=1.3.0&request=GetMap'
-          + '&layers=LANDUSE.AGRICULTURE.LATEST&styles=&crs=EPSG:3857'
-          + '&bbox={bbox-epsg-3857}&width=256&height=256'
-          + '&format=image/png&transparent=true'
-        ],
-        tileSize: 256,
-        attribution: '&copy; <a href="https://geoservices.ign.fr/">IGN</a> RPG. Licence Ouverte.'
+        type: 'raster', tileSize: 256,
+        tiles: [wms13('https://data.geopf.fr/wms-r/wms', 'LANDUSE.AGRICULTURE.LATEST')],
+        attribution: '&copy; <a href="https://geoservices.ign.fr/">IGN</a> Licence Ouverte'
       },
       netherlands: {
-        type: 'raster',
-        tiles: [
-          'https://service.pdok.nl/rvo/brpgewaspercelen/wms/v1_0?service=WMS&version=1.1.1&request=GetMap'
-          + '&layers=BrpGewas&styles=&srs=EPSG:3857'
-          + '&bbox={bbox-epsg-3857}&width=256&height=256'
-          + '&format=image/png&transparent=true'
-        ],
-        tileSize: 256,
-        attribution: '&copy; <a href="https://www.pdok.nl/">PDOK</a> / RVO BRP. CC0.'
+        type: 'raster', tileSize: 256,
+        tiles: [wms11('https://service.pdok.nl/rvo/brpgewaspercelen/wms/v1_0', 'BrpGewas')],
+        attribution: '&copy; <a href="https://www.pdok.nl/">PDOK</a>/RVO CC0'
+      },
+      'belgium-fl': {
+        type: 'raster', tileSize: 256,
+        tiles: [wms13('https://geo.api.vlaanderen.be/ALV/wms', 'LbGebrPerc2024')],
+        attribution: '&copy; Dept. Landbouw &amp; Visserij Vlaanderen'
+      },
+      'belgium-wa': {
+        type: 'raster', tileSize: 256,
+        tiles: [wms13(
+          'https://geoservices.wallonie.be/arcgis/services/AGRICULTURE/SIGEC_PARC_AGRI_ANON__2022/MapServer/WMSServer',
+          '1')],
+        attribution: '&copy; SPW Wallonie SIGEC'
+      },
+      spain: {
+        type: 'raster', tileSize: 256,
+        tiles: [wms11('https://wms.mapa.gob.es/sigpac/wms', 'AU.Sigpac:linea_declaracion')],
+        attribution: '&copy; <a href="https://www.fega.gob.es/">FEGA</a> SIGPAC'
+      },
+      ireland: {
+        type: 'raster', tileSize: 256,
+        tiles: [wms13('https://www.inspire.gov.ie/geoserver/inspire_iacsdata/wms', 'LU.IE.GSAA.2024')],
+        attribution: '&copy; DAFM Ireland GSAA'
+      },
+      jrc: {
+        type: 'raster', tileSize: 256,
+        tiles: [wms11(
+          'https://jeodpp.jrc.ec.europa.eu/jeodpp/services/ows/wms/landcover/eucropmap',
+          'LC.EUCROPMAP')],
+        attribution: '&copy; <a href="https://data.jrc.ec.europa.eu/">JRC</a> EUCropMap CC-BY 4.0'
       }
     },
     layers: [
+      { id: 'osm-basemap', type: 'raster', source: 'osm', paint: { 'raster-opacity': 1 } },
       {
-        id: 'osm-basemap',
-        type: 'raster',
-        source: 'osm',
-        paint: { 'raster-opacity': 1 }
-      },
-      {
-        id: 'crome-fill',
-        type: 'fill',
-        source: 'crome',
-        'source-layer': 'crome2020',
+        id: 'crome-fill', type: 'fill', source: 'crome', 'source-layer': 'crome2020',
         paint: {
-          'fill-color': [
-            'match', ['get', 'lucode'],
-            ...Object.entries(LUCODE_COLORS).flat(),
-            '#cccccc'
-          ],
+          'fill-color': ['match', ['get', 'lucode'], ...Object.entries(LUCODE_COLORS).flat(), '#cccccc'],
           'fill-opacity': 0.75
         }
       },
       {
-        id: 'crome-outline',
-        type: 'line',
-        source: 'crome',
-        'source-layer': 'crome2020',
+        id: 'crome-outline', type: 'line', source: 'crome', 'source-layer': 'crome2020',
         paint: {
           'line-color': '#333',
           'line-width': ['interpolate', ['linear'], ['zoom'], 10, 0, 14, 0.5],
           'line-opacity': 0.3
         }
       },
-      {
-        id: 'germany-wms',
-        type: 'raster',
-        source: 'germany',
-        paint: { 'raster-opacity': 0 },
-        layout: { visibility: 'none' }
-      },
-      {
-        id: 'france-wms',
-        type: 'raster',
-        source: 'france',
-        paint: { 'raster-opacity': 0 },
-        layout: { visibility: 'none' }
-      },
-      {
-        id: 'netherlands-wms',
-        type: 'raster',
-        source: 'netherlands',
-        paint: { 'raster-opacity': 0 },
-        layout: { visibility: 'none' }
-      }
+      { id: 'germany-wms', type: 'raster', source: 'germany', paint: { 'raster-opacity': 0 }, layout: { visibility: 'none' } },
+      { id: 'france-wms', type: 'raster', source: 'france', paint: { 'raster-opacity': 0 }, layout: { visibility: 'none' } },
+      { id: 'netherlands-wms', type: 'raster', source: 'netherlands', paint: { 'raster-opacity': 0 }, layout: { visibility: 'none' } },
+      { id: 'belgium-fl-wms', type: 'raster', source: 'belgium-fl', paint: { 'raster-opacity': 0 }, layout: { visibility: 'none' } },
+      { id: 'belgium-wa-wms', type: 'raster', source: 'belgium-wa', paint: { 'raster-opacity': 0 }, layout: { visibility: 'none' } },
+      { id: 'spain-wms', type: 'raster', source: 'spain', paint: { 'raster-opacity': 0 }, layout: { visibility: 'none' } },
+      { id: 'ireland-wms', type: 'raster', source: 'ireland', paint: { 'raster-opacity': 0 }, layout: { visibility: 'none' } },
+      { id: 'jrc-wms', type: 'raster', source: 'jrc', paint: { 'raster-opacity': 0 }, layout: { visibility: 'none' } }
     ]
   },
   center: [2.0, 50.0],
@@ -288,26 +363,81 @@ const map = new maplibregl.Map({
   maxZoom: 16
 });
 
-// Navigation + scale
 map.addControl(new maplibregl.NavigationControl(), 'top-right');
 map.addControl(new maplibregl.ScaleControl({ maxWidth: 200, unit: 'metric' }), 'bottom-right');
 
-// === Layer toggle logic ===
-const CROP_LAYERS = {
-  'toggle-crome':       { layers: ['crome-fill', 'crome-outline'], type: 'vector' },
-  'toggle-germany':     { layers: ['germany-wms'], type: 'raster' },
-  'toggle-france':      { layers: ['france-wms'], type: 'raster' },
-  'toggle-netherlands': { layers: ['netherlands-wms'], type: 'raster' },
-};
+// === Draggable + collapsible panels ===
+function makeDraggable(panel) {
+  const header = panel.querySelector('.panel-header');
+  let dragging = false, startX, startY, origLeft, origTop;
 
+  function onStart(e) {
+    if (e.target.classList.contains('panel-toggle')) return;
+    dragging = true;
+    const pt = e.touches ? e.touches[0] : e;
+    const rect = panel.getBoundingClientRect();
+    startX = pt.clientX; startY = pt.clientY;
+    origLeft = rect.left; origTop = rect.top;
+    panel.style.right = 'auto'; panel.style.bottom = 'auto';
+    panel.style.left = origLeft + 'px'; panel.style.top = origTop + 'px';
+    e.preventDefault();
+  }
+  function onMove(e) {
+    if (!dragging) return;
+    const pt = e.touches ? e.touches[0] : e;
+    let newLeft = origLeft + (pt.clientX - startX);
+    let newTop = origTop + (pt.clientY - startY);
+    newLeft = Math.max(0, Math.min(window.innerWidth - 60, newLeft));
+    newTop = Math.max(0, Math.min(window.innerHeight - 30, newTop));
+    panel.style.left = newLeft + 'px';
+    panel.style.top = newTop + 'px';
+  }
+  function onEnd() { dragging = false; }
+
+  header.addEventListener('mousedown', onStart);
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onEnd);
+  header.addEventListener('touchstart', onStart, { passive: false });
+  document.addEventListener('touchmove', onMove, { passive: false });
+  document.addEventListener('touchend', onEnd);
+}
+
+function makeCollapsible(panel) {
+  const btn = panel.querySelector('.panel-toggle');
+  btn.addEventListener('click', () => {
+    panel.classList.toggle('collapsed');
+    btn.innerHTML = panel.classList.contains('collapsed') ? '&#9660;' : '&#9650;';
+  });
+}
+
+document.querySelectorAll('.panel').forEach(p => {
+  makeDraggable(p);
+  makeCollapsible(p);
+});
+
+// === Layer toggle + opacity ===
 let currentOpacity = 0.75;
 
+function setLayerVisible(toggleId, on) {
+  const def = LAYER_DEFS[toggleId];
+  for (const layerId of def.mapLayers) {
+    if (on) {
+      map.setLayoutProperty(layerId, 'visibility', 'visible');
+      if (def.type === 'raster') {
+        map.setPaintProperty(layerId, 'raster-opacity', currentOpacity);
+      }
+    } else {
+      map.setLayoutProperty(layerId, 'visibility', 'none');
+    }
+  }
+  updateLegend();
+}
+
 function applyOpacity() {
-  for (const [toggleId, info] of Object.entries(CROP_LAYERS)) {
-    const on = document.getElementById(toggleId).checked;
-    for (const layerId of info.layers) {
-      if (!on) continue;
-      if (info.type === 'raster') {
+  for (const [tid, def] of Object.entries(LAYER_DEFS)) {
+    if (!document.getElementById(tid).checked) continue;
+    for (const layerId of def.mapLayers) {
+      if (def.type === 'raster') {
         map.setPaintProperty(layerId, 'raster-opacity', currentOpacity);
       } else if (layerId.includes('fill')) {
         map.setPaintProperty(layerId, 'fill-opacity', currentOpacity);
@@ -318,22 +448,12 @@ function applyOpacity() {
   }
 }
 
-for (const [toggleId, info] of Object.entries(CROP_LAYERS)) {
-  document.getElementById(toggleId).addEventListener('change', function() {
-    for (const layerId of info.layers) {
-      if (this.checked) {
-        map.setLayoutProperty(layerId, 'visibility', 'visible');
-        if (info.type === 'raster') {
-          map.setPaintProperty(layerId, 'raster-opacity', currentOpacity);
-        }
-      } else {
-        map.setLayoutProperty(layerId, 'visibility', 'none');
-      }
-    }
+for (const tid of Object.keys(LAYER_DEFS)) {
+  document.getElementById(tid).addEventListener('change', function() {
+    setLayerVisible(tid, this.checked);
   });
 }
 
-// Opacity slider
 const slider = document.getElementById('opacity-slider');
 const opacityVal = document.getElementById('opacity-val');
 slider.addEventListener('input', () => {
@@ -342,29 +462,72 @@ slider.addEventListener('input', () => {
   applyOpacity();
 });
 
-// === CROME legend ===
-const legendEl = document.getElementById('legend');
-CATEGORIES.forEach(cat => {
-  const h = document.createElement('div');
-  h.style.fontWeight = 'bold';
-  h.style.marginTop = '6px';
-  h.textContent = cat.name;
-  legendEl.appendChild(h);
-  cat.codes.forEach(code => {
-    const row = document.createElement('div');
-    row.className = 'legend-row';
-    const sw = document.createElement('div');
-    sw.className = 'legend-swatch';
-    sw.style.background = LUCODE_COLORS[code] || '#ccc';
-    row.appendChild(sw);
-    const lbl = document.createElement('span');
-    lbl.textContent = LUCODE_LABELS[code] || code;
-    row.appendChild(lbl);
-    legendEl.appendChild(row);
-  });
-});
+// === Dynamic legend ===
+const legendContent = document.getElementById('legend-content');
 
-// === Hover info (CROME only) ===
+function buildCromeLegend() {
+  const frag = document.createDocumentFragment();
+  const sec = document.createElement('div');
+  sec.className = 'legend-section';
+  const h = document.createElement('h4');
+  h.textContent = 'England - CROME 2020';
+  sec.appendChild(h);
+  CATEGORIES.forEach(cat => {
+    const ch = document.createElement('div');
+    ch.style.cssText = 'font-weight:bold; margin-top:4px; font-size:11px;';
+    ch.textContent = cat.name;
+    sec.appendChild(ch);
+    cat.codes.forEach(code => {
+      const row = document.createElement('div');
+      row.className = 'legend-row';
+      const sw = document.createElement('div');
+      sw.className = 'legend-swatch';
+      sw.style.background = LUCODE_COLORS[code] || '#ccc';
+      row.appendChild(sw);
+      const lbl = document.createElement('span');
+      lbl.textContent = LUCODE_LABELS[code] || code;
+      row.appendChild(lbl);
+      sec.appendChild(row);
+    });
+  });
+  frag.appendChild(sec);
+  return frag;
+}
+
+function buildImageLegend(label, imgUrl) {
+  const sec = document.createElement('div');
+  sec.className = 'legend-section';
+  const h = document.createElement('h4');
+  h.textContent = label;
+  sec.appendChild(h);
+  const img = document.createElement('img');
+  img.src = imgUrl;
+  img.alt = label + ' legend';
+  img.onerror = function() { this.style.display = 'none'; };
+  sec.appendChild(img);
+  return sec;
+}
+
+function updateLegend() {
+  legendContent.innerHTML = '';
+  let any = false;
+  for (const [tid, def] of Object.entries(LAYER_DEFS)) {
+    if (!document.getElementById(tid).checked) continue;
+    any = true;
+    if (def.legendType === 'crome') {
+      legendContent.appendChild(buildCromeLegend());
+    } else if (def.legendType === 'image' && def.legendImg) {
+      legendContent.appendChild(buildImageLegend(def.label, def.legendImg));
+    }
+  }
+  if (!any) {
+    legendContent.innerHTML = '<span class="legend-empty">Enable a layer to see its legend</span>';
+  }
+}
+
+updateLegend();
+
+// === Hover info (CROME) ===
 const infoEl = document.getElementById('info');
 map.on('mousemove', 'crome-fill', e => {
   if (e.features.length) {
