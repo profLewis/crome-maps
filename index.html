@@ -183,6 +183,14 @@ const LAYERS = [
     years: [2020], defaultYear: 2020
   },
   {
+    id: 'eurocrops', label: 'EU Field Boundaries (EuroCrops)', type: 'vector-remote',
+    legendType: 'eurocrops',
+    years: null, defaultYear: null,
+    pmtilesUrl: 'https://data.source.coop/cholmes/eurocrops/eurocrops-all.pmtiles',
+    sourceLayer: 'eurocrops',
+    attribution: '&copy; <a href="https://github.com/maja601/EuroCrops">EuroCrops</a> CC-BY 4.0'
+  },
+  {
     id: 'germany', label: 'Germany (DLR)', type: 'raster',
     legendType: 'image',
     years: [2017,2018,2019,2020,2021,2022,2023,2024], defaultYear: 2024,
@@ -345,20 +353,39 @@ const initLayers = [
   }
 ];
 
-// Add WMS raster sources and layers
+// Add WMS raster and remote vector sources/layers
 LAYERS.forEach(L => {
-  if (L.type !== 'raster') return;
-  const yr = L.defaultYear;
-  initSources[L.id] = {
-    type: 'raster', tileSize: 256,
-    tiles: [L.tileUrl(yr)],
-    attribution: L.attribution || ''
-  };
-  initLayers.push({
-    id: L.id + '-wms', type: 'raster', source: L.id,
-    paint: { 'raster-opacity': 0 },
-    layout: { visibility: 'none' }
-  });
+  if (L.type === 'raster') {
+    const yr = L.defaultYear;
+    initSources[L.id] = {
+      type: 'raster', tileSize: 256,
+      tiles: [L.tileUrl(yr)],
+      attribution: L.attribution || ''
+    };
+    initLayers.push({
+      id: L.id + '-wms', type: 'raster', source: L.id,
+      paint: { 'raster-opacity': 0 },
+      layout: { visibility: 'none' }
+    });
+  } else if (L.type === 'vector-remote') {
+    initSources[L.id] = {
+      type: 'vector',
+      url: 'pmtiles://' + L.pmtilesUrl,
+      attribution: L.attribution || ''
+    };
+    initLayers.push({
+      id: L.id + '-fill', type: 'fill', source: L.id,
+      'source-layer': L.sourceLayer,
+      paint: { 'fill-color': '#66bb6a', 'fill-opacity': 0.5 },
+      layout: { visibility: 'none' }
+    });
+    initLayers.push({
+      id: L.id + '-outline', type: 'line', source: L.id,
+      'source-layer': L.sourceLayer,
+      paint: { 'line-color': '#2e7d32', 'line-width': 0.5, 'line-opacity': 0.6 },
+      layout: { visibility: 'none' }
+    });
+  }
 });
 
 const map = new maplibregl.Map({
@@ -502,6 +529,14 @@ function toggleLayer(L, on) {
     ['crome-fill', 'crome-outline'].forEach(lid => {
       map.setLayoutProperty(lid, 'visibility', on ? 'visible' : 'none');
     });
+  } else if (L.type === 'vector-remote') {
+    [L.id + '-fill', L.id + '-outline'].forEach(lid => {
+      map.setLayoutProperty(lid, 'visibility', on ? 'visible' : 'none');
+    });
+    if (on) {
+      map.setPaintProperty(L.id + '-fill', 'fill-opacity', currentOpacity * 0.67);
+      map.setPaintProperty(L.id + '-outline', 'line-opacity', currentOpacity * 0.8);
+    }
   } else {
     const lid = L.id + '-wms';
     map.setLayoutProperty(lid, 'visibility', on ? 'visible' : 'none');
@@ -535,6 +570,9 @@ function applyOpacity() {
     if (!layerState[L.id].on) return;
     if (L.type === 'raster') {
       map.setPaintProperty(L.id + '-wms', 'raster-opacity', currentOpacity);
+    } else if (L.type === 'vector-remote') {
+      map.setPaintProperty(L.id + '-fill', 'fill-opacity', currentOpacity * 0.67);
+      map.setPaintProperty(L.id + '-outline', 'line-opacity', currentOpacity * 0.8);
     } else {
       map.setPaintProperty('crome-fill', 'fill-opacity', currentOpacity);
       map.setPaintProperty('crome-outline', 'line-opacity', currentOpacity * 0.4);
@@ -601,6 +639,19 @@ function updateLegend() {
     const yr = layerState[L.id].year;
     if (L.legendType === 'crome') {
       legendContent.appendChild(buildCromeLegend());
+    } else if (L.legendType === 'eurocrops') {
+      const sec = document.createElement('div'); sec.className = 'legend-section';
+      const h = document.createElement('h4'); h.textContent = 'EU Field Boundaries (EuroCrops)'; sec.appendChild(h);
+      const row = document.createElement('div'); row.className = 'legend-row';
+      const sw = document.createElement('div'); sw.className = 'legend-swatch';
+      sw.style.background = '#66bb6a'; sw.style.border = '1px solid #2e7d32'; row.appendChild(sw);
+      const lbl = document.createElement('span'); lbl.textContent = 'Field boundary (hover for crop type)'; row.appendChild(lbl);
+      sec.appendChild(row);
+      const note = document.createElement('div');
+      note.style.cssText = 'font-size:10px;color:#666;margin-top:4px;';
+      note.textContent = '16 EU countries: AT, BE, DE, DK, EE, ES, FR, HR, LT, LV, NL, RO, SE, SI, SK';
+      sec.appendChild(note);
+      legendContent.appendChild(sec);
     } else if (L.legendType === 'image') {
       const url = typeof L.legendImg === 'function' ? L.legendImg(yr) : L.legendImg;
       if (url) legendContent.appendChild(buildImageLegend(L.label + (yr ? ' ' + yr : ''), url));
@@ -610,7 +661,7 @@ function updateLegend() {
 }
 updateLegend();
 
-// === Hover info (CROME) ===
+// === Hover info ===
 const infoEl = document.getElementById('info');
 map.on('mousemove', 'crome-fill', e => {
   if (e.features.length) {
@@ -621,6 +672,20 @@ map.on('mousemove', 'crome-fill', e => {
   }
 });
 map.on('mouseleave', 'crome-fill', () => {
+  infoEl.style.display = 'none';
+  map.getCanvas().style.cursor = '';
+});
+// EuroCrops hover
+map.on('mousemove', 'eurocrops-fill', e => {
+  if (e.features.length) {
+    const p = e.features[0].properties;
+    const name = p.EC_trans_n || p.EC_hcat_n || '(unknown)';
+    infoEl.style.display = 'block';
+    infoEl.textContent = name;
+    map.getCanvas().style.cursor = 'pointer';
+  }
+});
+map.on('mouseleave', 'eurocrops-fill', () => {
   infoEl.style.display = 'none';
   map.getCanvas().style.cursor = '';
 });

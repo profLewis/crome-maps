@@ -1,0 +1,33 @@
+# European Crop Map Datasets
+# Format: id | type | label | service_url | layer_pattern | years | notes
+# Lines starting with # are comments
+# This file is read by discover_updates.sh to check for new data
+
+# --- Vector tile sources (PMTiles) ---
+crome|vector-local|England (CROME)|WFS:https://environment.data.gov.uk/spatialdata/crop-map-of-england-{YEAR}/wfs|Crop_Map_of_England_{YEAR}_{COUNTY}|2020,2021,2022,2023,2024|Download per county, convert with tippecanoe
+eurocrops|vector-remote|EU Field Boundaries (EuroCrops)|https://data.source.coop/cholmes/eurocrops/eurocrops-all.pmtiles|eurocrops|static|16 EU countries, fiboa-harmonized
+
+# --- WMS raster sources ---
+germany|wms|Germany (DLR CropTypes)|https://geoservice.dlr.de/eoc/land/wms|CROPTYPES_DE_P1Y|2017-2024|Uses TIME dimension parameter
+france|wms|France (RPG)|https://data.geopf.fr/wms-r/wms|LANDUSE.AGRICULTURE{YEAR}|2007-2024|Layer name includes year, v1.3.0
+netherlands|wms|Netherlands (BRP)|https://service.pdok.nl/rvo/brpgewaspercelen/wms/v1_0|BrpGewas|current|Parcel level, z12+
+belgium-fl|wms|Belgium - Flanders|https://geo.api.vlaanderen.be/ALV/wms|LbGebrPerc{YEAR}|2008-2024|Layer name includes year, v1.3.0, z12+
+belgium-wa|wms|Belgium - Wallonia|https://geoservices.wallonie.be/arcgis/services/AGRICULTURE/SIGEC_PARC_AGRI_ANON__{YEAR}/MapServer/WMSServer|1|2019-2023|URL includes year, v1.3.0, z12+
+austria|wms|Austria (INVEKOS)|https://inspire.lfrz.gv.at/009501/wms|inspire_schlaege_{YEAR}_polygon OR inspire_schlaege_{YEAR}-2_polygon|2015-2025|Naming changed in 2022 to -1/-2 suffix, v1.3.0, z12+
+czechia|wms|Czech Republic (LPIS)|https://mze.gov.cz/public/app/wms/public_DPB_PB_OPV.fcgi|DPB_A0|current|v1.3.0, z12+
+denmark|wms|Denmark (FVM Marker)|https://geodata.fvm.dk/geoserver/Marker/wms|Marker_{YEAR}|2008-2025|v1.1.1
+luxembourg|wms|Luxembourg (ASTA LPIS)|https://wms.inspire.geoportail.lu/geoserver/af/wms|LU.ExistingLandUseObject_LPIS_{YEAR}|2016-2025|v1.3.0, z12+
+portugal|wms|Portugal (IFAP iSIP)|https://www.ifap.pt/isip/ows/isip.data/wms|isip.data:parcelas.{REGION}.{YEAR}jun10|2017-2019|Regional layers: AML,Algarve,Centro,Norte,Alentejo,RAA,RAM
+slovenia|wms|Slovenia (MKGP GERK)|https://storitve.eprostor.gov.si/ows-pub-wms/SI.MKGP.GERK/ows|RKG_BLOK_GERK|current|v1.3.0, z12+
+switzerland|wms|Switzerland (BLW)|https://wms.geo.admin.ch/|ch.blw.landwirtschaftliche-nutzungsflaechen|current|v1.3.0
+norway|wms|Norway (NIBIO AR5)|https://wms.nibio.no/cgi-bin/ar5|Arealtype|current|v1.1.1, z12+
+
+# --- Known services WITHOUT CORS (not usable in browser) ---
+# ireland|wms|Ireland (DAFM GSAA)|https://inspire.gov.ie/.../wms|LU.IE.GSAA.2024|2024|No CORS
+# jrc|wms|EU-wide (JRC EUCropMap)|https://jeodpp.jrc.ec.europa.eu/.../eucropmap|LC.EUCROPMAP|2018,2022|No CORS
+# spain|wms|Spain (SIGPAC)|https://wms.mapa.gob.es/sigpac/wms|various|?|Returns empty tiles
+# estonia|wms|Estonia (PRIA)|https://kls.pria.ee/geoserver/pria/wms|...|?|No CORS
+# finland|wms|Finland (Ruokavirasto)|https://inspire-opendata.ruokavirasto.fi/geoserver/wms|...|?|No CORS
+# sweden|wms|Sweden (Jordbruksverket)|https://inspire-geoportal.jordbruksverket.se/wms|...|?|No CORS
+# poland|wms|Poland (ARiMR)|https://mapy.arimr.gov.pl/wms|...|?|No CORS
+# hungary|wms|Hungary (MePAR)|https://mepar.mvh.gov.hu/geoserver/wms|...|?|No CORS
