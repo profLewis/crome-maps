@@ -60,6 +60,8 @@
   .legend-section h4 { margin: 6px 0 2px; font-size: 11.5px; color: #555; }
   .legend-section img { max-width: 230px; display: block; }
   .legend-empty { color: #999; font-style: italic; }
+  .zoom-hint { font-size: 10px; color: #e67e00; display: none; padding: 4px 0 0; }
+  .zoom-hint.visible { display: block; }
 
   #info {
     position: absolute; top: 10px; right: 50px;
@@ -199,7 +201,7 @@ const LAYERS = [
   },
   {
     id: 'netherlands', label: 'Netherlands (BRP)', type: 'raster',
-    legendType: 'image',
+    legendType: 'image', minZoom: 12,
     years: null, defaultYear: null,
     tileUrl: () => wms11('https://service.pdok.nl/rvo/brpgewaspercelen/wms/v1_0', 'BrpGewas'),
     legendImg: 'https://service.pdok.nl/rvo/brpgewaspercelen/wms/v1_0?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=BrpGewas&format=image/png',
@@ -207,7 +209,7 @@ const LAYERS = [
   },
   {
     id: 'belgium-fl', label: 'Belgium - Flanders', type: 'raster',
-    legendType: 'image',
+    legendType: 'image', minZoom: 12,
     years: Array.from({length:17}, (_,i) => 2008+i), defaultYear: 2024,
     tileUrl: (yr) => wms13('https://geo.api.vlaanderen.be/ALV/wms', 'LbGebrPerc' + yr),
     legendImg: (yr) => 'https://geo.api.vlaanderen.be/ALV/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=LbGebrPerc' + yr + '&format=image/png',
@@ -215,21 +217,13 @@ const LAYERS = [
   },
   {
     id: 'belgium-wa', label: 'Belgium - Wallonia', type: 'raster',
-    legendType: 'image',
+    legendType: 'image', minZoom: 12,
     years: [2019,2020,2021,2022,2023], defaultYear: 2022,
     tileUrl: (yr) => wms13(
       'https://geoservices.wallonie.be/arcgis/services/AGRICULTURE/SIGEC_PARC_AGRI_ANON__' + yr + '/MapServer/WMSServer', '1'),
     legendImg: (yr) => 'https://geoservices.wallonie.be/arcgis/services/AGRICULTURE/SIGEC_PARC_AGRI_ANON__' + yr
       + '/MapServer/WMSServer?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=1&format=image/png',
     attribution: '&copy; SPW Wallonie SIGEC'
-  },
-  {
-    id: 'spain', label: 'Spain (SIGPAC)', type: 'raster',
-    legendType: 'image',
-    years: null, defaultYear: null,
-    tileUrl: () => wms13('https://wms.mapa.gob.es/sigpac/wms', 'AU.Sigpac:linea_declaracion'),
-    legendImg: 'https://wms.mapa.gob.es/sigpac/wms?request=GetLegendGraphic&format=image/png&width=20&height=20&layer=AU.Sigpac:linea_declaracion',
-    attribution: '&copy; <a href="https://www.fega.gob.es/">FEGA</a> SIGPAC'
   }
 ];
 
@@ -392,9 +386,19 @@ LAYERS.forEach(L => {
     layerState[L.id].on = cb.checked;
     toggleLayer(L, cb.checked);
     updateLegend();
+    updateZoomHints();
   });
 
   layerListEl.appendChild(row);
+
+  // Zoom hint for parcel-level layers
+  if (L.minZoom) {
+    const hint = document.createElement('div');
+    hint.className = 'zoom-hint';
+    hint.id = 'hint-' + L.id;
+    hint.textContent = 'Zoom in to see parcels (z' + L.minZoom + '+)';
+    layerListEl.appendChild(hint);
+  }
 });
 
 // Opacity slider
@@ -459,6 +463,19 @@ function applyOpacity() {
     }
   });
 }
+
+// === Zoom hints for parcel layers ===
+function updateZoomHints() {
+  const z = map.getZoom();
+  LAYERS.forEach(L => {
+    if (!L.minZoom) return;
+    const hint = document.getElementById('hint-' + L.id);
+    if (hint) {
+      hint.classList.toggle('visible', layerState[L.id].on && z < L.minZoom);
+    }
+  });
+}
+map.on('zoom', updateZoomHints);
 
 // === Dynamic legend ===
 const legendContent = document.getElementById('legend-content');
