@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>European Crop Maps</title>
+<title>Global Crop Maps</title>
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script src="https://unpkg.com/pmtiles@3.2.1/dist/pmtiles.js"></script>
@@ -30,6 +30,20 @@
     font-size: 14px; color: #666; padding: 0 0 0 8px; line-height: 1;
   }
   .panel-toggle:hover { color: #333; }
+  .settings-btn {
+    background: none; border: none; cursor: pointer;
+    font-size: 15px; color: #666; padding: 0 0 0 4px; line-height: 1;
+  }
+  .settings-btn:hover { color: #333; }
+  #settings-popover {
+    display: none; position: absolute; top: 38px; left: 10px; z-index: 10;
+    background: #fff; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    padding: 10px 14px; font: 12px/1.8 system-ui, sans-serif; min-width: 220px;
+  }
+  #settings-popover.open { display: block; }
+  .settings-title { font-weight: bold; font-size: 12px; margin-bottom: 4px; border-bottom: 1px solid #e0e0e0; padding-bottom: 4px; }
+  #settings-popover label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 11.5px; }
+  #settings-popover input[type="checkbox"] { margin: 0; }
   .panel-body { padding: 8px 12px; }
   .panel.collapsed .panel-body { display: none; }
   .panel.collapsed .panel-header { border-bottom: none; }
@@ -53,16 +67,49 @@
   .opacity-row input[type="range"] { width: 90px; cursor: pointer; }
   .opacity-row span { min-width: 30px; text-align: right; font-size: 11px; }
 
-  #legend { bottom: 30px; left: 10px; max-width: 260px; }
-  #legend .panel-body { max-height: 45vh; overflow-y: auto; }
+  #legend-stack {
+    position: absolute; bottom: 30px; left: 10px; z-index: 2;
+    display: flex; flex-direction: column-reverse; gap: 6px;
+    max-height: 85vh; overflow-y: auto; pointer-events: none;
+  }
+  .legend-card {
+    pointer-events: auto;
+    background: rgba(255,255,255,0.94); border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+    font: 12px/1.6 system-ui, sans-serif;
+    max-width: 260px; overflow: hidden;
+  }
+  .legend-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 4px 8px; background: #f5f5f5; border-bottom: 1px solid #e0e0e0;
+    cursor: pointer; user-select: none;
+  }
+  .legend-card-header h4 { margin: 0; font-size: 11px; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .legend-card-close {
+    background: none; border: none; cursor: pointer; font-size: 14px;
+    color: #999; padding: 0 0 0 6px; line-height: 1;
+  }
+  .legend-card-close:hover { color: #333; }
+  .legend-card-body { padding: 6px 8px; max-height: 40vh; overflow-y: auto; }
+  .legend-card.collapsed .legend-card-body { display: none; }
+  .legend-card.collapsed .legend-card-header { border-bottom: none; }
   .legend-row { display: flex; align-items: center; gap: 6px; }
   .legend-swatch { width: 14px; height: 14px; border-radius: 2px; flex-shrink: 0; }
-  .legend-section { margin-bottom: 8px; }
-  .legend-section h4 { margin: 6px 0 2px; font-size: 11.5px; color: #555; }
-  .legend-section img { max-width: 230px; display: block; }
-  .legend-empty { color: #999; font-style: italic; }
+  .legend-card-body img { max-width: 230px; display: block; }
   .zoom-hint { font-size: 10px; color: #e67e00; display: none; padding: 4px 0 0; }
   .zoom-hint.visible { display: block; }
+
+  .continent-section { margin: 0; }
+  .continent-header {
+    display: flex; align-items: center; gap: 4px; cursor: pointer; user-select: none;
+    font-weight: bold; font-size: 11px; color: #555; padding: 5px 0 3px;
+    border-top: 1px solid #e0e0e0;
+  }
+  .continent-header:first-child { border-top: none; }
+  .continent-header .arrow { font-size: 8px; color: #999; transition: transform 0.15s; }
+  .continent-header.open .arrow { transform: rotate(90deg); }
+  .continent-body { display: none; padding-left: 2px; }
+  .continent-header.open + .continent-body { display: block; }
 
   #info {
     position: absolute; top: 10px; right: 50px;
@@ -78,25 +125,31 @@
 
 <div id="controls" class="panel">
   <div class="panel-header">
-    <h3>European Crop Maps</h3>
+    <h3>Global Crop Maps</h3>
+    <button class="settings-btn" id="settings-gear" title="Settings">&#9881;</button>
     <button class="panel-toggle" title="Collapse/expand">&#9650;</button>
   </div>
   <div class="panel-body" id="layer-list"></div>
 </div>
 
-<div id="legend" class="panel">
-  <div class="panel-header">
-    <h3>Legend</h3>
-    <button class="panel-toggle" title="Collapse/expand">&#9650;</button>
-  </div>
-  <div class="panel-body">
-    <div id="legend-content"><span class="legend-empty">Enable a layer to see its legend</span></div>
-  </div>
+<div id="settings-popover">
+  <div class="settings-title">Settings</div>
+  <label><input type="checkbox" id="setting-close-layer"> Dismiss legend also hides layer</label>
 </div>
+
+<div id="legend-stack"></div>
 
 <div id="info"></div>
 
 <script>
+// === Settings (persisted in localStorage) ===
+const SETTINGS = { closeLegendClosesLayer: true };
+try {
+  const saved = JSON.parse(localStorage.getItem('cropmap-settings'));
+  if (saved) Object.assign(SETTINGS, saved);
+} catch(e) {}
+function saveSettings() { localStorage.setItem('cropmap-settings', JSON.stringify(SETTINGS)); }
+
 // === CROME lookup tables ===
 const LUCODE_LABELS = {
   "AC01":"Spring Barley","AC03":"Beet","AC04":"Borage","AC05":"Buckwheat",
@@ -162,6 +215,314 @@ const CATEGORIES = [
   { name: "Other", codes: ["NA01","WA00","CA02"] },
 ];
 
+// === EuroCrops color scheme by crop type ===
+// Group ~173 crop names into color families; top categories cover 95%+ of features
+const EC_COLORS = {
+  // Cereals — yellows/golds
+  'winter_common_soft_wheat': '#d4a017', 'spring_common_soft_wheat': '#e6b800',
+  'winter_durum_hard_wheat': '#c9a830', 'winter_barley': '#ccaa00',
+  'spring_barley': '#e8c840', 'summer_barley': '#dbb840',
+  'winter_rye': '#b89830', 'spring_rye': '#c4a848', 'summer_rye': '#b09040',
+  'winter_triticale': '#a89030', 'spring_triticale': '#b89840',
+  'winter_oats': '#c8a848', 'spring_oats': '#d8b858', 'summer_oats': '#c0a040',
+  'grain_maize_corn_popcorn': '#f5c71a', 'green_silo_maize': '#e8b800',
+  'spelt': '#c0a030', 'winter_spelt': '#b09020', 'buckwheat': '#bc8f8f',
+  'millet_sorghum': '#f4a460', 'rice': '#fff8dc',
+  'unspecified_cereals': '#d0b050', 'unspecified_season_unspecified_cereals': '#c8a848',
+  'winter_unspecified_cereals': '#c4a040', 'spring_unspecified_cereals': '#d4b050',
+  'summer_unspecified_cereals': '#ccaa48', 'arable_crops': '#dab860',
+  // Oilseeds — oranges
+  'winter_rapeseed_rape': '#ffa500', 'spring_rapeseed_rape': '#ffb347',
+  'rapeseed_rape': '#ff9800', 'summer_rapeseed_rape': '#ffb040',
+  'sunflower': '#ffc107', 'flax_linen': '#e8d44d', 'soy_soybeans': '#cdaa20',
+  'mustard': '#eee8aa', 'hemp_cannabis': '#9acd32',
+  // Legumes — bright greens
+  'beans': '#228b22', 'peas': '#00ff7f', 'lentils': '#3cb371',
+  'chickpeas': '#556b2f', 'sweet_lupins': '#00fa9a', 'vetches': '#6b8e23',
+  'legumes_dried_pulses_protein_crops': '#2e8b57',
+  'legumes_harvested_green': '#32cd32', 'other_dry_pulses': '#4f7942',
+  'clover': '#00cd66', 'alfalfa_lucerne': '#2e8b57',
+  // Root crops — browns/tans
+  'potatoes': '#cd853f', 'sugar_beet': '#deb887', 'beetroot_beets': '#e07020',
+  'carrots_daucus': '#ff8c00', 'fodder_roots': '#d2691e',
+  'mangelwurzel_fodder_beet': '#c87830',
+  // Grass/pasture — greens
+  'pasture_meadow_grassland_grass': '#7cfc00', 'temporary_grass': '#90ee90',
+  'lolium_ryegrass': '#98fb98', 'festuca_fescue': '#8fbc8f', 'timothy': '#86c67c',
+  // Vegetables — reds/pinks
+  'fresh_vegetables': '#ff6347', 'onions': '#daa520', 'leek': '#8db600',
+  'asparagus': '#87ceeb', 'spinach': '#2e8b57', 'chicory_chicories': '#8fbc8f',
+  'strawberries': '#ff4040',
+  // Orchards/fruits — purples
+  'orchards_fruits': '#9370db', 'unspecified_orchards_fruits': '#8b668b',
+  'apples': '#ff6b6b', 'pears': '#c5e17a', 'cherry_cherries': '#dc143c',
+  'walnuts': '#8b7355', 'berries_berry_species': '#9400d3',
+  'vineyards_wine_vine_rebland_grapes': '#722f72',
+  // Trees/forest — dark greens
+  'tree_wood_forest': '#2f4f4f', 'other_tree_wood_forest': '#3a5f3a',
+  'afforestation_reforestation': '#355e3b', 'shrubberries_shrubs': '#4a7c59',
+  'nurseries_nursery': '#228b22',
+  // Flowers
+  'flowers_ornamental_plants': '#ff69b4',
+  // Fallow/other — grays
+  'fallow_land_not_crop': '#d2b48c', 'not_known_and_other': '#a9a9a9',
+  'unmaintained': '#c0c0c0', 'other_arable_land_crops': '#b0a898',
+  'other_industrial_crops': '#a0937c', 'other_permanent_crops_plantations': '#8b7e70',
+  'permanent_crops_perennial': '#7a6e62',
+  'kitchen_gardens': '#90ee90', 'sod_turf': '#7ccd7c',
+};
+const EC_COLOR_EXPR = ['match', ['get', 'EC_hcat_n'],
+  ...Object.entries(EC_COLORS).flat(), '#888888'];
+
+const EC_CATEGORIES = [
+  { name: 'Cereals', key: ['winter_common_soft_wheat','winter_barley','grain_maize_corn_popcorn','spring_barley','winter_triticale','winter_rye'] },
+  { name: 'Oilseeds', key: ['winter_rapeseed_rape','sunflower','flax_linen','soy_soybeans'] },
+  { name: 'Grass / Pasture', key: ['pasture_meadow_grassland_grass','temporary_grass'] },
+  { name: 'Legumes', key: ['beans','peas','clover','alfalfa_lucerne'] },
+  { name: 'Root Crops', key: ['potatoes','sugar_beet','beetroot_beets'] },
+  { name: 'Fruits / Vines', key: ['vineyards_wine_vine_rebland_grapes','orchards_fruits','apples'] },
+  { name: 'Forest / Trees', key: ['tree_wood_forest','shrubberries_shrubs'] },
+  { name: 'Fallow / Other', key: ['fallow_land_not_crop','not_known_and_other'] },
+];
+
+// Europe bounding box for filtering stray features outside the continent
+const EUROPE_BBOX = { type: 'Polygon', coordinates: [[[-30, 34], [50, 34], [50, 72], [-30, 72], [-30, 34]]] };
+
+// === Crop name translation ===
+// Target language for display — change to 'de','fr','da','nl' etc. for other languages
+const DISPLAY_LANG = 'en';
+
+// Translation dictionaries: source language → { original: { en: '...', de: '...', fr: '...', ... } }
+const CROP_TRANSLATIONS = {
+  // Danish (Denmark)
+  da: {
+    'Vinterhvede': { en: 'Winter wheat', de: 'Winterweizen', fr: 'Blé tendre d\'hiver' },
+    'Vårhvede': { en: 'Spring wheat', de: 'Sommerweizen', fr: 'Blé de printemps' },
+    'Vinterbyg': { en: 'Winter barley', de: 'Wintergerste', fr: 'Orge d\'hiver' },
+    'Vårbyg': { en: 'Spring barley', de: 'Sommergerste', fr: 'Orge de printemps' },
+    'Vinterrug': { en: 'Winter rye', de: 'Winterroggen', fr: 'Seigle d\'hiver' },
+    'Rug': { en: 'Rye', de: 'Roggen', fr: 'Seigle' },
+    'Havre': { en: 'Oats', de: 'Hafer', fr: 'Avoine' },
+    'Triticale': { en: 'Triticale', de: 'Triticale', fr: 'Triticale' },
+    'Vinterraps': { en: 'Winter rapeseed', de: 'Winterraps', fr: 'Colza d\'hiver' },
+    'Vårraps': { en: 'Spring rapeseed', de: 'Sommerraps', fr: 'Colza de printemps' },
+    'Majs': { en: 'Maize', de: 'Mais', fr: 'Maïs' },
+    'Silomajs': { en: 'Silage maize', de: 'Silomais', fr: 'Maïs ensilage' },
+    'Kartofler': { en: 'Potatoes', de: 'Kartoffeln', fr: 'Pommes de terre' },
+    'Sukkerroer': { en: 'Sugar beet', de: 'Zuckerrüben', fr: 'Betterave sucrière' },
+    'Solsikke': { en: 'Sunflower', de: 'Sonnenblume', fr: 'Tournesol' },
+    'Rajgræs': { en: 'Ryegrass', de: 'Weidelgras', fr: 'Ray-grass' },
+    'Kløver': { en: 'Clover', de: 'Klee', fr: 'Trèfle' },
+    'Lucerne': { en: 'Alfalfa', de: 'Luzerne', fr: 'Luzerne' },
+    'Ærter': { en: 'Peas', de: 'Erbsen', fr: 'Pois' },
+    'Hestebønner': { en: 'Field beans', de: 'Ackerbohnen', fr: 'Féveroles' },
+    'Græs': { en: 'Grass', de: 'Gras', fr: 'Herbe' },
+    'Permanent græs': { en: 'Permanent grass', de: 'Dauergrünland', fr: 'Prairie permanente' },
+    'Brak': { en: 'Fallow', de: 'Brache', fr: 'Jachère' },
+    'Skov': { en: 'Forest', de: 'Wald', fr: 'Forêt' },
+    'Juletræer': { en: 'Christmas trees', de: 'Weihnachtsbäume', fr: 'Sapins de Noël' },
+    'Hør': { en: 'Flax', de: 'Flachs', fr: 'Lin' },
+    'Sojabønner': { en: 'Soybeans', de: 'Sojabohnen', fr: 'Soja' },
+    'Boghvede': { en: 'Buckwheat', de: 'Buchweizen', fr: 'Sarrasin' },
+    'Hamp': { en: 'Hemp', de: 'Hanf', fr: 'Chanvre' },
+    'Løg': { en: 'Onions', de: 'Zwiebeln', fr: 'Oignons' },
+    'Gulerødder': { en: 'Carrots', de: 'Karotten', fr: 'Carottes' },
+    'Jordbær': { en: 'Strawberries', de: 'Erdbeeren', fr: 'Fraises' },
+    'Æbler': { en: 'Apples', de: 'Äpfel', fr: 'Pommes' },
+  },
+  // German (Austria, Switzerland, Germany)
+  de: {
+    'SENF': { en: 'Mustard', fr: 'Moutarde', da: 'Sennep' },
+    'WINTERWEIZEN': { en: 'Winter wheat', fr: 'Blé tendre d\'hiver', da: 'Vinterhvede' },
+    'Winterweizen': { en: 'Winter wheat', fr: 'Blé tendre d\'hiver', da: 'Vinterhvede' },
+    'SOMMERWEIZEN': { en: 'Spring wheat', fr: 'Blé de printemps', da: 'Vårhvede' },
+    'WINTERGERSTE': { en: 'Winter barley', fr: 'Orge d\'hiver', da: 'Vinterbyg' },
+    'Wintergerste': { en: 'Winter barley', fr: 'Orge d\'hiver', da: 'Vinterbyg' },
+    'SOMMERGERSTE': { en: 'Spring barley', fr: 'Orge de printemps', da: 'Vårbyg' },
+    'WINTERROGGEN': { en: 'Winter rye', fr: 'Seigle d\'hiver', da: 'Vinterrug' },
+    'WINTERRAPS': { en: 'Winter rapeseed', fr: 'Colza d\'hiver', da: 'Vinterraps' },
+    'SOMMERRAPS': { en: 'Spring rapeseed', fr: 'Colza de printemps', da: 'Vårraps' },
+    'MAIS': { en: 'Maize', fr: 'Maïs', da: 'Majs' },
+    'Mais': { en: 'Maize', fr: 'Maïs', da: 'Majs' },
+    'SILOMAIS': { en: 'Silage maize', fr: 'Maïs ensilage', da: 'Silomajs' },
+    'Silomais': { en: 'Silage maize', fr: 'Maïs ensilage', da: 'Silomajs' },
+    'KARTOFFELN': { en: 'Potatoes', fr: 'Pommes de terre', da: 'Kartofler' },
+    'Kartoffeln': { en: 'Potatoes', fr: 'Pommes de terre', da: 'Kartofler' },
+    'ZUCKERRÜBEN': { en: 'Sugar beet', fr: 'Betterave sucrière', da: 'Sukkerroer' },
+    'Zuckerrüben': { en: 'Sugar beet', fr: 'Betterave sucrière', da: 'Sukkerroer' },
+    'SONNENBLUMEN': { en: 'Sunflower', fr: 'Tournesol', da: 'Solsikke' },
+    'TRITICALE': { en: 'Triticale', fr: 'Triticale', da: 'Triticale' },
+    'Triticale': { en: 'Triticale', fr: 'Triticale', da: 'Triticale' },
+    'HAFER': { en: 'Oats', fr: 'Avoine', da: 'Havre' },
+    'Hafer': { en: 'Oats', fr: 'Avoine', da: 'Havre' },
+    'ERBSEN': { en: 'Peas', fr: 'Pois', da: 'Ærter' },
+    'ACKERBOHNEN': { en: 'Field beans', fr: 'Féveroles', da: 'Hestebønner' },
+    'SOJABOHNEN': { en: 'Soybeans', fr: 'Soja', da: 'Sojabønner' },
+    'LUZERNE': { en: 'Alfalfa', fr: 'Luzerne', da: 'Lucerne' },
+    'Luzerne': { en: 'Alfalfa', fr: 'Luzerne', da: 'Lucerne' },
+    'KLEE': { en: 'Clover', fr: 'Trèfle', da: 'Kløver' },
+    'Klee': { en: 'Clover', fr: 'Trèfle', da: 'Kløver' },
+    'GRÜNLAND': { en: 'Grassland', fr: 'Prairie', da: 'Græs' },
+    'Grünland': { en: 'Grassland', fr: 'Prairie', da: 'Græs' },
+    'DAUERGRÜNLAND': { en: 'Permanent grassland', fr: 'Prairie permanente', da: 'Permanent græs' },
+    'Dauergrünland': { en: 'Permanent grassland', fr: 'Prairie permanente', da: 'Permanent græs' },
+    'BRACHE': { en: 'Fallow', fr: 'Jachère', da: 'Brak' },
+    'Brache': { en: 'Fallow', fr: 'Jachère', da: 'Brak' },
+    'DINKEL': { en: 'Spelt', fr: 'Épeautre', da: 'Spelt' },
+    'Dinkel': { en: 'Spelt', fr: 'Épeautre', da: 'Spelt' },
+    'BUCHWEIZEN': { en: 'Buckwheat', fr: 'Sarrasin', da: 'Boghvede' },
+    'HANF': { en: 'Hemp', fr: 'Chanvre', da: 'Hamp' },
+    'FLACHS': { en: 'Flax', fr: 'Lin', da: 'Hør' },
+    'Ackerfläche': { en: 'Arable land', fr: 'Terre arable', da: 'Agerjord' },
+    'Kunstwiese': { en: 'Temporary grassland', fr: 'Prairie temporaire', da: 'Midlertidig græs' },
+    'Reben': { en: 'Vineyards', fr: 'Vignes', da: 'Vinmarker' },
+    'Obstanlagen': { en: 'Orchards', fr: 'Vergers', da: 'Frugtplantager' },
+  },
+  // French (France, Belgium Wallonia, Luxembourg)
+  fr: {
+    'Blé tendre d\'hiver': { en: 'Winter soft wheat', de: 'Winterweizen', da: 'Vinterhvede' },
+    'Blé tendre de printemps': { en: 'Spring soft wheat', de: 'Sommerweizen', da: 'Vårhvede' },
+    'Blé dur d\'hiver': { en: 'Winter durum wheat', de: 'Winterhartweizen', da: 'Vinter durumhvede' },
+    'Orge d\'hiver': { en: 'Winter barley', de: 'Wintergerste', da: 'Vinterbyg' },
+    'Orge de printemps': { en: 'Spring barley', de: 'Sommergerste', da: 'Vårbyg' },
+    'Colza d\'hiver': { en: 'Winter rapeseed', de: 'Winterraps', da: 'Vinterraps' },
+    'Colza de printemps': { en: 'Spring rapeseed', de: 'Sommerraps', da: 'Vårraps' },
+    'Maïs grain': { en: 'Grain maize', de: 'Körnermais', da: 'Majskorn' },
+    'Maïs ensilage': { en: 'Silage maize', de: 'Silomais', da: 'Silomajs' },
+    'Tournesol': { en: 'Sunflower', de: 'Sonnenblume', da: 'Solsikke' },
+    'Seigle': { en: 'Rye', de: 'Roggen', da: 'Rug' },
+    'Avoine': { en: 'Oats', de: 'Hafer', da: 'Havre' },
+    'Triticale': { en: 'Triticale', de: 'Triticale', da: 'Triticale' },
+    'Pommes de terre': { en: 'Potatoes', de: 'Kartoffeln', da: 'Kartofler' },
+    'Betterave sucrière': { en: 'Sugar beet', de: 'Zuckerrüben', da: 'Sukkerroer' },
+    'Pois': { en: 'Peas', de: 'Erbsen', da: 'Ærter' },
+    'Féveroles': { en: 'Field beans', de: 'Ackerbohnen', da: 'Hestebønner' },
+    'Soja': { en: 'Soybeans', de: 'Sojabohnen', da: 'Sojabønner' },
+    'Luzerne': { en: 'Alfalfa', de: 'Luzerne', da: 'Lucerne' },
+    'Trèfle': { en: 'Clover', de: 'Klee', da: 'Kløver' },
+    'Prairie permanente': { en: 'Permanent grassland', de: 'Dauergrünland', da: 'Permanent græs' },
+    'Prairie temporaire': { en: 'Temporary grassland', de: 'Kunstwiese', da: 'Midlertidig græs' },
+    'Jachère': { en: 'Fallow', de: 'Brache', da: 'Brak' },
+    'Lin': { en: 'Flax', de: 'Flachs', da: 'Hør' },
+    'Chanvre': { en: 'Hemp', de: 'Hanf', da: 'Hamp' },
+    'Vignes': { en: 'Vineyards', de: 'Reben', da: 'Vinmarker' },
+    'Vergers': { en: 'Orchards', de: 'Obstanlagen', da: 'Frugtplantager' },
+    'Moutarde': { en: 'Mustard', de: 'Senf', da: 'Sennep' },
+    'Épeautre': { en: 'Spelt', de: 'Dinkel', da: 'Spelt' },
+    'Sarrasin': { en: 'Buckwheat', de: 'Buchweizen', da: 'Boghvede' },
+  },
+  // Dutch (Netherlands, Belgium Flanders)
+  nl: {
+    'Grasland, blijvend': { en: 'Permanent grassland', de: 'Dauergrünland', fr: 'Prairie permanente' },
+    'Grasland, natuurlijk': { en: 'Natural grassland', de: 'Natürliches Grünland', fr: 'Prairie naturelle' },
+    'Grasland, tijdelijk': { en: 'Temporary grassland', de: 'Kunstwiese', fr: 'Prairie temporaire' },
+    'Wintertarwe': { en: 'Winter wheat', de: 'Winterweizen', fr: 'Blé tendre d\'hiver' },
+    'Zomertarwe': { en: 'Spring wheat', de: 'Sommerweizen', fr: 'Blé de printemps' },
+    'Wintergerst': { en: 'Winter barley', de: 'Wintergerste', fr: 'Orge d\'hiver' },
+    'Zomergerst': { en: 'Spring barley', de: 'Sommergerste', fr: 'Orge de printemps' },
+    'Snijmaïs': { en: 'Silage maize', de: 'Silomais', fr: 'Maïs ensilage' },
+    'Korrelmaïs': { en: 'Grain maize', de: 'Körnermais', fr: 'Maïs grain' },
+    'Consumptieaardappelen': { en: 'Table potatoes', de: 'Speisekartoffeln', fr: 'Pommes de terre' },
+    'Pootaardappelen': { en: 'Seed potatoes', de: 'Pflanzkartoffeln', fr: 'Plants de pommes de terre' },
+    'Zetmeelaardappelen': { en: 'Starch potatoes', de: 'Stärkekartoffeln', fr: 'Pommes de terre féculières' },
+    'Suikerbieten': { en: 'Sugar beet', de: 'Zuckerrüben', fr: 'Betterave sucrière' },
+    'Uien': { en: 'Onions', de: 'Zwiebeln', fr: 'Oignons' },
+    'Winterkoolzaad': { en: 'Winter rapeseed', de: 'Winterraps', fr: 'Colza d\'hiver' },
+    'Zonnebloemen': { en: 'Sunflower', de: 'Sonnenblume', fr: 'Tournesol' },
+    'Vlas': { en: 'Flax', de: 'Flachs', fr: 'Lin' },
+    'Hennep': { en: 'Hemp', de: 'Hanf', fr: 'Chanvre' },
+    'Erwten': { en: 'Peas', de: 'Erbsen', fr: 'Pois' },
+    'Bonen': { en: 'Beans', de: 'Bohnen', fr: 'Haricots' },
+    'Luzerne': { en: 'Alfalfa', de: 'Luzerne', fr: 'Luzerne' },
+    'Klaver': { en: 'Clover', de: 'Klee', fr: 'Trèfle' },
+    'Braakland': { en: 'Fallow', de: 'Brache', fr: 'Jachère' },
+    'Haver': { en: 'Oats', de: 'Hafer', fr: 'Avoine' },
+    'Rogge': { en: 'Rye', de: 'Roggen', fr: 'Seigle' },
+  },
+  // Norwegian (Norway)
+  no: {
+    'Fulldyrka jord': { en: 'Fully cultivated land', de: 'Ackerland', fr: 'Terre cultivée' },
+    'Overflatedyrka jord': { en: 'Surface cultivated land', de: 'Oberflächenkultur', fr: 'Culture superficielle' },
+    'Innmarksbeite': { en: 'Infield pasture', de: 'Weide', fr: 'Pâturage' },
+    'Skog': { en: 'Forest', de: 'Wald', fr: 'Forêt' },
+    'Myr': { en: 'Bog/peatland', de: 'Moor', fr: 'Tourbière' },
+    'Åpen fastmark': { en: 'Open firm ground', de: 'Offenes Festland', fr: 'Terrain ouvert' },
+    'Bebygd': { en: 'Built-up area', de: 'Bebaut', fr: 'Zone bâtie' },
+    'Vann': { en: 'Water', de: 'Wasser', fr: 'Eau' },
+    'Snø/is': { en: 'Snow/ice', de: 'Schnee/Eis', fr: 'Neige/glace' },
+    'Hav': { en: 'Sea', de: 'Meer', fr: 'Mer' },
+    'Ferskvann': { en: 'Freshwater', de: 'Süßwasser', fr: 'Eau douce' },
+    'Bre': { en: 'Glacier', de: 'Gletscher', fr: 'Glacier' },
+    'Samferdsel': { en: 'Transport/roads', de: 'Verkehr', fr: 'Transport' },
+    'Ikke kartlagt': { en: 'Not mapped', de: 'Nicht kartiert', fr: 'Non cartographié' },
+    'Barskog': { en: 'Coniferous forest', de: 'Nadelwald', fr: 'Forêt de conifères' },
+    'Lauvskog': { en: 'Deciduous forest', de: 'Laubwald', fr: 'Forêt de feuillus' },
+    'Blandingsskog': { en: 'Mixed forest', de: 'Mischwald', fr: 'Forêt mixte' },
+    'Jorddekt': { en: 'Soil-covered', de: 'Erdbedeckt', fr: 'Sol couvert' },
+    'Blokkmark': { en: 'Boulder field', de: 'Blockfeld', fr: 'Champ de blocs' },
+    'Grunnlendt': { en: 'Shallow soil', de: 'Flachgründig', fr: 'Sol peu profond' },
+    'Fjell': { en: 'Mountain', de: 'Gebirge', fr: 'Montagne' },
+  },
+  // Finnish (Finland)
+  fi: {
+    'Kevätvehnä': { en: 'Spring wheat', de: 'Sommerweizen', fr: 'Blé de printemps' },
+    'Syysvehnä': { en: 'Winter wheat', de: 'Winterweizen', fr: 'Blé d\'hiver' },
+    'Ohra': { en: 'Barley', de: 'Gerste', fr: 'Orge' },
+    'Kaura': { en: 'Oats', de: 'Hafer', fr: 'Avoine' },
+    'Ruis': { en: 'Rye', de: 'Roggen', fr: 'Seigle' },
+    'Rypsi': { en: 'Turnip rape', de: 'Rübsen', fr: 'Navette' },
+    'Rapsi': { en: 'Rapeseed', de: 'Raps', fr: 'Colza' },
+    'Herne': { en: 'Peas', de: 'Erbsen', fr: 'Pois' },
+    'Härkäpapu': { en: 'Faba bean', de: 'Ackerbohne', fr: 'Féverole' },
+    'Peruna': { en: 'Potatoes', de: 'Kartoffeln', fr: 'Pommes de terre' },
+    'Sokerijuurikas': { en: 'Sugar beet', de: 'Zuckerrübe', fr: 'Betterave sucrière' },
+    'Nurmi': { en: 'Grassland', de: 'Grünland', fr: 'Prairie' },
+    'Kesanto': { en: 'Fallow', de: 'Brache', fr: 'Jachère' },
+    'Luonnonhoitopelto': { en: 'Nature management field', de: 'Naturpflegefeld', fr: 'Champ de gestion naturelle' },
+    'Metsä': { en: 'Forest', de: 'Wald', fr: 'Forêt' },
+  },
+  // Portuguese (Portugal)
+  pt: {
+    'Trigo': { en: 'Wheat', de: 'Weizen', fr: 'Blé' },
+    'Cevada': { en: 'Barley', de: 'Gerste', fr: 'Orge' },
+    'Milho': { en: 'Maize', de: 'Mais', fr: 'Maïs' },
+    'Arroz': { en: 'Rice', de: 'Reis', fr: 'Riz' },
+    'Aveia': { en: 'Oats', de: 'Hafer', fr: 'Avoine' },
+    'Girassol': { en: 'Sunflower', de: 'Sonnenblume', fr: 'Tournesol' },
+    'Batata': { en: 'Potatoes', de: 'Kartoffeln', fr: 'Pommes de terre' },
+    'Pastagem': { en: 'Pasture', de: 'Weide', fr: 'Pâturage' },
+    'Olival': { en: 'Olive grove', de: 'Olivenhain', fr: 'Oliveraie' },
+    'Vinha': { en: 'Vineyard', de: 'Weinberg', fr: 'Vignoble' },
+    'Pousio': { en: 'Fallow', de: 'Brache', fr: 'Jachère' },
+  },
+};
+
+// Translate a crop name from source language to display language
+function translateCrop(name, sourceLang) {
+  if (!name || DISPLAY_LANG === sourceLang) return name;
+  const trimmed = name.trim();
+  const dict = CROP_TRANSLATIONS[sourceLang];
+  if (!dict) return trimmed;
+  // Exact match
+  if (dict[trimmed] && dict[trimmed][DISPLAY_LANG]) {
+    return dict[trimmed][DISPLAY_LANG];
+  }
+  // Case-insensitive match
+  const lower = trimmed.toLowerCase();
+  for (const [key, translations] of Object.entries(dict)) {
+    if (key.toLowerCase() === lower && translations[DISPLAY_LANG]) {
+      return translations[DISPLAY_LANG];
+    }
+  }
+  // Partial match — check if name starts with a known key
+  for (const [key, translations] of Object.entries(dict)) {
+    if (lower.startsWith(key.toLowerCase()) && translations[DISPLAY_LANG]) {
+      return translations[DISPLAY_LANG] + trimmed.substring(key.length);
+    }
+  }
+  return trimmed; // No translation found — return original
+}
+
 // === WMS URL builders ===
 function wms11(base, layers, extra) {
   return base + '?service=WMS&version=1.1.1&request=GetMap'
@@ -175,16 +536,36 @@ function wms13(base, layers) {
     + '&bbox={bbox-epsg-3857}&width=256&height=256&format=image/png&transparent=true';
 }
 
+// GetFeatureInfo URL builders — take (baseUrl, layers, bbox4326, x, y, extra)
+// bbox4326 = [minlon, minlat, maxlon, maxlat]
+function gfi11(base, layers, bbox, x, y, extra) {
+  // WMS 1.1.1: SRS=EPSG:4326, bbox = minlon,minlat,maxlon,maxlat (x,y order)
+  return base + '?service=WMS&version=1.1.1&request=GetFeatureInfo'
+    + '&layers=' + encodeURIComponent(layers) + '&query_layers=' + encodeURIComponent(layers)
+    + '&styles=&srs=EPSG:4326&info_format=application/json'
+    + '&bbox=' + bbox.join(',') + '&width=256&height=256&x=' + x + '&y=' + y
+    + (extra || '');
+}
+function gfi13(base, layers, bbox, i, j, extra) {
+  // WMS 1.3.0: CRS=EPSG:4326, bbox = minlat,minlon,maxlat,maxlon (lat,lon order)
+  const bbox13 = [bbox[1], bbox[0], bbox[3], bbox[2]];
+  return base + '?service=WMS&version=1.3.0&request=GetFeatureInfo'
+    + '&layers=' + encodeURIComponent(layers) + '&query_layers=' + encodeURIComponent(layers)
+    + '&styles=&crs=EPSG:4326&info_format=application/json'
+    + '&bbox=' + bbox13.join(',') + '&width=256&height=256&i=' + i + '&j=' + j
+    + (extra || '');
+}
+
 // === Layer configuration ===
 // Each layer defines how to build its tile URL given a year
 const LAYERS = [
   {
-    id: 'crome', label: 'England (CROME)', type: 'vector',
+    id: 'crome', label: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 England (CROME)', type: 'vector',
     legendType: 'crome', defaultOn: true,
-    years: [2020], defaultYear: 2020
+    years: [2020, 2021, 2022, 2023, 2024], defaultYear: 2024
   },
   {
-    id: 'eurocrops', label: 'EU Field Boundaries (EuroCrops)', type: 'vector-remote',
+    id: 'eurocrops', label: '🇪🇺 EU Field Boundaries (EuroCrops)', type: 'vector-remote',
     legendType: 'eurocrops',
     years: null, defaultYear: null, dataYear: '2018-2021',
     pmtilesUrl: 'https://data.source.coop/cholmes/eurocrops/eurocrops-all.pmtiles',
@@ -192,56 +573,72 @@ const LAYERS = [
     attribution: '&copy; <a href="https://github.com/maja601/EuroCrops">EuroCrops</a> CC-BY 4.0'
   },
   {
-    id: 'germany', label: 'Germany (DLR)', type: 'raster',
+    id: 'germany', label: '🇩🇪 Germany (DLR)', type: 'raster', lang: 'en',
     legendType: 'image',
     years: [2017,2018,2019,2020,2021,2022,2023,2024], defaultYear: 2024,
     tileUrl: (yr) => wms11('https://geoservice.dlr.de/eoc/land/wms', 'CROPTYPES_DE_P1Y',
       '&TIME=' + yr + '-01-01T00:00:00Z'),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://geoservice.dlr.de/eoc/land/wms',
+      'CROPTYPES_DE_P1Y', bbox, x, y, '&TIME=' + yr + '-01-01T00:00:00Z'),
     legendImg: 'https://geoservice.dlr.de/eoc/land/wms?request=GetLegendGraphic&version=1.1.1&format=image/png&width=20&height=20&layer=CROPTYPES_DE_P1Y',
     attribution: '&copy; <a href="https://geoservice.dlr.de">DLR EOC</a> CC-BY 4.0'
   },
   {
-    id: 'france', label: 'France (RPG)', type: 'raster',
+    id: 'france', label: '🇫🇷 France (RPG)', type: 'raster', lang: 'fr',
     legendType: 'image',
     years: Array.from({length:18}, (_,i) => 2007+i), defaultYear: 2024,
     tileUrl: (yr) => wms13('https://data.geopf.fr/wms-r/wms', 'LANDUSE.AGRICULTURE' + yr),
+    featureInfo: (yr, bbox, i, j) => gfi13('https://data.geopf.fr/wms-r/wms',
+      'LANDUSE.AGRICULTURE' + yr, bbox, i, j, '&format=image/png'),
     legendImg: (yr) => 'https://data.geopf.fr/wms-r/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=LANDUSE.AGRICULTURE' + yr + '&format=image/png',
     attribution: '&copy; <a href="https://geoservices.ign.fr/">IGN</a> RPG Licence Ouverte'
   },
   {
-    id: 'netherlands', label: 'Netherlands (BRP)', type: 'raster',
+    id: 'netherlands', label: '🇳🇱 Netherlands (BRP)', type: 'raster', lang: 'nl',
     legendType: 'image', minZoom: 12, countryNum: 528, indicatorColor: '#FF9800',
     years: null, defaultYear: null, dataYear: '2024',
     tileUrl: () => wms11('https://service.pdok.nl/rvo/brpgewaspercelen/wms/v1_0', 'BrpGewas'),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://service.pdok.nl/rvo/brpgewaspercelen/wms/v1_0',
+      'BrpGewas', bbox, x, y),
     legendImg: 'https://service.pdok.nl/rvo/brpgewaspercelen/wms/v1_0?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=BrpGewas&format=image/png',
     attribution: '&copy; <a href="https://www.pdok.nl/">PDOK</a>/RVO CC0'
   },
   {
-    id: 'belgium-fl', label: 'Belgium - Flanders', type: 'raster',
+    id: 'belgium-fl', label: '🇧🇪 Belgium - Flanders', type: 'raster', lang: 'nl',
     legendType: 'image', minZoom: 12, countryNum: 56, indicatorColor: '#E91E63',
     years: Array.from({length:17}, (_,i) => 2008+i), defaultYear: 2024,
     tileUrl: (yr) => wms13('https://geo.api.vlaanderen.be/ALV/wms', 'LbGebrPerc' + yr),
+    featureInfo: (yr, bbox, i, j) => gfi13('https://geo.api.vlaanderen.be/ALV/wms',
+      'LbGebrPerc' + yr, bbox, i, j),
     legendImg: (yr) => 'https://geo.api.vlaanderen.be/ALV/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=LbGebrPerc' + yr + '&format=image/png',
     attribution: '&copy; Dept. Landbouw &amp; Visserij Vlaanderen'
   },
   {
-    id: 'belgium-wa', label: 'Belgium - Wallonia', type: 'raster',
+    id: 'belgium-wa', label: '🇧🇪 Belgium - Wallonia', type: 'raster', lang: 'fr',
     legendType: 'image', minZoom: 12, countryNum: 56, indicatorColor: '#AD1457',
     years: [2019,2020,2021,2022,2023], defaultYear: 2022,
     tileUrl: (yr) => wms13(
       'https://geoservices.wallonie.be/arcgis/services/AGRICULTURE/SIGEC_PARC_AGRI_ANON__' + yr + '/MapServer/WMSServer', '1'),
+    featureInfo: (yr, bbox, i, j) => gfi13(
+      'https://geoservices.wallonie.be/arcgis/services/AGRICULTURE/SIGEC_PARC_AGRI_ANON__' + yr + '/MapServer/WMSServer',
+      '1', bbox, i, j),
     legendImg: (yr) => 'https://geoservices.wallonie.be/arcgis/services/AGRICULTURE/SIGEC_PARC_AGRI_ANON__' + yr
       + '/MapServer/WMSServer?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=1&format=image/png',
     attribution: '&copy; SPW Wallonie SIGEC'
   },
   {
-    id: 'austria', label: 'Austria (INVEKOS)', type: 'raster',
+    id: 'austria', label: '🇦🇹 Austria (INVEKOS)', type: 'raster', lang: 'de',
     legendType: 'image', minZoom: 12, countryNum: 40, indicatorColor: '#9C27B0',
     years: Array.from({length:11}, (_,i) => 2015+i), defaultYear: 2024,
     tileUrl: (yr) => {
       const lyr = yr <= 2021 ? 'inspire_schlaege_' + yr + '_polygon'
                              : 'inspire_schlaege_' + yr + '-2_polygon';
       return wms13('https://inspire.lfrz.gv.at/009501/wms', lyr);
+    },
+    featureInfo: (yr, bbox, i, j) => {
+      const lyr = yr <= 2021 ? 'inspire_schlaege_' + yr + '_polygon'
+                             : 'inspire_schlaege_' + yr + '-2_polygon';
+      return gfi13('https://inspire.lfrz.gv.at/009501/wms', lyr, bbox, i, j);
     },
     legendImg: (yr) => {
       const lyr = yr <= 2021 ? 'inspire_schlaege_' + yr + '_polygon'
@@ -251,24 +648,28 @@ const LAYERS = [
     attribution: '&copy; AMA/BML Austria INVEKOS'
   },
   {
-    id: 'denmark', label: 'Denmark (FVM Marker)', type: 'raster',
+    id: 'denmark', label: '🇩🇰 Denmark (FVM Marker)', type: 'raster', lang: 'da',
     legendType: 'image',
     years: Array.from({length:18}, (_,i) => 2008+i), defaultYear: 2025,
     tileUrl: (yr) => wms11('https://geodata.fvm.dk/geoserver/Marker/wms', 'Marker_' + yr),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://geodata.fvm.dk/geoserver/Marker/wms',
+      'Marker_' + yr, bbox, x, y),
     legendImg: (yr) => 'https://geodata.fvm.dk/geoserver/Marker/wms?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=Marker_' + yr + '&format=image/png',
     attribution: '&copy; <a href="https://fvm.dk">FVM Denmark</a>'
   },
   {
-    id: 'luxembourg', label: 'Luxembourg (ASTA LPIS)', type: 'raster',
+    id: 'luxembourg', label: '🇱🇺 Luxembourg (ASTA LPIS)', type: 'raster', lang: 'fr',
     legendType: 'image', minZoom: 12, countryNum: 442, indicatorColor: '#00BCD4',
     years: Array.from({length:10}, (_,i) => 2016+i), defaultYear: 2025,
     tileUrl: (yr) => wms13('https://wms.inspire.geoportail.lu/geoserver/af/wms',
       'LU.ExistingLandUseObject_LPIS_' + yr),
+    featureInfo: (yr, bbox, i, j) => gfi13('https://wms.inspire.geoportail.lu/geoserver/af/wms',
+      'LU.ExistingLandUseObject_LPIS_' + yr, bbox, i, j),
     legendImg: (yr) => 'https://wms.inspire.geoportail.lu/geoserver/af/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=LU.ExistingLandUseObject_LPIS_' + yr + '&format=image/png',
     attribution: '&copy; ASTA Luxembourg'
   },
   {
-    id: 'portugal', label: 'Portugal (IFAP iSIP)', type: 'raster',
+    id: 'portugal', label: '🇵🇹 Portugal (IFAP iSIP)', type: 'raster', lang: 'pt',
     legendType: 'image', minZoom: 12, countryNum: 620, indicatorColor: '#FF5722',
     years: [2017,2018,2019], defaultYear: 2019,
     tileUrl: (yr) => {
@@ -277,30 +678,296 @@ const LAYERS = [
       const layers = regions.map(r => 'isip.data:parcelas.' + r + '.' + yr + 'jun10').join(',');
       return wms11('https://www.ifap.pt/isip/ows/isip.data/wms', layers);
     },
+    featureInfo: (yr, bbox, x, y) => {
+      const layers = 'isip.data:parcelas.AML.' + yr + 'jun10';
+      return gfi11('https://www.ifap.pt/isip/ows/isip.data/wms', layers, bbox, x, y);
+    },
     legendImg: (yr) => 'https://www.ifap.pt/isip/ows/isip.data/wms?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=isip.data:parcelas.AML.' + yr + 'jun10&format=image/png',
     attribution: '&copy; IFAP Portugal iSIP'
   },
   {
-    id: 'switzerland', label: 'Switzerland (BLW)', type: 'raster',
+    id: 'switzerland', label: '🇨🇭 Switzerland (BLW)', type: 'raster', lang: 'de',
     legendType: 'image',
     years: null, defaultYear: null, dataYear: '2025',
     tileUrl: () => wms13('https://wms.geo.admin.ch/', 'ch.blw.landwirtschaftliche-nutzungsflaechen'),
+    featureInfo: (yr, bbox, i, j) => gfi13('https://wms.geo.admin.ch/',
+      'ch.blw.landwirtschaftliche-nutzungsflaechen', bbox, i, j),
     legendImg: 'https://wms.geo.admin.ch/?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=ch.blw.landwirtschaftliche-nutzungsflaechen&format=image/png',
     attribution: '&copy; <a href="https://geo.admin.ch">swisstopo</a>/BLW'
   },
   {
-    id: 'norway', label: 'Norway (NIBIO AR5)', type: 'raster',
+    id: 'norway', label: '🇳🇴 Norway (NIBIO AR5)', type: 'raster', lang: 'no',
     legendType: 'image', minZoom: 15, countryNum: 578, indicatorColor: '#2196F3',
     years: null, defaultYear: null, dataYear: 'current',
     tileUrl: () => wms11('https://wms.nibio.no/cgi-bin/ar5', 'Arealtype'),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://wms.nibio.no/cgi-bin/ar5',
+      'Arealtype', bbox, x, y).replace('info_format=application/json', 'info_format=application/vnd.ogc.gml'),
     legendImg: 'https://wms.nibio.no/cgi-bin/ar5?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=Arealtype&format=image/png',
     attribution: '&copy; <a href="https://nibio.no">NIBIO</a> Norway'
+  },
+  // --- Additional European parcel layers (from ARCcrop) ---
+  {
+    id: 'spain', label: '🇪🇸 Spain (SIGPAC)', type: 'raster', lang: 'es',
+    legendType: 'image', minZoom: 12,
+    years: null, defaultYear: null, dataYear: '2025',
+    tileUrl: () => wms13('https://wms.mapa.gob.es/sigpac/wms', 'AU.Sigpac:recinto'),
+    featureInfo: (yr, bbox, i, j) => gfi13('https://wms.mapa.gob.es/sigpac/wms',
+      'AU.Sigpac:recinto', bbox, i, j),
+    legendImg: 'https://wms.mapa.gob.es/sigpac/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=AU.Sigpac:recinto&format=image/png',
+    attribution: '&copy; FEGA/MAPA Spain SIGPAC'
+  },
+  {
+    id: 'czechia', label: '🇨🇿 Czechia (LPIS)', type: 'raster', lang: 'cs',
+    legendType: 'image', minZoom: 12,
+    years: null, defaultYear: null, dataYear: '2024',
+    tileUrl: () => wms11('https://mze.gov.cz/public/app/wms/public_DPB_PB_OPV.fcgi', 'DPB_UCINNE'),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://mze.gov.cz/public/app/wms/public_DPB_PB_OPV.fcgi',
+      'DPB_UCINNE', bbox, x, y),
+    legendImg: 'https://mze.gov.cz/public/app/wms/public_DPB_PB_OPV.fcgi?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=DPB_UCINNE&format=image/png',
+    attribution: '&copy; MZe Czech Republic LPIS'
+  },
+  {
+    id: 'slovenia', label: '🇸🇮 Slovenia (GERK)', type: 'raster', lang: 'sl',
+    legendType: 'image', minZoom: 12,
+    years: null, defaultYear: null, dataYear: '2024',
+    tileUrl: () => wms13('https://storitve.eprostor.gov.si/ows-pub-wms/SI.MKGP.GERK/ows', 'RKG_BLOK_GERK'),
+    featureInfo: (yr, bbox, i, j) => gfi13('https://storitve.eprostor.gov.si/ows-pub-wms/SI.MKGP.GERK/ows',
+      'RKG_BLOK_GERK', bbox, i, j),
+    legendImg: 'https://storitve.eprostor.gov.si/ows-pub-wms/SI.MKGP.GERK/ows?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=RKG_BLOK_GERK&format=image/png',
+    attribution: '&copy; MKGP Slovenia GERK'
+  },
+  {
+    id: 'croatia', label: '🇭🇷 Croatia (ARKOD)', type: 'raster', lang: 'hr',
+    legendType: 'image', minZoom: 12,
+    years: null, defaultYear: null, dataYear: '2024',
+    tileUrl: () => wms11('https://servisi.apprrr.hr/NIPP/wms', 'hr.land_parcels'),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://servisi.apprrr.hr/NIPP/wms',
+      'hr.land_parcels', bbox, x, y),
+    legendImg: 'https://servisi.apprrr.hr/NIPP/wms?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=hr.land_parcels&format=image/png',
+    attribution: '&copy; APPRRR Croatia ARKOD'
+  },
+  {
+    id: 'estonia', label: '🇪🇪 Estonia (GSAA)', type: 'raster', lang: 'et',
+    legendType: 'image', minZoom: 12,
+    years: null, defaultYear: null, dataYear: '2024',
+    tileUrl: () => wms13('https://kls.pria.ee/geoserver/inspire_gsaa/wms', 'inspire_gsaa'),
+    featureInfo: (yr, bbox, i, j) => gfi13('https://kls.pria.ee/geoserver/inspire_gsaa/wms',
+      'inspire_gsaa', bbox, i, j),
+    legendImg: 'https://kls.pria.ee/geoserver/inspire_gsaa/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=inspire_gsaa&format=image/png',
+    attribution: '&copy; PRIA Estonia GSAA'
+  },
+  {
+    id: 'latvia', label: '🇱🇻 Latvia (Field Blocks)', type: 'raster', lang: 'lv',
+    legendType: 'image', minZoom: 12,
+    years: null, defaultYear: null, dataYear: '2024',
+    tileUrl: () => wms11('https://karte.lad.gov.lv/arcgis/services/lauku_bloki/MapServer/WMSServer', '0'),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://karte.lad.gov.lv/arcgis/services/lauku_bloki/MapServer/WMSServer',
+      '0', bbox, x, y),
+    legendImg: 'https://karte.lad.gov.lv/arcgis/services/lauku_bloki/MapServer/WMSServer?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=0&format=image/png',
+    attribution: '&copy; LAD Latvia'
+  },
+  {
+    id: 'poland', label: '🇵🇱 Poland (LPIS)', type: 'raster', lang: 'pl',
+    legendType: 'image', minZoom: 12,
+    years: null, defaultYear: null, dataYear: '2024',
+    tileUrl: () => wms11('https://mapy.geoportal.gov.pl/wss/ext/arimr_lpis', '14'),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://mapy.geoportal.gov.pl/wss/ext/arimr_lpis',
+      '14', bbox, x, y),
+    legendImg: 'https://mapy.geoportal.gov.pl/wss/ext/arimr_lpis?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=14&format=image/png',
+    attribution: '&copy; ARiMR/GUGiK Poland LPIS'
+  },
+  {
+    id: 'sweden', label: '🇸🇪 Sweden (Jordbruk)', type: 'raster', lang: 'sv',
+    legendType: 'image', minZoom: 12,
+    years: null, defaultYear: null, dataYear: '2024',
+    tileUrl: () => wms11('https://epub.sjv.se/inspire/inspire/wms', 'jordbruksblock'),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://epub.sjv.se/inspire/inspire/wms',
+      'jordbruksblock', bbox, x, y),
+    legendImg: 'https://epub.sjv.se/inspire/inspire/wms?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=jordbruksblock&format=image/png',
+    attribution: '&copy; SJV Sweden'
+  },
+  {
+    id: 'finland', label: '🇫🇮 Finland (Ruokavirasto LPIS)', type: 'raster', lang: 'fi',
+    legendType: 'image', minZoom: 12,
+    years: [2020, 2021, 2022, 2023, 2024], defaultYear: 2024,
+    tileUrl: (yr) => wms13('https://inspire.ruokavirasto-awsa.com/geoserver/wms',
+      'inspire:LC.LandCoverSurfaces.LPIS.' + yr),
+    featureInfo: (yr, bbox, i, j) => gfi13('https://inspire.ruokavirasto-awsa.com/geoserver/wms',
+      'inspire:LC.LandCoverSurfaces.LPIS.' + yr, bbox, i, j),
+    legendImg: (yr) => 'https://inspire.ruokavirasto-awsa.com/geoserver/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=inspire:LC.LandCoverSurfaces.LPIS.' + yr + '&format=image/png',
+    attribution: '&copy; Ruokavirasto Finland'
+  },
+  // --- Non-European layers ---
+  {
+    id: 'usda-cdl', label: '🇺🇸 USA (USDA CDL)', type: 'raster', lang: 'en',
+    legendType: 'image',
+    years: Array.from({length:16}, (_,i) => 2008+i), defaultYear: 2023,
+    tileUrl: (yr) => wms11('https://nassgeodata.gmu.edu/CropScapeService/wms_cdlall.cgi', 'cdl_' + yr),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://nassgeodata.gmu.edu/CropScapeService/wms_cdlall.cgi',
+      'cdl_' + yr, bbox, x, y),
+    legendImg: (yr) => 'https://nassgeodata.gmu.edu/CropScapeService/wms_cdlall.cgi?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=cdl_' + yr + '&format=image/png',
+    attribution: '&copy; USDA NASS CropScape'
+  },
+  {
+    id: 'canada', label: '🇨🇦 Canada (AAFC)', type: 'raster', lang: 'en',
+    legendType: 'image',
+    years: Array.from({length:16}, (_,i) => 2009+i), defaultYear: 2024,
+    tileUrl: (yr) => wms11(
+      'https://www.agr.gc.ca/imagery-images/services/annual_crop_inventory/' + yr + '/ImageServer/WMSServer',
+      yr + ':annual_crop_inventory'),
+    featureInfo: (yr, bbox, x, y) => gfi11(
+      'https://www.agr.gc.ca/imagery-images/services/annual_crop_inventory/' + yr + '/ImageServer/WMSServer',
+      yr + ':annual_crop_inventory', bbox, x, y),
+    legendImg: (yr) => 'https://www.agr.gc.ca/imagery-images/services/annual_crop_inventory/' + yr + '/ImageServer/WMSServer?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=' + yr + ':annual_crop_inventory&format=image/png',
+    attribution: '&copy; AAFC Canada Annual Crop Inventory'
+  },
+  {
+    id: 'argentina', label: '🇦🇷 Argentina (GeoINTA)', type: 'raster', lang: 'es',
+    legendType: 'image',
+    years: null, defaultYear: null, dataYear: '2024',
+    tileUrl: () => wms13('https://geo-backend.inta.gob.ar/geoserver/wms',
+      'geonode:mnc_verano2024_f300268fd112b0ec3ef5f731edb78882'),
+    featureInfo: (yr, bbox, i, j) => gfi13('https://geo-backend.inta.gob.ar/geoserver/wms',
+      'geonode:mnc_verano2024_f300268fd112b0ec3ef5f731edb78882', bbox, i, j),
+    legendImg: 'https://geo-backend.inta.gob.ar/geoserver/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=geonode:mnc_verano2024_f300268fd112b0ec3ef5f731edb78882&format=image/png',
+    attribution: '&copy; INTA Argentina'
+  },
+  // --- Oceania ---
+  {
+    id: 'australia', label: '🇦🇺 Australia (ABARES)', type: 'raster', lang: 'en',
+    legendType: 'image',
+    years: null, defaultYear: null, dataYear: '2023',
+    tileUrl: () => wms13(
+      'https://di-daa.img.arcgis.com/arcgis/services/Land_and_vegetation/Catchment_Scale_Land_Use_Simplified/ImageServer/WMSServer',
+      'Catchment_Scale_Land_Use_Simplified'),
+    featureInfo: (yr, bbox, i, j) => gfi13(
+      'https://di-daa.img.arcgis.com/arcgis/services/Land_and_vegetation/Catchment_Scale_Land_Use_Simplified/ImageServer/WMSServer',
+      'Catchment_Scale_Land_Use_Simplified', bbox, i, j),
+    legendImg: 'https://di-daa.img.arcgis.com/arcgis/services/Land_and_vegetation/Catchment_Scale_Land_Use_Simplified/ImageServer/WMSServer?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=Catchment_Scale_Land_Use_Simplified&format=image/png',
+    attribution: '&copy; ABARES Australia'
+  },
+  {
+    id: 'dea-landcover', label: '🇦🇺 Australia Land Cover (DEA)', type: 'raster', lang: 'en',
+    legendType: 'image',
+    years: Array.from({length:33}, (_,i) => 1988+i), defaultYear: 2020,
+    tileUrl: (yr) => wms11('https://ows.dea.ga.gov.au/', 'ga_ls_landcover',
+      '&time=' + yr + '-01-01'),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://ows.dea.ga.gov.au/',
+      'ga_ls_landcover', bbox, x, y, '&time=' + yr + '-01-01'),
+    legendImg: 'https://ows.dea.ga.gov.au/legend/ga_ls_landcover/level3/legend.png',
+    attribution: '&copy; <a href="https://www.dea.ga.gov.au/">Digital Earth Australia</a> CC-BY 4.0'
+  },
+  {
+    id: 'newzealand', label: '🇳🇿 New Zealand (LCDB)', type: 'raster', lang: 'en',
+    legendType: 'image',
+    years: null, defaultYear: null, dataYear: '2024',
+    tileUrl: () => wms11('https://maps.scinfo.org.nz/lcdb/wms', 'lcdb_lcdb6'),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://maps.scinfo.org.nz/lcdb/wms',
+      'lcdb_lcdb6', bbox, x, y),
+    legendImg: 'https://maps.scinfo.org.nz/lcdb/wms?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=lcdb_lcdb6&format=image/png',
+    attribution: '&copy; Manaaki Whenua / Landcare Research NZ'
+  },
+  // --- Africa ---
+  {
+    id: 'deafrica-crop', label: '🌍 Africa Cropland (DE Africa)', type: 'raster', lang: 'en',
+    legendType: 'image',
+    years: null, defaultYear: null, dataYear: '2019',
+    tileUrl: () => wms13('https://ows.digitalearth.africa/wms', 'crop_mask'),
+    featureInfo: (yr, bbox, i, j) => gfi13('https://ows.digitalearth.africa/wms',
+      'crop_mask', bbox, i, j),
+    legendImg: 'https://ows.digitalearth.africa/legend/crop_mask/green/legend.png',
+    attribution: '&copy; Digital Earth Africa'
+  },
+  // --- Global layers ---
+  {
+    id: 'modis-landcover', label: '🛰️ MODIS Land Cover (Global)', type: 'raster', lang: 'en',
+    legendType: 'image',
+    years: Array.from({length:24}, (_,i) => 2001+i), defaultYear: 2023,
+    tileUrl: (yr) => wms11('https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi',
+      'MODIS_Combined_L3_IGBP_Land_Cover_Type_Annual', '&time=' + yr + '-01-01'),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi',
+      'MODIS_Combined_L3_IGBP_Land_Cover_Type_Annual', bbox, x, y, '&time=' + yr + '-01-01'),
+    legendImg: 'https://gibs.earthdata.nasa.gov/legends/MODIS_IGBP_Land_Cover_Type_H.png',
+    attribution: '&copy; NASA EOSDIS GIBS / MODIS MCD12Q1'
+  },
+  {
+    id: 'gfsad-croplands', label: '🌾 Global Croplands (GFSAD)', type: 'raster', lang: 'en',
+    legendType: 'image',
+    years: null, defaultYear: null, dataYear: '2000',
+    tileUrl: () => wms11('https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi',
+      'Agricultural_Lands_Croplands_2000'),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi',
+      'Agricultural_Lands_Croplands_2000', bbox, x, y),
+    legendImg: 'https://gibs.earthdata.nasa.gov/legends/Agricultural_Lands_Croplands_2000_H.png',
+    attribution: '&copy; NASA EOSDIS GIBS / Ramankutty et al. 2008'
+  },
+  {
+    id: 'jrc-eucropmap', label: '🇪🇺 JRC EU Crop Map', type: 'raster', lang: 'en',
+    legendType: 'image',
+    years: [2018, 2019, 2020, 2021, 2022], defaultYear: 2022,
+    tileUrl: (yr) => wms11('https://jeodpp.jrc.ec.europa.eu/jeodpp/services/ows/wms/landcover/eucropmap',
+      'LC.EUCROPMAP.' + yr),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://jeodpp.jrc.ec.europa.eu/jeodpp/services/ows/wms/landcover/eucropmap',
+      'LC.EUCROPMAP.' + yr, bbox, x, y),
+    legendImg: (yr) => 'https://jeodpp.jrc.ec.europa.eu/jeodpp/services/ows/wms/landcover/eucropmap?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=LC.EUCROPMAP.' + yr + '&format=image/png',
+    attribution: '&copy; JRC/EC EU Crop Map'
+  },
+  {
+    id: 'esa-worldcover', label: '🛰️ ESA WorldCover', type: 'raster', lang: 'en',
+    legendType: 'image',
+    years: [2020, 2021], defaultYear: 2021,
+    tileUrl: (yr) => wms11('https://services.terrascope.be/wms/v2', 'WORLDCOVER_' + yr + '_MAP'),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://services.terrascope.be/wms/v2',
+      'WORLDCOVER_' + yr + '_MAP', bbox, x, y),
+    legendImg: (yr) => 'https://services.terrascope.be/wms/v2?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=WORLDCOVER_' + yr + '_MAP&format=image/png',
+    attribution: '&copy; ESA/Copernicus WorldCover'
+  },
+  {
+    id: 'worldcereal', label: '🌾 WorldCereal Temp. Crops', type: 'raster', lang: 'en',
+    legendType: 'image',
+    years: null, defaultYear: null, dataYear: '2021',
+    tileUrl: () => wms11('https://services.terrascope.be/wms/v2', 'WORLDCEREAL_TEMPORARYCROPS_V1'),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://services.terrascope.be/wms/v2',
+      'WORLDCEREAL_TEMPORARYCROPS_V1', bbox, x, y),
+    legendImg: 'https://services.terrascope.be/wms/v2?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=WORLDCEREAL_TEMPORARYCROPS_V1&format=image/png',
+    attribution: '&copy; ESA/VITO WorldCereal'
+  },
+  {
+    id: 'worldcereal-maize', label: '🌽 WorldCereal Maize', type: 'raster', lang: 'en',
+    legendType: 'image',
+    years: null, defaultYear: null, dataYear: '2021',
+    tileUrl: () => wms11('https://services.terrascope.be/wms/v2', 'WORLDCEREAL_MAIZE_V1'),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://services.terrascope.be/wms/v2',
+      'WORLDCEREAL_MAIZE_V1', bbox, x, y),
+    legendImg: 'https://services.terrascope.be/wms/v2?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=WORLDCEREAL_MAIZE_V1&format=image/png',
+    attribution: '&copy; ESA/VITO WorldCereal'
+  },
+  {
+    id: 'worldcereal-winter', label: '🌾 WorldCereal Winter Cereals', type: 'raster', lang: 'en',
+    legendType: 'image',
+    years: null, defaultYear: null, dataYear: '2021',
+    tileUrl: () => wms11('https://services.terrascope.be/wms/v2', 'WORLDCEREAL_WINTERCEREALS_V1'),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://services.terrascope.be/wms/v2',
+      'WORLDCEREAL_WINTERCEREALS_V1', bbox, x, y),
+    legendImg: 'https://services.terrascope.be/wms/v2?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=WORLDCEREAL_WINTERCEREALS_V1&format=image/png',
+    attribution: '&copy; ESA/VITO WorldCereal'
+  },
+  {
+    id: 'worldcereal-spring', label: '🌾 WorldCereal Spring Cereals', type: 'raster', lang: 'en',
+    legendType: 'image',
+    years: null, defaultYear: null, dataYear: '2021',
+    tileUrl: () => wms11('https://services.terrascope.be/wms/v2', 'WORLDCEREAL_SPRINGCEREALS_V1'),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://services.terrascope.be/wms/v2',
+      'WORLDCEREAL_SPRINGCEREALS_V1', bbox, x, y),
+    legendImg: 'https://services.terrascope.be/wms/v2?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=WORLDCEREAL_SPRINGCEREALS_V1&format=image/png',
+    attribution: '&copy; ESA/VITO WorldCereal'
   }
 ];
 
 // === Map setup ===
 const base = window.location.href.replace(/\/[^/]*$/, '');
-const PMTILES_URL = base + '/crome2020.pmtiles';
+function cromePmtilesUrl(yr) { return base + '/crome' + yr + '.pmtiles'; }
+const PMTILES_URL = cromePmtilesUrl(2024);
 const protocol = new pmtiles.Protocol();
 maplibregl.addProtocol('pmtiles', protocol.tile);
 
@@ -315,21 +982,23 @@ const initSources = {
   crome: {
     type: 'vector',
     url: 'pmtiles://' + PMTILES_URL,
-    attribution: 'CROME 2020 &copy; RPA. OGL v3.0.'
+    attribution: 'CROME &copy; RPA. OGL v3.0.'
   }
 };
 
 const initLayers = [
   { id: 'osm-basemap', type: 'raster', source: 'osm', paint: { 'raster-opacity': 1 } },
   {
-    id: 'crome-fill', type: 'fill', source: 'crome', 'source-layer': 'crome2020',
+    id: 'crome-fill', type: 'fill', source: 'crome', 'source-layer': 'crome2024',
+    filter: ['==', ['geometry-type'], 'Polygon'],
     paint: {
       'fill-color': ['match', ['get', 'lucode'], ...Object.entries(LUCODE_COLORS).flat(), '#cccccc'],
       'fill-opacity': 0.75
     }
   },
   {
-    id: 'crome-outline', type: 'line', source: 'crome', 'source-layer': 'crome2020',
+    id: 'crome-outline', type: 'line', source: 'crome', 'source-layer': 'crome2024',
+    filter: ['==', ['geometry-type'], 'Polygon'],
     paint: {
       'line-color': '#333',
       'line-width': ['interpolate', ['linear'], ['zoom'], 10, 0, 14, 0.5],
@@ -347,27 +1016,38 @@ LAYERS.forEach(L => {
       tiles: [L.tileUrl(yr)],
       attribution: L.attribution || ''
     };
-    initLayers.push({
+    const layerDef = {
       id: L.id + '-wms', type: 'raster', source: L.id,
       paint: { 'raster-opacity': 0 },
       layout: { visibility: 'none' }
-    });
+    };
+    if (L.minZoom) layerDef.minzoom = L.minZoom;
+    initLayers.push(layerDef);
   } else if (L.type === 'vector-remote') {
     initSources[L.id] = {
       type: 'vector',
       url: 'pmtiles://' + L.pmtilesUrl,
+      bounds: L.id === 'eurocrops' ? [-30, 34, 50, 72] : undefined,
       attribution: L.attribution || ''
     };
+    // Use crop-type colors and Europe bbox filter for EuroCrops; plain filter for others
+    const isEurocrops = L.id === 'eurocrops';
+    const vFilter = ['==', ['geometry-type'], 'Polygon'];
     initLayers.push({
       id: L.id + '-fill', type: 'fill', source: L.id,
       'source-layer': L.sourceLayer,
-      paint: { 'fill-color': '#66bb6a', 'fill-opacity': 0.5 },
+      filter: vFilter,
+      paint: {
+        'fill-color': isEurocrops ? EC_COLOR_EXPR : '#66bb6a',
+        'fill-opacity': 0.5
+      },
       layout: { visibility: 'none' }
     });
     initLayers.push({
       id: L.id + '-outline', type: 'line', source: L.id,
       'source-layer': L.sourceLayer,
-      paint: { 'line-color': '#2e7d32', 'line-width': 0.5, 'line-opacity': 0.6 },
+      filter: vFilter,
+      paint: { 'line-color': isEurocrops ? '#555' : '#2e7d32', 'line-width': 0.5, 'line-opacity': 0.6 },
       layout: { visibility: 'none' }
     });
   }
@@ -488,13 +1168,67 @@ function makeCollapsible(panel) {
 }
 document.querySelectorAll('.panel').forEach(p => { makeDraggable(p); makeCollapsible(p); });
 
+// === Settings gear ===
+const settingsPopover = document.getElementById('settings-popover');
+const settingsGear = document.getElementById('settings-gear');
+settingsGear.addEventListener('click', (e) => {
+  e.stopPropagation();
+  settingsPopover.classList.toggle('open');
+});
+document.addEventListener('click', (e) => {
+  if (!settingsPopover.contains(e.target) && e.target !== settingsGear) {
+    settingsPopover.classList.remove('open');
+  }
+});
+const closeLyrCb = document.getElementById('setting-close-layer');
+closeLyrCb.checked = SETTINGS.closeLegendClosesLayer;
+closeLyrCb.addEventListener('change', () => {
+  SETTINGS.closeLegendClosesLayer = closeLyrCb.checked;
+  saveSettings();
+});
+
 // === Build layer list UI ===
 const layerListEl = document.getElementById('layer-list');
 const layerState = {}; // { id: { on, year } }
 
+// Continent sections: first layer ID → section label
+const sections = [
+  { start: 'crome',          label: 'Europe — Classification', open: true },
+  { start: 'spain',          label: 'Europe — Parcels',        open: false },
+  { start: 'usda-cdl',       label: 'Americas',                open: false },
+  { start: 'australia',      label: 'Oceania',                 open: false },
+  { start: 'deafrica-crop',  label: 'Africa',                  open: false },
+  { start: 'modis-landcover', label: 'Global / Satellite',      open: false },
+];
+const sectionMap = {}; sections.forEach(s => { sectionMap[s.start] = s; });
+
+let currentBody = null; // current continent body container
+
 LAYERS.forEach(L => {
   layerState[L.id] = { on: !!L.defaultOn, year: L.defaultYear };
 
+  // Start a new collapsible continent section?
+  if (sectionMap[L.id]) {
+    const s = sectionMap[L.id];
+    const sec = document.createElement('div');
+    sec.className = 'continent-section';
+
+    const hdr = document.createElement('div');
+    hdr.className = 'continent-header' + (s.open ? ' open' : '');
+    hdr.innerHTML = '<span class="arrow">&#9654;</span> ' + s.label;
+    hdr.addEventListener('click', () => {
+      hdr.classList.toggle('open');
+    });
+    sec.appendChild(hdr);
+
+    currentBody = document.createElement('div');
+    currentBody.className = 'continent-body';
+    sec.appendChild(currentBody);
+
+    layerListEl.appendChild(sec);
+  }
+
+  const container = currentBody || layerListEl;
   const row = document.createElement('div');
   row.className = 'layer-row';
 
@@ -519,7 +1253,10 @@ LAYERS.forEach(L => {
     });
     sel.addEventListener('change', () => {
       layerState[L.id].year = parseInt(sel.value);
-      if (layerState[L.id].on) updateWmsSource(L);
+      if (layerState[L.id].on) {
+        if (L.type === 'vector') updateCromeSource(layerState[L.id].year);
+        else updateWmsSource(L);
+      }
       updateLegend();
     });
     row.appendChild(sel);
@@ -537,20 +1274,21 @@ LAYERS.forEach(L => {
 
   cb.addEventListener('change', () => {
     layerState[L.id].on = cb.checked;
+    if (cb.checked) delete legendClosed[L.id]; // re-show legend when toggled on
     toggleLayer(L, cb.checked);
     updateLegend();
     updateZoomHints();
   });
 
-  layerListEl.appendChild(row);
+  container.appendChild(row);
 
   // Zoom hint for parcel-level layers
   if (L.minZoom) {
     const hint = document.createElement('div');
     hint.className = 'zoom-hint';
     hint.id = 'hint-' + L.id;
-    hint.textContent = 'Country shown at low zoom; parcels at z' + L.minZoom + '+';
-    layerListEl.appendChild(hint);
+    hint.textContent = 'Parcels visible at z' + L.minZoom + '+';
+    container.appendChild(hint);
   }
 });
 
@@ -598,6 +1336,40 @@ function toggleLayer(L, on) {
     if (map.getLayer(L.id + '-indicator-line'))
       map.setLayoutProperty(L.id + '-indicator-line', 'visibility', vis);
   }
+}
+
+function updateCromeSource(yr) {
+  const srcLayer = 'crome' + yr;
+  const url = 'pmtiles://' + cromePmtilesUrl(yr);
+
+  // Remove existing layers and source
+  if (map.getLayer('crome-fill')) map.removeLayer('crome-fill');
+  if (map.getLayer('crome-outline')) map.removeLayer('crome-outline');
+  if (map.getSource('crome')) map.removeSource('crome');
+
+  // Re-add with new year
+  map.addSource('crome', {
+    type: 'vector', url: url,
+    attribution: 'CROME &copy; RPA. OGL v3.0.'
+  });
+  map.addLayer({
+    id: 'crome-fill', type: 'fill', source: 'crome', 'source-layer': srcLayer,
+    filter: ['==', ['geometry-type'], 'Polygon'],
+    paint: {
+      'fill-color': ['match', ['get', 'lucode'], ...Object.entries(LUCODE_COLORS).flat(), '#cccccc'],
+      'fill-opacity': currentOpacity
+    }
+  });
+  map.addLayer({
+    id: 'crome-outline', type: 'line', source: 'crome', 'source-layer': srcLayer,
+    filter: ['==', ['geometry-type'], 'Polygon'],
+    paint: {
+      'line-color': '#333',
+      'line-width': ['interpolate', ['linear'], ['zoom'], 10, 0, 14, 0.5],
+      'line-opacity': currentOpacity * 0.4
+    }
+  });
+  // No need to rebind hover — unified handler queries layers dynamically
 }
 
 function updateWmsSource(L) {
@@ -649,105 +1421,455 @@ function updateZoomHints() {
 }
 map.on('zoom', updateZoomHints);
 
-// === Dynamic legend ===
-const legendContent = document.getElementById('legend-content');
+// === Dynamic legend — stacking closeable cards ===
+const legendStack = document.getElementById('legend-stack');
+const legendCards = {}; // { layerId: cardElement }
+const legendClosed = {}; // { layerId: true } — user-dismissed cards stay hidden until layer toggled
 
-function buildCromeLegend() {
-  const sec = document.createElement('div');
-  sec.className = 'legend-section';
-  const h = document.createElement('h4'); h.textContent = 'England - CROME 2020';
-  sec.appendChild(h);
+function makeLegendCard(id, title, bodyContent) {
+  const card = document.createElement('div');
+  card.className = 'legend-card';
+  card.dataset.layerId = id;
+
+  const hdr = document.createElement('div');
+  hdr.className = 'legend-card-header';
+  const h = document.createElement('h4');
+  h.textContent = title;
+  hdr.appendChild(h);
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'legend-card-close';
+  closeBtn.innerHTML = '&times;';
+  closeBtn.title = 'Close legend';
+  closeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    card.remove();
+    delete legendCards[id];
+    if (SETTINGS.closeLegendClosesLayer) {
+      layerState[id].on = false;
+      const cb = document.getElementById('toggle-' + id);
+      if (cb) cb.checked = false;
+      const L = LAYERS.find(l => l.id === id);
+      if (L) toggleLayer(L, false);
+    } else {
+      legendClosed[id] = true;
+    }
+  });
+  hdr.appendChild(closeBtn);
+  // Click header to collapse/expand body
+  hdr.addEventListener('click', () => { card.classList.toggle('collapsed'); });
+  card.appendChild(hdr);
+
+  const body = document.createElement('div');
+  body.className = 'legend-card-body';
+  body.appendChild(bodyContent);
+  card.appendChild(body);
+  return card;
+}
+
+function buildCromeBody() {
+  const frag = document.createDocumentFragment();
   CATEGORIES.forEach(cat => {
     const ch = document.createElement('div');
     ch.style.cssText = 'font-weight:bold;margin-top:4px;font-size:11px;';
-    ch.textContent = cat.name; sec.appendChild(ch);
+    ch.textContent = cat.name; frag.appendChild(ch);
     cat.codes.forEach(code => {
       const row = document.createElement('div'); row.className = 'legend-row';
       const sw = document.createElement('div'); sw.className = 'legend-swatch';
       sw.style.background = LUCODE_COLORS[code] || '#ccc'; row.appendChild(sw);
       const lbl = document.createElement('span');
       lbl.textContent = LUCODE_LABELS[code] || code; row.appendChild(lbl);
-      sec.appendChild(row);
+      frag.appendChild(row);
     });
   });
-  return sec;
+  return frag;
 }
 
-function buildImageLegend(label, imgUrl) {
-  const sec = document.createElement('div'); sec.className = 'legend-section';
-  const h = document.createElement('h4'); h.textContent = label; sec.appendChild(h);
+function buildEuroCropsBody() {
+  const frag = document.createDocumentFragment();
+  EC_CATEGORIES.forEach(cat => {
+    const ch = document.createElement('div');
+    ch.style.cssText = 'font-weight:bold;margin-top:4px;font-size:11px;';
+    ch.textContent = cat.name; frag.appendChild(ch);
+    cat.key.forEach(k => {
+      const row = document.createElement('div'); row.className = 'legend-row';
+      const sw = document.createElement('div'); sw.className = 'legend-swatch';
+      sw.style.background = EC_COLORS[k] || '#888'; row.appendChild(sw);
+      const lbl = document.createElement('span');
+      lbl.textContent = cleanCropName(k); row.appendChild(lbl);
+      frag.appendChild(row);
+    });
+  });
+  const note = document.createElement('div');
+  note.style.cssText = 'font-size:10px;color:#666;margin-top:4px;';
+  note.textContent = '16 EU countries · hover for details';
+  frag.appendChild(note);
+  return frag;
+}
+
+function buildImageBody(imgUrl, alt) {
+  const frag = document.createDocumentFragment();
   const img = document.createElement('img');
-  img.src = imgUrl; img.alt = label + ' legend';
+  img.src = imgUrl; img.alt = alt;
   img.onerror = function() {
-    this.parentElement.innerHTML += '<span class="legend-empty">Legend not available</span>';
-    this.remove();
+    // Remove the card if the image fails to load
+    const card = img.closest('.legend-card');
+    if (card) { card.remove(); delete legendCards[card.dataset.layerId]; }
   };
-  sec.appendChild(img);
-  return sec;
+  frag.appendChild(img);
+  return frag;
 }
 
 function updateLegend() {
-  legendContent.innerHTML = '';
-  let any = false;
+  // Remove cards for layers that are no longer active
+  for (const [id, card] of Object.entries(legendCards)) {
+    if (!layerState[id] || !layerState[id].on) {
+      card.remove();
+      delete legendCards[id];
+    }
+  }
+
+  // Add or refresh cards for active layers
   LAYERS.forEach(L => {
     if (!layerState[L.id].on) return;
-    any = true;
+    if (legendClosed[L.id]) return; // user closed this one
+
     const yr = layerState[L.id].year;
-    if (L.legendType === 'crome') {
-      legendContent.appendChild(buildCromeLegend());
-    } else if (L.legendType === 'eurocrops') {
-      const sec = document.createElement('div'); sec.className = 'legend-section';
-      const h = document.createElement('h4'); h.textContent = 'EU Field Boundaries (EuroCrops)'; sec.appendChild(h);
-      const row = document.createElement('div'); row.className = 'legend-row';
-      const sw = document.createElement('div'); sw.className = 'legend-swatch';
-      sw.style.background = '#66bb6a'; sw.style.border = '1px solid #2e7d32'; row.appendChild(sw);
-      const lbl = document.createElement('span'); lbl.textContent = 'Field boundary (hover for crop type)'; row.appendChild(lbl);
-      sec.appendChild(row);
-      const note = document.createElement('div');
-      note.style.cssText = 'font-size:10px;color:#666;margin-top:4px;';
-      note.textContent = '16 EU countries: AT, BE, DE, DK, EE, ES, FR, HR, LT, LV, NL, RO, SE, SI, SK';
-      sec.appendChild(note);
-      legendContent.appendChild(sec);
-    } else if (L.legendType === 'image') {
-      const url = typeof L.legendImg === 'function' ? L.legendImg(yr) : L.legendImg;
-      if (url) legendContent.appendChild(buildImageLegend(L.label + (yr ? ' ' + yr : ''), url));
+    // If card exists but year changed, remove it so it gets rebuilt
+    if (legendCards[L.id] && legendCards[L.id].dataset.year != (yr || '')) {
+      legendCards[L.id].remove();
+      delete legendCards[L.id];
     }
+    if (legendCards[L.id]) return; // already showing
+
+    let title, body;
+
+    if (L.legendType === 'crome') {
+      title = 'England — CROME ' + (yr || 2024);
+      body = buildCromeBody();
+    } else if (L.legendType === 'eurocrops') {
+      title = 'EuroCrops';
+      body = buildEuroCropsBody();
+    } else if (L.legendType === 'image') {
+      try {
+        const url = typeof L.legendImg === 'function' ? L.legendImg(yr) : L.legendImg;
+        if (!url) return;
+        title = L.label + (yr ? ' ' + yr : '');
+        body = buildImageBody(url, title);
+      } catch(e) { return; }
+    } else {
+      return;
+    }
+
+    const card = makeLegendCard(L.id, title, body);
+    card.dataset.year = yr || '';
+    legendStack.appendChild(card);
+    legendCards[L.id] = card;
   });
-  if (!any) legendContent.innerHTML = '<span class="legend-empty">Enable a layer to see its legend</span>';
 }
+
 updateLegend();
 
-// === Hover info ===
+// === Unified hover info for all layers ===
 const infoEl = document.getElementById('info');
-map.on('mousemove', 'crome-fill', e => {
-  if (e.features.length) {
-    const code = e.features[0].properties.lucode;
-    infoEl.style.display = 'block';
-    infoEl.textContent = (LUCODE_LABELS[code] || code) + ' (' + code + ')';
-    map.getCanvas().style.cursor = 'pointer';
-  }
-});
-map.on('mouseleave', 'crome-fill', () => {
-  infoEl.style.display = 'none';
-  map.getCanvas().style.cursor = '';
-});
-// EuroCrops hover — clean up underscore-delimited names to readable English
+
 function cleanCropName(s) {
   if (!s) return '';
   return s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
-map.on('mousemove', 'eurocrops-fill', e => {
-  if (e.features.length) {
-    const p = e.features[0].properties;
-    const name = cleanCropName(p.EC_hcat_n) || p.EC_trans_n || '(unknown)';
+
+// WMS GetFeatureInfo hover — debounced, queries server for feature attributes
+let gfiTimer = null;
+let gfiController = null;
+
+function lngLatToBbox4326(lngLat, zoom) {
+  // Build a small bbox around the click point in EPSG:4326
+  // Size scales with zoom level
+  const size = 360 / Math.pow(2, zoom) / 256;
+  return [
+    lngLat.lng - size * 2,
+    lngLat.lat - size * 2,
+    lngLat.lng + size * 2,
+    lngLat.lat + size * 2
+  ];
+}
+
+function summariseGfiProps(props, lang) {
+  // Extract the most useful property from a GFI response and translate
+  if (!props || typeof props !== 'object') return null;
+
+  // Switzerland has multilingual fields — pick by display language
+  if (props['nutzung_de'] || props['nutzung_fr'] || props['nutzung_it']) {
+    const langMap = { en: 'nutzung_de', de: 'nutzung_de', fr: 'nutzung_fr', it: 'nutzung_it' };
+    const field = langMap[DISPLAY_LANG] || 'nutzung_de';
+    const val = props[field] || props['nutzung_de'];
+    if (val) return translateCrop(val, DISPLAY_LANG === 'fr' ? 'fr' : 'de');
+  }
+
+  // Priority: known crop/land-use field names
+  const cropKeys = [
+    // Germany DLR (English from server)
+    'crop type',
+    // Denmark FVM
+    'Afgroede',
+    // Austria INVEKOS
+    'SNAR_BEZEICHNUNG',
+    // Netherlands BRP
+    'gewas', 'category',
+    // Belgium
+    'CULT_NOM', 'cult_nom', 'LB_CULT_G', 'CATEGORIE',
+    // France RPG
+    'libelle', 'code_cultu',
+    // Luxembourg
+    'description', 'Description',
+    // Norway
+    'artype_beskrivelse', 'arealtype', 'AREALTYPE',
+    // Portugal
+    'cultura', 'CULTURA',
+    // Finland Ruokavirasto LPIS
+    'PERUSLOHKOTUNNUS',
+    // Generic
+    'GRAY_INDEX', 'class', 'CLASS', 'crop', 'CROP', 'croptype',
+    'land_use', 'landuse', 'LANDUSE',
+    'lucode', 'LUCODE', 'value', 'VALUE', 'label', 'LABEL',
+    'name', 'NAME'];
+  for (const k of cropKeys) {
+    if (props[k] !== undefined && props[k] !== null && props[k] !== '') {
+      const val = String(props[k]).trim();
+      return lang ? translateCrop(val, lang) : val;
+    }
+  }
+  // Fallback: first non-id, non-geometry string/number value
+  for (const [k, v] of Object.entries(props)) {
+    if (['id','fid','gml_id','objectid','shape','geom','geometry','bbox',
+         'inspire_id','gml_identifier','geom_date_created','gml_geom',
+         'gml_length','geo_id','geo_part_key','log_pkey','fart_id','geo_type',
+         'fs_kennung','kz_bio_oepul_jn','journalnr','cvr','markblok','gb',
+         'gbanmeldt','marknr','imk_areal','betriebsnummer','bur_nr',
+         'nutzungsidentifikator','bewirtschaftungsgrad','flaeche_m2',
+         'bezugsjahr','kanton','bff_qualitaet_1','code_programm','programm',
+         'id_parcel','surf_parc','culture_d1','culture_d2','code_group',
+         'sl_flaeche_brutto_ha','jaar','status','gewascode',
+         'artype','artreslag','arskogbon','argrunnf','grenkel','grvanlig',
+         'verifiseringsdato','datafangstdato','areal_da','sl_sdeid',
+         'informasjon','opphav','klassifiseringsmetode','klassifiseringsmetode_kode',
+         'artype_label',
+         'tunnus','vuosi','pinta_ala','luomuviljely','kalteva_ala',
+         'pohjavesi_ala','natura_ala','suojakaista_m','virkistyspvm'
+         ].includes(k.toLowerCase())) continue;
+    if (v !== null && v !== undefined && v !== '') {
+      const val = String(v).trim();
+      return lang ? translateCrop(val, lang) : val;
+    }
+  }
+  return null;
+}
+
+map.on('mousemove', e => {
+  // Collect info from ALL active layers at hover point
+  const parts = [];
+
+  // Vector layers: CROME
+  if (layerState.crome && layerState.crome.on && map.getLayer('crome-fill')) {
+    const fs = map.queryRenderedFeatures(e.point, { layers: ['crome-fill'] });
+    fs.forEach(f => {
+      const code = f.properties.lucode;
+      parts.push('CROME: ' + (LUCODE_LABELS[code] || code) + ' (' + code + ')');
+    });
+  }
+
+  // Vector layers: EuroCrops
+  if (layerState.eurocrops && layerState.eurocrops.on && map.getLayer('eurocrops-fill')) {
+    const fs = map.queryRenderedFeatures(e.point, { layers: ['eurocrops-fill'] });
+    fs.forEach(f => {
+      const p = f.properties;
+      const name = cleanCropName(p.EC_hcat_n) || p.EC_trans_n || '(unknown)';
+      parts.push('EuroCrops: ' + name);
+    });
+  }
+
+  // Show vector results immediately
+  if (parts.length > 0) {
     infoEl.style.display = 'block';
-    infoEl.textContent = name;
+    infoEl.innerHTML = parts.map(p => '<div>' + p + '</div>').join('');
     map.getCanvas().style.cursor = 'pointer';
   }
+
+  // WMS layers: query ALL active raster layers via GetFeatureInfo
+  const wmsLayers = LAYERS.filter(L =>
+    L.type === 'raster' && L.featureInfo && layerState[L.id] && layerState[L.id].on
+    && (!L.minZoom || map.getZoom() >= L.minZoom));
+
+  if (wmsLayers.length === 0 && parts.length === 0) {
+    infoEl.style.display = 'none';
+    map.getCanvas().style.cursor = '';
+    return;
+  }
+
+  if (wmsLayers.length === 0) return;
+
+  // Debounce WMS queries
+  if (gfiTimer) clearTimeout(gfiTimer);
+  if (gfiController) gfiController.abort();
+
+  if (parts.length === 0) map.getCanvas().style.cursor = 'crosshair';
+
+  gfiTimer = setTimeout(() => {
+    const lngLat = e.lngLat;
+    const zoom = map.getZoom();
+    const bbox = lngLatToBbox4326(lngLat, zoom);
+    gfiController = new AbortController();
+
+    // Fetch all WMS layers in parallel
+    const promises = wmsLayers.map(L => {
+      const yr = layerState[L.id].year;
+      const url = L.featureInfo(yr, bbox, 128, 128);
+
+      function parseGfiResponse(data) {
+        const results = [];
+        if (data && data.features && data.features.length > 0) {
+          data.features.forEach(f => {
+            const t = summariseGfiProps(f.properties, L.lang);
+            if (t) results.push(L.label + ': ' + t);
+          });
+        } else if (data && data.type === 'Feature' && data.properties) {
+          const t = summariseGfiProps(data.properties, L.lang);
+          if (t) results.push(L.label + ': ' + t);
+        } else if (typeof data === 'string' && data.trim()) {
+          // Try to parse as GML/XML — extract known fields
+          if (data.includes('<') && data.includes('>')) {
+            const xmlProps = {};
+            const tagRe = /<([A-Za-z_][A-Za-z0-9_]*)>([^<]+)<\//g;
+            let m;
+            while ((m = tagRe.exec(data)) !== null) xmlProps[m[1]] = m[2].trim();
+            if (Object.keys(xmlProps).length > 0) {
+              const t = summariseGfiProps(xmlProps, L.lang);
+              if (t) results.push(L.label + ': ' + t);
+            }
+          }
+          if (results.length === 0) {
+            const clean = data.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+            if (clean.length > 0 && clean.length < 200) results.push(L.label + ': ' + clean);
+          }
+        }
+        return results;
+      }
+
+      return fetch(url, { signal: gfiController.signal })
+        .then(r => {
+          const ct = r.headers.get('content-type') || '';
+          if (ct.includes('json')) return r.json();
+          return r.text().then(t => { try { return JSON.parse(t); } catch { return t; } });
+        })
+        .then(data => parseGfiResponse(data))
+        .catch(() => []);
+    });
+
+    Promise.all(promises).then(results => {
+      const wmsParts = results.flat();
+      const allParts = [...parts, ...wmsParts];
+      if (allParts.length > 0) {
+        infoEl.style.display = 'block';
+        infoEl.innerHTML = allParts.map(p => '<div>' + p + '</div>').join('');
+        map.getCanvas().style.cursor = 'pointer';
+      } else if (parts.length === 0) {
+        infoEl.style.display = 'none';
+        map.getCanvas().style.cursor = '';
+      }
+    });
+  }, 150);
 });
-map.on('mouseleave', 'eurocrops-fill', () => {
+
+map.on('mouseout', () => {
+  if (gfiTimer) clearTimeout(gfiTimer);
+  if (gfiController) gfiController.abort();
   infoEl.style.display = 'none';
   map.getCanvas().style.cursor = '';
+});
+
+// === Geometry validation on source load ===
+// Checks vector features for: wrong geometry type, zero/tiny area, extreme slivers
+function ringArea(coords) {
+  // Shoelace formula for polygon ring area in degrees^2
+  let a = 0;
+  for (let i = 0, n = coords.length; i < n - 1; i++) {
+    a += coords[i][0] * coords[i + 1][1] - coords[i + 1][0] * coords[i][1];
+  }
+  return Math.abs(a) / 2;
+}
+
+function polyArea(geom) {
+  if (!geom || !geom.coordinates) return 0;
+  const coords = geom.type === 'MultiPolygon' ? geom.coordinates.flat() : geom.coordinates;
+  let area = 0;
+  coords.forEach((ring, i) => {
+    const a = ringArea(ring);
+    area += (i === 0) ? a : -a; // exterior adds, holes subtract
+  });
+  return area;
+}
+
+function bboxAspect(geom) {
+  if (!geom || !geom.coordinates) return 1;
+  const coords = geom.type === 'MultiPolygon'
+    ? geom.coordinates.flat(2) : geom.coordinates.flat();
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  for (let i = 0; i < coords.length; i++) {
+    const [x, y] = coords[i];
+    if (x < minX) minX = x; if (x > maxX) maxX = x;
+    if (y < minY) minY = y; if (y > maxY) maxY = y;
+  }
+  const dx = maxX - minX, dy = maxY - minY;
+  if (dx === 0 && dy === 0) return Infinity;
+  if (dx === 0 || dy === 0) return Infinity;
+  return Math.max(dx / dy, dy / dx);
+}
+
+const validatedSources = new Set();
+
+function validateSourceFeatures(sourceId, sourceLayer) {
+  const key = sourceId + '/' + sourceLayer;
+  if (validatedSources.has(key)) return;
+
+  const features = map.querySourceFeatures(sourceId, { sourceLayer: sourceLayer });
+  if (features.length === 0) return;
+  validatedSources.add(key);
+
+  let points = 0, lines = 0, zeroArea = 0, slivers = 0, total = features.length;
+  const MIN_AREA = 1e-10;    // ~0.001 sq metres at equator
+  const MAX_ASPECT = 100;    // bbox aspect ratio threshold for slivers
+
+  features.forEach(f => {
+    const gt = f.geometry.type;
+    if (gt === 'Point' || gt === 'MultiPoint') { points++; return; }
+    if (gt === 'LineString' || gt === 'MultiLineString') { lines++; return; }
+    const a = polyArea(f.geometry);
+    if (a < MIN_AREA) { zeroArea++; return; }
+    if (bboxAspect(f.geometry) > MAX_ASPECT) slivers++;
+  });
+
+  const issues = [];
+  if (points) issues.push(points + ' stray point(s)');
+  if (lines) issues.push(lines + ' stray line(s)');
+  if (zeroArea) issues.push(zeroArea + ' zero-area polygon(s)');
+  if (slivers) issues.push(slivers + ' sliver(s) (aspect > ' + MAX_ASPECT + ')');
+
+  if (issues.length) {
+    console.warn('[Geo Validation] ' + key + ': ' + total + ' features checked — ' + issues.join(', '));
+  } else {
+    console.log('[Geo Validation] ' + key + ': ' + total + ' features OK');
+  }
+}
+
+// Run validation when vector sources finish loading tiles
+map.on('idle', () => {
+  LAYERS.forEach(L => {
+    if (L.type === 'vector' && layerState[L.id] && layerState[L.id].on) {
+      const yr = layerState[L.id].year || 2024;
+      validateSourceFeatures('crome', 'crome' + yr);
+    } else if (L.type === 'vector-remote' && layerState[L.id] && layerState[L.id].on) {
+      validateSourceFeatures(L.id, L.sourceLayer);
+    }
+  });
 });
 </script>
 </body>
