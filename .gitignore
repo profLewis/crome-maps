@@ -1,8 +1,2 @@
 # SQLite journals
 *.pmtiles-journal
-
-# Large PMTiles files (>100MB) — use Git LFS or external hosting
-# crome2020.pmtiles
-
-# Raster tile work directory
-../crome-work/raster_tiles/
