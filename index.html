@@ -1381,7 +1381,7 @@ LAYERS.forEach(L => {
       // PMTiles-only raster — use a placeholder source (will be replaced on activation)
       const fn = typeof L.pmtilesFile === 'function' ? L.pmtilesFile(yr) : (L.id + '.pmtiles');
       initSources[L.id] = {
-        type: 'raster',
+        type: 'raster', tileSize: 256,
         url: 'pmtiles://' + base + '/' + fn,
         attribution: L.attribution || ''
       };
@@ -1766,7 +1766,7 @@ async function activateRasterWithFallback(L) {
     if (map.getSource(L.id)) map.removeSource(L.id);
 
     map.addSource(L.id, {
-      type: 'raster',
+      type: 'raster', tileSize: 256,
       url: 'pmtiles://' + base + '/' + filename,
       attribution: L.attribution || ''
     });
