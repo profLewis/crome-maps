@@ -2144,13 +2144,52 @@ function buildEuroCropsBody() {
   return frag;
 }
 
-function buildListBody(items) {
+function buildListBody(items, layerId) {
   const frag = document.createDocumentFragment();
+  if (!hiddenClasses[layerId]) hiddenClasses[layerId] = new Set();
+
+  // All / None buttons
+  const btnRow = document.createElement('div');
+  btnRow.style.cssText = 'display:flex;gap:4px;margin-bottom:4px;';
+  const selAll = document.createElement('button');
+  selAll.textContent = 'All';
+  selAll.style.cssText = 'font-size:9px;padding:1px 4px;cursor:pointer;border:1px solid #ccc;border-radius:2px;background:#f5f5f5;';
+  selAll.addEventListener('click', () => {
+    hiddenClasses[layerId].clear();
+    if (legendCards[layerId]) { legendCards[layerId].remove(); delete legendCards[layerId]; }
+    updateLegend();
+  });
+  const selNone = document.createElement('button');
+  selNone.textContent = 'None';
+  selNone.style.cssText = selAll.style.cssText;
+  selNone.addEventListener('click', () => {
+    items.forEach(item => hiddenClasses[layerId].add(item.label));
+    if (legendCards[layerId]) { legendCards[layerId].remove(); delete legendCards[layerId]; }
+    updateLegend();
+  });
+  btnRow.appendChild(selAll);
+  btnRow.appendChild(selNone);
+  frag.appendChild(btnRow);
+
   items.forEach(item => {
+    const isHidden = hiddenClasses[layerId].has(item.label);
     const row = document.createElement('div');
     row.className = 'legend-row';
-    row.innerHTML = '<div class="legend-swatch" style="background:' + item.color + '"></div>'
-      + '<span style="font-size:11px">' + item.label + '</span>';
+    row.style.cssText = 'cursor:pointer;' + (isHidden ? 'opacity:0.35;' : '');
+    row.addEventListener('click', () => {
+      if (hiddenClasses[layerId].has(item.label)) hiddenClasses[layerId].delete(item.label);
+      else hiddenClasses[layerId].add(item.label);
+      if (legendCards[layerId]) { legendCards[layerId].remove(); delete legendCards[layerId]; }
+      updateLegend();
+    });
+    const sw = document.createElement('div'); sw.className = 'legend-swatch';
+    sw.style.background = isHidden ? '#ccc' : item.color;
+    row.appendChild(sw);
+    const lbl = document.createElement('span');
+    lbl.style.fontSize = '11px';
+    lbl.textContent = item.label;
+    if (isHidden) lbl.style.textDecoration = 'line-through';
+    row.appendChild(lbl);
     frag.appendChild(row);
   });
   return frag;
@@ -2201,7 +2240,7 @@ function updateLegend() {
       body = buildEuroCropsBody();
     } else if (L.legendType === 'list') {
       title = L.label + (yr ? ' ' + yr : (L.dataYear ? ' ' + L.dataYear : ''));
-      body = buildListBody(L.legendItems);
+      body = buildListBody(L.legendItems, L.id);
     } else if (L.legendType === 'image') {
       try {
         const url = typeof L.legendImg === 'function' ? L.legendImg(yr) : L.legendImg;
