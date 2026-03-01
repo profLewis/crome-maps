@@ -40,18 +40,21 @@ rm -f "$FIFO"
 mkfifo "$FIFO"
 
 # Tippecanoe reads from FIFO in background
+# --drop-densest-as-needed: fallback to drop features if coalescing isn't enough
 tippecanoe \
   -o "$OUTFILE" \
   -l "crome${YEAR}" \
   -z12 \
   --coalesce-densest-as-needed \
+  --drop-densest-as-needed \
   --drop-rate=1 \
   --hilbert \
-  -y lucode \
   --simplification=10 \
   --force \
   < "$FIFO" &
 TIPPECANOE_PID=$!
+
+MAX_RETRIES=3
 
 # Stream all counties into the FIFO
 (
@@ -61,9 +64,18 @@ TIPPECANOE_PID=$!
   for county in "${COUNTIES[@]}"; do
     COUNT=$((COUNT + 1))
     echo "[$COUNT/$TOTAL] Fetching $county..." >&2
-    if ! ogr2ogr -f GeoJSONSeq /vsistdout/ "$WFS" "$county" \
-      -t_srs EPSG:4326 -select lucode 2>/dev/null; then
-      echo "  WARNING: $county FAILED, skipping" >&2
+    ok=0
+    for attempt in $(seq 1 $MAX_RETRIES); do
+      if ogr2ogr -f GeoJSONSeq /vsistdout/ "$WFS" "$county" \
+        -t_srs EPSG:4326 2>/dev/null; then
+        ok=1
+        break
+      fi
+      echo "  Attempt $attempt/$MAX_RETRIES failed, retrying in 5s..." >&2
+      sleep 5
+    done
+    if [ $ok -eq 0 ]; then
+      echo "  WARNING: $county FAILED after $MAX_RETRIES attempts, skipping" >&2
       FAILED=$((FAILED + 1))
     fi
   done

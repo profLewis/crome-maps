@@ -1,0 +1,29 @@
+{
+  "generated": "2026-03-01T11:59:54Z",
+  "files": {
+    "crome2024.pmtiles": {
+      "size": 659456,
+      "modified": "2026-02-28T13:10:28Z"
+    },
+    "crome2021.pmtiles": {
+      "size": 28672,
+      "modified": "2026-02-27T08:33:15Z"
+    },
+    "crome2020_new.pmtiles": {
+      "size": 1806336,
+      "modified": "2026-02-27T00:02:46Z"
+    },
+    "crome2020.pmtiles": {
+      "size": 442531078,
+      "modified": "2026-02-28T11:44:48Z"
+    },
+    "crome2022.pmtiles": {
+      "size": 28672,
+      "modified": "2026-02-28T13:10:06Z"
+    },
+    "crome2023.pmtiles": {
+      "size": 3092480,
+      "modified": "2026-02-28T13:11:20Z"
+    }
+  }
+}
