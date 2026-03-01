@@ -1200,7 +1200,10 @@ LAYERS.forEach(L => {
 
 // === Map setup ===
 const base = window.location.href.replace(/\/[^/]*$/, '');
-function cromePmtilesUrl(yr) { return base + '/crome' + yr + '.pmtiles'; }
+// GitHub Pages can't serve Git LFS files — use media.githubusercontent.com which
+// serves actual LFS content with CORS and byte-range request support
+const pmtilesBase = 'https://media.githubusercontent.com/media/profLewis/crome-maps/main';
+function cromePmtilesUrl(yr) { return pmtilesBase + '/crome' + yr + '.pmtiles'; }
 const PMTILES_URL = cromePmtilesUrl(2024);
 const protocol = new pmtiles.Protocol();
 maplibregl.addProtocol('pmtiles', protocol.tile);
@@ -1312,7 +1315,7 @@ async function checkPmtilesAvailable(filename) {
   if (pmtilesManifest[filename]) return true;
   if (pmtilesAvailability[filename] !== undefined) return pmtilesAvailability[filename];
   try {
-    const resp = await fetch(base + '/' + filename, { method: 'HEAD' });
+    const resp = await fetch(pmtilesBase + '/' + filename, { method: 'HEAD' });
     pmtilesAvailability[filename] = resp.ok;
     return resp.ok;
   } catch {
@@ -1382,7 +1385,7 @@ LAYERS.forEach(L => {
       const fn = typeof L.pmtilesFile === 'function' ? L.pmtilesFile(yr) : (L.id + '.pmtiles');
       initSources[L.id] = {
         type: 'raster', tileSize: 256,
-        url: 'pmtiles://' + base + '/' + fn,
+        url: 'pmtiles://' + pmtilesBase + '/' + fn,
         attribution: L.attribution || ''
       };
     }
@@ -1767,7 +1770,7 @@ async function activateRasterWithFallback(L) {
 
     map.addSource(L.id, {
       type: 'raster', tileSize: 256,
-      url: 'pmtiles://' + base + '/' + filename,
+      url: 'pmtiles://' + pmtilesBase + '/' + filename,
       attribution: L.attribution || ''
     });
     const layerDef = {
@@ -1810,7 +1813,7 @@ async function activateVectorPmtilesOrWms(L) {
     // Add as vector source
     map.addSource(L.id, {
       type: 'vector',
-      url: 'pmtiles://' + base + '/' + filename,
+      url: 'pmtiles://' + pmtilesBase + '/' + filename,
       attribution: L.attribution || ''
     });
     map.addLayer({
