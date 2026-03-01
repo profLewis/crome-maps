@@ -1,6 +1,6 @@
 #!/bin/bash
 # download_all.sh — Orchestrate downloading all datasets as PMTiles
-# Usage: ./download_all.sh [--vector-only | --raster-only] [--dataset ID] [--year YEAR] [--dry-run]
+# Usage: ./download_all.sh [--vector-only | --raster-only | --geotiff-only | --wms-only] [--dataset ID] [--year YEAR] [--update] [--dry-run]
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -12,6 +12,9 @@ mkdir -p "$LOGDIR"
 # Parse arguments
 VECTOR_ONLY=false
 RASTER_ONLY=false
+GEOTIFF_ONLY=false
+WMS_ONLY=false
+UPDATE_MODE=false
 SPECIFIC_DATASET=""
 SPECIFIC_YEAR=""
 DRY_RUN=false
@@ -21,6 +24,9 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --vector-only) VECTOR_ONLY=true; shift ;;
     --raster-only) RASTER_ONLY=true; shift ;;
+    --geotiff-only) GEOTIFF_ONLY=true; RASTER_ONLY=true; shift ;;
+    --wms-only) WMS_ONLY=true; RASTER_ONLY=true; shift ;;
+    --update) UPDATE_MODE=true; shift ;;
     --dataset) SPECIFIC_DATASET="$2"; shift 2 ;;
     --year) SPECIFIC_YEAR="$2"; shift 2 ;;
     --dry-run) DRY_RUN=true; shift ;;
@@ -29,7 +35,10 @@ while [[ $# -gt 0 ]]; do
       echo "Usage: $0 [OPTIONS]"
       echo "Options:"
       echo "  --vector-only     Only download vector (WFS) datasets"
-      echo "  --raster-only     Only download raster (WMS) datasets"
+      echo "  --raster-only     Only download raster (WMS+GeoTIFF) datasets"
+      echo "  --geotiff-only    Only download GeoTIFF datasets"
+      echo "  --wms-only        Only download WMS raster datasets"
+      echo "  --update          Check for updates before downloading"
       echo "  --dataset ID      Only download a specific dataset"
       echo "  --year YEAR       Only download a specific year"
       echo "  --dry-run         Show what would be downloaded without downloading"
@@ -113,9 +122,24 @@ if [ "$RASTER_ONLY" != "true" ]; then
   log ""
 fi
 
-# --- Raster (WMS) datasets ---
+# --- Update check (if --update mode) ---
+if [ "$UPDATE_MODE" = "true" ]; then
+  log "--- Checking for updates ---"
+  UPDATE_LIST=$("$SCRIPT_DIR/check_updates.sh" --quiet 2>/dev/null)
+  if [ -z "$UPDATE_LIST" ]; then
+    log "  No updates found."
+  else
+    log "  Updates available:"
+    echo "$UPDATE_LIST" | while read -r line; do
+      log "    $line"
+    done
+  fi
+  log ""
+fi
+
+# --- Raster datasets (WMS + GeoTIFF) ---
 if [ "$VECTOR_ONLY" != "true" ]; then
-  log "--- Raster (WMS) Datasets ---"
+  log "--- Raster Datasets ---"
 
   DATASETS=$(jq -r 'to_entries[] | select(.key != "_comment") | .key' "$RASTER_CONFIG")
   for ds in $DATASETS; do
@@ -124,7 +148,16 @@ if [ "$VECTOR_ONLY" != "true" ]; then
     fi
 
     LABEL=$(jq -r --arg id "$ds" '.[$id].label' "$RASTER_CONFIG")
+    SOURCE_TYPE=$(jq -r --arg id "$ds" '.[$id].source_type // "wms"' "$RASTER_CONFIG")
     YEARS=$(jq -r --arg id "$ds" '.[$id].years[]' "$RASTER_CONFIG")
+
+    # Filter by source type flags
+    if [ "$GEOTIFF_ONLY" = "true" ] && [ "$SOURCE_TYPE" != "geotiff" ]; then
+      continue
+    fi
+    if [ "$WMS_ONLY" = "true" ] && [ "$SOURCE_TYPE" != "wms" ]; then
+      continue
+    fi
 
     for yr in $YEARS; do
       if [ -n "$SPECIFIC_YEAR" ] && [ "$yr" != "$SPECIFIC_YEAR" ]; then
@@ -140,7 +173,17 @@ if [ "$VECTOR_ONLY" != "true" ]; then
 
       TOTAL=$((TOTAL + 1))
 
-      # Skip if exists
+      # In update mode, skip datasets that check_updates didn't flag
+      if [ "$UPDATE_MODE" = "true" ] && [ -f "$OUTFILE" ]; then
+        if ! echo "$UPDATE_LIST" | grep -q "^$ds"; then
+          SIZE=$(ls -lh "$OUTFILE" | awk '{print $5}')
+          log "  UP TO DATE: $LABEL $yr ($SIZE)"
+          SKIPPED=$((SKIPPED + 1))
+          continue
+        fi
+      fi
+
+      # Skip if exists (normal mode)
       if [ "$SKIP_EXISTING" = "true" ] && [ -f "$OUTFILE" ]; then
         SIZE=$(ls -lh "$OUTFILE" | awk '{print $5}')
         log "  SKIP: $LABEL $yr ($SIZE exists)"
@@ -149,19 +192,31 @@ if [ "$VECTOR_ONLY" != "true" ]; then
       fi
 
       if [ "$DRY_RUN" = "true" ]; then
-        log "  WOULD DOWNLOAD: $LABEL $yr → $OUTFILE"
+        log "  WOULD DOWNLOAD: $LABEL $yr [$SOURCE_TYPE] → $OUTFILE"
         continue
       fi
 
-      log "  DOWNLOADING: $LABEL $yr..."
-      if "$SCRIPT_DIR/download_wms_tiles.sh" "$ds" "$yr" >> "$LOGFILE" 2>&1; then
-        SUCCESS=$((SUCCESS + 1))
-        SIZE=$(ls -lh "$OUTFILE" 2>/dev/null | awk '{print $5}')
-        log "  OK: $LABEL $yr ($SIZE)"
+      log "  DOWNLOADING: $LABEL $yr [$SOURCE_TYPE]..."
+      if [ "$SOURCE_TYPE" = "geotiff" ]; then
+        if "$SCRIPT_DIR/download_geotiff.sh" "$ds" "$yr" >> "$LOGFILE" 2>&1; then
+          SUCCESS=$((SUCCESS + 1))
+          SIZE=$(ls -lh "$OUTFILE" 2>/dev/null | awk '{print $5}')
+          log "  OK: $LABEL $yr ($SIZE)"
+        else
+          FAILED=$((FAILED + 1))
+          ERRORS+=("GeoTIFF: $LABEL $yr")
+          log "  FAILED: $LABEL $yr"
+        fi
       else
-        FAILED=$((FAILED + 1))
-        ERRORS+=("WMS: $LABEL $yr")
-        log "  FAILED: $LABEL $yr"
+        if "$SCRIPT_DIR/download_wms_tiles.sh" "$ds" "$yr" >> "$LOGFILE" 2>&1; then
+          SUCCESS=$((SUCCESS + 1))
+          SIZE=$(ls -lh "$OUTFILE" 2>/dev/null | awk '{print $5}')
+          log "  OK: $LABEL $yr ($SIZE)"
+        else
+          FAILED=$((FAILED + 1))
+          ERRORS+=("WMS: $LABEL $yr")
+          log "  FAILED: $LABEL $yr"
+        fi
       fi
     done
   done
@@ -200,12 +255,15 @@ MANIFEST="$SCRIPT_DIR/pmtiles_manifest.json"
     fname=$(basename "$f")
     fsize=$(stat -f%z "$f" 2>/dev/null || stat -c%s "$f" 2>/dev/null || echo 0)
     fdate=$(stat -f "%Sm" -t "%Y-%m-%dT%H:%M:%SZ" "$f" 2>/dev/null || date -r "$f" -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || echo "unknown")
+    # Extract dataset ID from filename (remove year suffix and .pmtiles)
+    ds_id=$(echo "$fname" | sed -E 's/[0-9]{4}\.pmtiles$/.pmtiles/' | sed 's/\.pmtiles$//')
+    src_type=$(jq -r --arg id "$ds_id" '.[$id].source_type // "wms"' "$RASTER_CONFIG" 2>/dev/null)
     if [ "$first" = "true" ]; then
       first=false
     else
       echo ","
     fi
-    printf '    "%s": {"size": %s, "modified": "%s"}' "$fname" "$fsize" "$fdate"
+    printf '    "%s": {"size": %s, "modified": "%s", "source_type": "%s"}' "$fname" "$fsize" "$fdate" "$src_type"
   done
   echo ""
   echo "  }"

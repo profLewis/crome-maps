@@ -1,0 +1,20 @@
+# JAXA HRLULC 10m — GDAL color-relief table
+# Source: https://www.eorc.jaxa.jp/ALOS/en/dataset/lulc_e.htm
+# 15 land cover classes for Japan
+# Format: value R G B A
+0    0    0    0    0
+1    0    0    255  255
+2    255  0    0    255
+3    128  128  128  255
+4    0    100  0    255
+5    0    200  0    255
+6    50   180  50   255
+7    200  255  200  255
+8    255  255  0    255
+9    255  200  0    255
+10   255  255  180  255
+11   220  200  150  255
+12   200  150  100  255
+13   255  255  255  255
+14   0    200  200  255
+15   150  150  255  255

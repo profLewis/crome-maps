@@ -850,6 +850,60 @@ const LAYERS = [
     legendImg: 'https://geo-backend.inta.gob.ar/geoserver/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=geonode:mnc_verano2024_f300268fd112b0ec3ef5f731edb78882&format=image/png',
     attribution: '&copy; INTA Argentina'
   },
+  // --- Mexico / Central America ---
+  {
+    id: 'mexico-madmex', label: '🇲🇽 Mexico (CONABIO MAD-Mex)', type: 'raster', lang: 'es',
+    legendType: 'image',
+    years: [2017, 2018], defaultYear: 2018,
+    pmtilesFile: (yr) => 'mexico-madmex' + yr + '.pmtiles',
+    tileUrl: (yr) => wms11('http://geonode.conabio.gob.mx/geoserver/ows',
+      'geonode:National_MAD-Mex_landsat8_lc_' + yr + '_31_classes'),
+    featureInfo: (yr, bbox, x, y) => gfi11('http://geonode.conabio.gob.mx/geoserver/ows',
+      'geonode:National_MAD-Mex_landsat8_lc_' + yr + '_31_classes', bbox, x, y),
+    legendImg: (yr) => 'http://geonode.conabio.gob.mx/geoserver/ows?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=geonode:National_MAD-Mex_landsat8_lc_' + yr + '_31_classes&format=image/png',
+    attribution: '&copy; <a href="https://madmex.conabio.gob.mx/">CONABIO</a> MAD-Mex'
+  },
+  {
+    id: 'nalcms', label: '🌎 N. America Land Cover (NALCMS)', type: 'raster', lang: 'en',
+    legendType: 'list',
+    years: null, defaultYear: null, dataYear: '2020',
+    pmtilesFile: () => 'nalcms.pmtiles',
+    legendItems: [
+      {color:'#003d00',label:'Temperate/Subpolar Needleleaf'},{color:'#006600',label:'Subpolar Taiga'},
+      {color:'#008c00',label:'Tropical/Subtropical Broadleaf Evergreen'},{color:'#00b300',label:'Tropical/Subtropical Broadleaf Deciduous'},
+      {color:'#00cc00',label:'Temperate/Subpolar Broadleaf Deciduous'},{color:'#59cc00',label:'Mixed Forest'},
+      {color:'#996600',label:'Tropical/Subtropical Shrubland'},{color:'#cc9900',label:'Temperate/Subpolar Shrubland'},
+      {color:'#e6e600',label:'Tropical/Subtropical Grassland'},{color:'#ffff73',label:'Temperate/Subpolar Grassland'},
+      {color:'#b3b300',label:'Subpolar/Polar Shrubland-Lichen-Moss'},{color:'#999900',label:'Subpolar/Polar Grassland-Lichen-Moss'},
+      {color:'#808000',label:'Subpolar/Polar Barren-Lichen-Moss'},{color:'#006699',label:'Wetland'},
+      {color:'#ffff00',label:'Cropland'},{color:'#993366',label:'Barren Lands'},
+      {color:'#e60000',label:'Urban'},{color:'#0000ff',label:'Water'},
+      {color:'#ffffff',label:'Snow and Ice'}
+    ],
+    attribution: '&copy; CEC/USGS/CONABIO NALCMS'
+  },
+  // --- South America ---
+  {
+    id: 'brazil-mapbiomas', label: '🇧🇷 Brazil (MapBiomas)', type: 'raster', lang: 'pt',
+    legendType: 'list',
+    years: [2020, 2021, 2022, 2023], defaultYear: 2023,
+    pmtilesFile: (yr) => 'brazil-mapbiomas' + yr + '.pmtiles',
+    legendItems: [
+      {color:'#1f8d49',label:'Forest Formation'},{color:'#d6bc74',label:'Savanna Formation'},
+      {color:'#519799',label:'Mangrove'},{color:'#04381d',label:'Flood. Forest'},
+      {color:'#026975',label:'Flood. Savanna'},{color:'#02d659',label:'Grassland'},
+      {color:'#ad975a',label:'Other Non-Forest'},{color:'#fc8114',label:'Pasture'},
+      {color:'#e6b655',label:'Sugar Cane'},{color:'#f5b3c8',label:'Other Temp. Crops'},
+      {color:'#c27ba0',label:'Soybean'},{color:'#db7093',label:'Rice'},
+      {color:'#d082de',label:'Cotton'},{color:'#d68fe2',label:'Other Perennial Crops'},
+      {color:'#9065d0',label:'Coffee'},{color:'#f3b4f1',label:'Citrus'},
+      {color:'#cca0d4',label:'Cashew'},{color:'#cd49e4',label:'Palm Oil'},
+      {color:'#cd49e4',label:'Perennial Crops'},{color:'#fff3bf',label:'Mosaic Ag/Past.'},
+      {color:'#aa0000',label:'Urban'},{color:'#d5d5e5',label:'Other Non-Veg.'},
+      {color:'#0000ff',label:'Water'},{color:'#8a2be2',label:'Non Observed'}
+    ],
+    attribution: '&copy; <a href="https://mapbiomas.org">MapBiomas</a> CC-BY-SA 4.0'
+  },
   // --- Oceania ---
   {
     id: 'australia', label: '🇦🇺 Australia (ABARES)', type: 'raster', lang: 'en',
@@ -896,6 +950,155 @@ const LAYERS = [
     legendImg: 'https://ows.digitalearth.africa/legend/crop_mask/green/legend.png',
     attribution: '&copy; Digital Earth Africa'
   },
+  // --- Asia ---
+  {
+    id: 'china-clcd', label: '🇨🇳 China Land Cover (CLCD)', type: 'raster', lang: 'zh',
+    legendType: 'list',
+    years: [2020, 2021, 2022, 2023], defaultYear: 2023,
+    pmtilesFile: (yr) => 'china-clcd' + yr + '.pmtiles',
+    legendItems: [
+      {color:'#ffff00',label:'Cropland'},{color:'#008200',label:'Forest'},
+      {color:'#b46432',label:'Shrub'},{color:'#00c800',label:'Grassland'},
+      {color:'#0000ff',label:'Water'},{color:'#ffffff',label:'Snow/Ice'},
+      {color:'#c89664',label:'Barren'},{color:'#ff0000',label:'Impervious'},
+      {color:'#00c8c8',label:'Wetland'}
+    ],
+    attribution: '&copy; <a href="https://zenodo.org/records/12779975">CLCD</a> Wuhan Univ. CC-BY-4.0'
+  },
+  {
+    id: 'india-bhuvan', label: '🇮🇳 India (Bhuvan LULC)', type: 'raster', lang: 'hi',
+    legendType: 'image',
+    years: null, defaultYear: null, dataYear: '2022',
+    pmtilesFile: () => 'india-bhuvan.pmtiles',
+    tileUrl: () => wms11('https://bhuvan-ras2.nrsc.gov.in/cgi-bin/LULC250K.exe', 'LULC250K'),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://bhuvan-ras2.nrsc.gov.in/cgi-bin/LULC250K.exe',
+      'LULC250K', bbox, x, y),
+    legendImg: 'https://bhuvan-ras2.nrsc.gov.in/cgi-bin/LULC250K.exe?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=LULC250K&format=image/png',
+    attribution: '&copy; NRSC/ISRO Bhuvan'
+  },
+  {
+    id: 'indonesia-klhk', label: '🇮🇩 Indonesia (KLHK)', type: 'raster', lang: 'id',
+    legendType: 'image',
+    years: null, defaultYear: null, dataYear: '2024',
+    pmtilesFile: () => 'indonesia-klhk.pmtiles',
+    tileUrl: () => wms11('https://geoportal.menlhk.go.id/server/services/dunekalks/PL_AR_250K/MapServer/WMSServer', '0'),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://geoportal.menlhk.go.id/server/services/dunekalks/PL_AR_250K/MapServer/WMSServer',
+      '0', bbox, x, y),
+    legendImg: 'https://geoportal.menlhk.go.id/server/services/dunekalks/PL_AR_250K/MapServer/WMSServer?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=0&format=image/png',
+    attribution: '&copy; KLHK Indonesia'
+  },
+  {
+    id: 'vietnam-jaxa', label: '🇻🇳 Vietnam (JAXA LULC 10m)', type: 'raster', lang: 'vi',
+    legendType: 'list',
+    years: null, defaultYear: null, dataYear: '2020',
+    pmtilesFile: () => 'vietnam-jaxa.pmtiles',
+    legendItems: [
+      {color:'#0000ff',label:'Water'},{color:'#ff0000',label:'Urban'},
+      {color:'#ffff00',label:'Rice Paddy'},{color:'#00b400',label:'Other Crops'},
+      {color:'#c8c8c8',label:'Bare'},{color:'#ffc800',label:'Orchards/Plantations'},
+      {color:'#c89664',label:'Barren'},{color:'#00c800',label:'Forest'},
+      {color:'#006400',label:'Mangrove'},{color:'#00c8c8',label:'Wetland'}
+    ],
+    attribution: '&copy; JAXA EORC Vietnam LULC'
+  },
+  {
+    id: 'japan-hrlulc', label: '🇯🇵 Japan HRLULC (JAXA)', type: 'raster', lang: 'ja',
+    legendType: 'list',
+    years: [2020, 2022, 2024], defaultYear: 2024,
+    pmtilesFile: (yr) => 'japan-hrlulc' + yr + '.pmtiles',
+    legendItems: [
+      {color:'#0000ff',label:'Water'},{color:'#ff0000',label:'Urban'},
+      {color:'#808080',label:'Bare Land'},{color:'#006400',label:'Deciduous Broadleaf'},
+      {color:'#00c800',label:'Deciduous Needleleaf'},{color:'#32b432',label:'Evergreen Broadleaf'},
+      {color:'#c8ffc8',label:'Evergreen Needleleaf'},{color:'#ffff00',label:'Rice Paddy'},
+      {color:'#ffc800',label:'Other Crops'},{color:'#ffffb4',label:'Grassland'},
+      {color:'#dcc896',label:'Bamboo'},{color:'#c89664',label:'Bare Deciduous'},
+      {color:'#ffffff',label:'Snow/Ice'},{color:'#00c8c8',label:'Wetland'},
+      {color:'#9696ff',label:'Aquaculture'}
+    ],
+    attribution: '&copy; JAXA EORC HRLULC'
+  },
+  {
+    id: 'japan-cropland', label: '🇯🇵 Japan Cropland 10m', type: 'raster', lang: 'ja',
+    legendType: 'list',
+    years: null, defaultYear: null, dataYear: '2021',
+    pmtilesFile: () => 'japan-cropland.pmtiles',
+    legendItems: [
+      {color:'#ffff00',label:'Rice Paddy'},{color:'#00c800',label:'Vegetables'},
+      {color:'#ffc800',label:'Orchards'},{color:'#c86432',label:'Tea'},
+      {color:'#00ff00',label:'Pasture'},{color:'#ff0000',label:'Other Crops'},
+      {color:'#9696ff',label:'Flower/Nursery'},{color:'#00c8c8',label:'Aquaculture'},
+      {color:'#c8c8c8',label:'Fallow'}
+    ],
+    attribution: '&copy; <a href="https://doi.org/10.5281/zenodo.7519274">Zenodo</a> CC-BY 4.0'
+  },
+  {
+    id: 'china-cropland10m', label: '🇨🇳 China ChinaCropland10m', type: 'raster', lang: 'zh',
+    legendType: 'list',
+    years: null, defaultYear: null, dataYear: '2020',
+    pmtilesFile: () => 'china-cropland10m.pmtiles',
+    legendItems: [
+      {color:'#009600',label:'Single Crop'},{color:'#ffff00',label:'Double Crop'},
+      {color:'#ffc800',label:'Triple Crop'},{color:'#ff9600',label:'Continuous Crop'},
+      {color:'#ff6400',label:'Irrigated'},{color:'#ff3200',label:'Rainfed'},
+      {color:'#ff0000',label:'Paddy Rice'},{color:'#c80000',label:'Dry Farming'},
+      {color:'#960000',label:'Greenhouse'},{color:'#640000',label:'Orchard/Plantation'}
+    ],
+    attribution: '&copy; <a href="https://doi.org/10.6084/m9.figshare.24633228">Figshare</a>'
+  },
+  // --- Africa / Middle East ---
+  {
+    id: 'southafrica-sanlc', label: '🇿🇦 South Africa (SANLC)', type: 'raster', lang: 'en',
+    legendType: 'list',
+    years: null, defaultYear: null, dataYear: '2022',
+    pmtilesFile: () => 'southafrica-sanlc.pmtiles',
+    legendItems: [
+      {color:'#960000',label:'Dense Settlement'},{color:'#ff3232',label:'Built-up'},
+      {color:'#006400',label:'Indigenous Forest'},{color:'#006600',label:'Woodland/Open Bush'},
+      {color:'#008c00',label:'Thicket/Dense Bush'},{color:'#00cc00',label:'Plantation Forest'},
+      {color:'#e6e600',label:'Grassland'},{color:'#b3b300',label:'Shrubland/Low Fynbos'},
+      {color:'#ffff00',label:'Commercial Cropland'},{color:'#ffc800',label:'Irrigated Crops'},
+      {color:'#ff9600',label:'Subsistence Crops'},{color:'#ff6400',label:'Orchards/Vines'},
+      {color:'#0000ff',label:'Water'},{color:'#00c8c8',label:'Wetland'},
+      {color:'#c89664',label:'Bare/Erosion'},{color:'#808080',label:'Mines/Quarries'}
+    ],
+    attribution: '&copy; DFFE South Africa SANLC'
+  },
+  {
+    id: 'kenya-jrc', label: '🇰🇪 Kenya (JRC/GEOGLAM Crops)', type: 'raster', lang: 'en',
+    legendType: 'list',
+    years: null, defaultYear: null, dataYear: '2021',
+    pmtilesFile: () => 'kenya-jrc.pmtiles',
+    legendItems: [
+      {color:'#ffff00',label:'Maize'},{color:'#00c800',label:'Beans'},
+      {color:'#ffc800',label:'Wheat'},{color:'#c86432',label:'Tea'},
+      {color:'#00ff00',label:'Sugarcane'},{color:'#ff0000',label:'Other Crops'},
+      {color:'#00c8c8',label:'Rice'},{color:'#c8c8c8',label:'Non-crop'}
+    ],
+    attribution: '&copy; JRC/EC GEOGLAM'
+  },
+  {
+    id: 'wapor-lcc', label: '🌍 Africa/ME (WaPOR Land Cover)', type: 'raster', lang: 'en',
+    legendType: 'image',
+    years: null, defaultYear: null, dataYear: '2021',
+    pmtilesFile: () => 'wapor-lcc.pmtiles',
+    tileUrl: () => wms11('https://io.apps.fao.org/geoserver/wms', 'WAPOR_2:L2_LCC_A'),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://io.apps.fao.org/geoserver/wms',
+      'WAPOR_2:L2_LCC_A', bbox, x, y),
+    legendImg: 'https://io.apps.fao.org/geoserver/wms?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=WAPOR_2:L2_LCC_A&format=image/png',
+    attribution: '&copy; <a href="https://wapor.apps.fao.org">FAO WaPOR</a>'
+  },
+  {
+    id: 'turkey-corine', label: '🇹🇷 Turkey (CORINE 2018)', type: 'raster', lang: 'tr',
+    legendType: 'image',
+    years: null, defaultYear: null, dataYear: '2018',
+    pmtilesFile: () => 'turkey-corine.pmtiles',
+    tileUrl: () => wms11('https://image.discomap.eea.europa.eu/arcgis/services/Corine/CLC2018_WM/MapServer/WMSServer', '12'),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://image.discomap.eea.europa.eu/arcgis/services/Corine/CLC2018_WM/MapServer/WMSServer',
+      '12', bbox, x, y),
+    legendImg: 'https://image.discomap.eea.europa.eu/arcgis/services/Corine/CLC2018_WM/MapServer/WMSServer?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=12&format=image/png',
+    attribution: '&copy; Copernicus CORINE Land Cover'
+  },
   // --- Global layers ---
   {
     id: 'modis-landcover', label: '🛰️ MODIS Land Cover (Global)', type: 'raster', lang: 'en',
@@ -922,7 +1125,7 @@ const LAYERS = [
   {
     id: 'jrc-eucropmap', label: '🇪🇺 JRC EU Crop Map', type: 'raster', lang: 'en',
     legendType: 'image',
-    years: [2018, 2019, 2020, 2021, 2022], defaultYear: 2022,
+    years: [2018, 2022], defaultYear: 2018,
     tileUrl: (yr) => wms11('https://jeodpp.jrc.ec.europa.eu/jeodpp/services/ows/wms/landcover/eucropmap',
       'LC.EUCROPMAP.' + yr),
     featureInfo: (yr, bbox, x, y) => gfi11('https://jeodpp.jrc.ec.europa.eu/jeodpp/services/ows/wms/landcover/eucropmap',
@@ -1161,11 +1364,22 @@ const initLayers = [
 LAYERS.forEach(L => {
   if (L.type === 'raster') {
     const yr = L.defaultYear;
-    initSources[L.id] = {
-      type: 'raster', tileSize: 256,
-      tiles: [L.tileUrl(yr)],
-      attribution: L.attribution || ''
-    };
+    if (L.tileUrl) {
+      // WMS-backed raster — set up WMS tile source (PMTiles will override later if available)
+      initSources[L.id] = {
+        type: 'raster', tileSize: 256,
+        tiles: [L.tileUrl(yr)],
+        attribution: L.attribution || ''
+      };
+    } else {
+      // PMTiles-only raster — use a placeholder source (will be replaced on activation)
+      const fn = typeof L.pmtilesFile === 'function' ? L.pmtilesFile(yr) : (L.id + '.pmtiles');
+      initSources[L.id] = {
+        type: 'raster',
+        url: 'pmtiles://' + base + '/' + fn,
+        attribution: L.attribution || ''
+      };
+    }
     const layerDef = {
       id: L.id + '-wms', type: 'raster', source: L.id,
       paint: { 'raster-opacity': 0 },
@@ -1534,7 +1748,7 @@ function toggleLayer(L, on) {
 async function activateRasterWithFallback(L) {
   const yr = layerState[L.id].year;
   const lid = L.id + '-wms';
-  const filename = pmtilesFilename(L.id, yr);
+  const filename = L.pmtilesFile ? L.pmtilesFile(yr) : pmtilesFilename(L.id, yr);
 
   // Check if we have a PMTiles file for this dataset/year
   const hasPmtiles = await checkPmtilesAvailable(filename);
@@ -1558,7 +1772,7 @@ async function activateRasterWithFallback(L) {
     if (L.minZoom) layerDef.minzoom = L.minZoom;
     map.addLayer(layerDef);
     updateSourceBadge(L.id, 'pmtiles');
-  } else {
+  } else if (L.tileUrl) {
     console.log('[Fallback] Using WMS for', L.id, yr);
     // Use WMS (already set up, just show it)
     if (map.getLayer(lid)) {
@@ -1566,13 +1780,16 @@ async function activateRasterWithFallback(L) {
       map.setPaintProperty(lid, 'raster-opacity', currentOpacity);
     }
     updateSourceBadge(L.id, 'wms');
+  } else {
+    console.log('[Fallback] No PMTiles or WMS available for', L.id, yr);
+    updateSourceBadge(L.id, null);
   }
 }
 
 // Also check for vector PMTiles for WFS-derived datasets
 async function activateVectorPmtilesOrWms(L) {
   const yr = layerState[L.id].year;
-  const filename = pmtilesFilename(L.id, yr);
+  const filename = L.pmtilesFile ? L.pmtilesFile(yr) : pmtilesFilename(L.id, yr);
   const hasPmtiles = await checkPmtilesAvailable(filename);
 
   if (hasPmtiles) {
@@ -1918,6 +2135,18 @@ function buildEuroCropsBody() {
   return frag;
 }
 
+function buildListBody(items) {
+  const frag = document.createDocumentFragment();
+  items.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'legend-row';
+    row.innerHTML = '<div class="legend-swatch" style="background:' + item.color + '"></div>'
+      + '<span style="font-size:11px">' + item.label + '</span>';
+    frag.appendChild(row);
+  });
+  return frag;
+}
+
 function buildImageBody(imgUrl, alt) {
   const frag = document.createDocumentFragment();
   const img = document.createElement('img');
@@ -1961,6 +2190,9 @@ function updateLegend() {
     } else if (L.legendType === 'eurocrops') {
       title = 'EuroCrops';
       body = buildEuroCropsBody();
+    } else if (L.legendType === 'list') {
+      title = L.label + (yr ? ' ' + yr : (L.dataYear ? ' ' + L.dataYear : ''));
+      body = buildListBody(L.legendItems);
     } else if (L.legendType === 'image') {
       try {
         const url = typeof L.legendImg === 'function' ? L.legendImg(yr) : L.legendImg;
