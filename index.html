@@ -93,7 +93,8 @@
   .legend-card-body { padding: 6px 8px; max-height: 40vh; overflow-y: auto; }
   .legend-card.collapsed .legend-card-body { display: none; }
   .legend-card.collapsed .legend-card-header { border-bottom: none; }
-  .legend-row { display: flex; align-items: center; gap: 6px; }
+  .legend-row { display: flex; align-items: center; gap: 6px; transition: opacity 0.15s; }
+  .legend-row:hover { background: rgba(0,0,0,0.04); border-radius: 2px; }
   .legend-swatch { width: 14px; height: 14px; border-radius: 2px; flex-shrink: 0; }
   .legend-card-body img { max-width: 230px; display: block; }
   .zoom-hint { font-size: 10px; color: #e67e00; display: none; padding: 4px 0 0; }
@@ -558,11 +559,26 @@ function gfi13(base, layers, bbox, i, j, extra) {
 
 // === Layer configuration ===
 // Each layer defines how to build its tile URL given a year
+// pmtilesFile: function(yr) returning the pmtiles filename for self-hosted files
+// tileUrl: WMS URL builder (used as fallback if PMTiles not available)
 const LAYERS = [
   {
     id: 'crome', label: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 England (CROME)', type: 'vector',
     legendType: 'crome', defaultOn: true,
     years: [2020, 2021, 2022, 2023, 2024], defaultYear: 2024
+  },
+  {
+    id: 'crome-raster', label: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 England (CROME Raster)', type: 'raster', lang: 'en',
+    legendType: 'crome',
+    years: [2020, 2021, 2022, 2023, 2024], defaultYear: 2020,
+    pmtilesFile: (yr) => 'crome-raster' + yr + '.pmtiles',
+    tileUrl: (yr) => wms11('https://environment.data.gov.uk/spatialdata/crop-map-of-england-' + yr + '/wms',
+      'Crop_Map_of_England_' + yr),
+    featureInfo: (yr, bbox, x, y) => gfi11(
+      'https://environment.data.gov.uk/spatialdata/crop-map-of-england-' + yr + '/wms',
+      'Crop_Map_of_England_' + yr, bbox, x, y),
+    legendImg: (yr) => 'https://environment.data.gov.uk/spatialdata/crop-map-of-england-' + yr + '/wms?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=Crop_Map_of_England_' + yr + '&format=image/png',
+    attribution: 'CROME &copy; RPA. OGL v3.0.'
   },
   {
     id: 'eurocrops', label: '🇪🇺 EU Field Boundaries (EuroCrops)', type: 'vector-remote',
@@ -576,6 +592,7 @@ const LAYERS = [
     id: 'germany', label: '🇩🇪 Germany (DLR)', type: 'raster', lang: 'en',
     legendType: 'image',
     years: [2017,2018,2019,2020,2021,2022,2023,2024], defaultYear: 2024,
+    pmtilesFile: (yr) => 'germany' + yr + '.pmtiles',
     tileUrl: (yr) => wms11('https://geoservice.dlr.de/eoc/land/wms', 'CROPTYPES_DE_P1Y',
       '&TIME=' + yr + '-01-01T00:00:00Z'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://geoservice.dlr.de/eoc/land/wms',
@@ -587,6 +604,7 @@ const LAYERS = [
     id: 'france', label: '🇫🇷 France (RPG)', type: 'raster', lang: 'fr',
     legendType: 'image',
     years: Array.from({length:18}, (_,i) => 2007+i), defaultYear: 2024,
+    pmtilesFile: (yr) => 'france' + yr + '.pmtiles',
     tileUrl: (yr) => wms13('https://data.geopf.fr/wms-r/wms', 'LANDUSE.AGRICULTURE' + yr),
     featureInfo: (yr, bbox, i, j) => gfi13('https://data.geopf.fr/wms-r/wms',
       'LANDUSE.AGRICULTURE' + yr, bbox, i, j, '&format=image/png'),
@@ -964,12 +982,144 @@ const LAYERS = [
   }
 ];
 
+// Add default pmtilesFile to all raster layers that don't have one
+LAYERS.forEach(L => {
+  if (L.type === 'raster' && !L.pmtilesFile) {
+    L.pmtilesFile = (yr) => L.id + (yr ? yr : '') + '.pmtiles';
+  }
+});
+
 // === Map setup ===
 const base = window.location.href.replace(/\/[^/]*$/, '');
 function cromePmtilesUrl(yr) { return base + '/crome' + yr + '.pmtiles'; }
 const PMTILES_URL = cromePmtilesUrl(2024);
 const protocol = new pmtiles.Protocol();
 maplibregl.addProtocol('pmtiles', protocol.tile);
+
+// === IndexedDB Tile Cache ===
+const TileCache = {
+  DB_NAME: 'cropmap-tile-cache',
+  DB_VERSION: 1,
+  STORE_NAME: 'tiles',
+  MAX_AGE_MS: 7 * 24 * 60 * 60 * 1000, // 7 days
+  MAX_ENTRIES: 50000,
+  _db: null,
+
+  async open() {
+    if (this._db) return this._db;
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(this.DB_NAME, this.DB_VERSION);
+      req.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains(this.STORE_NAME)) {
+          const store = db.createObjectStore(this.STORE_NAME, { keyPath: 'key' });
+          store.createIndex('ts', 'ts');
+        }
+      };
+      req.onsuccess = (e) => { this._db = e.target.result; resolve(this._db); };
+      req.onerror = () => reject(req.error);
+    });
+  },
+
+  async get(key) {
+    try {
+      const db = await this.open();
+      return new Promise((resolve) => {
+        const tx = db.transaction(this.STORE_NAME, 'readonly');
+        const req = tx.objectStore(this.STORE_NAME).get(key);
+        req.onsuccess = () => {
+          const result = req.result;
+          if (result && (Date.now() - result.ts) < this.MAX_AGE_MS) {
+            resolve(result.data);
+          } else {
+            resolve(null);
+          }
+        };
+        req.onerror = () => resolve(null);
+      });
+    } catch { return null; }
+  },
+
+  async put(key, data) {
+    try {
+      const db = await this.open();
+      const tx = db.transaction(this.STORE_NAME, 'readwrite');
+      tx.objectStore(this.STORE_NAME).put({ key, data, ts: Date.now() });
+    } catch { /* ignore cache write failures */ }
+  },
+
+  async evict() {
+    try {
+      const db = await this.open();
+      const tx = db.transaction(this.STORE_NAME, 'readwrite');
+      const store = tx.objectStore(this.STORE_NAME);
+      const countReq = store.count();
+      countReq.onsuccess = () => {
+        if (countReq.result > this.MAX_ENTRIES) {
+          const idx = store.index('ts');
+          const toDelete = countReq.result - this.MAX_ENTRIES + 1000;
+          let deleted = 0;
+          idx.openCursor().onsuccess = (e) => {
+            const cursor = e.target.result;
+            if (cursor && deleted < toDelete) {
+              cursor.delete();
+              deleted++;
+              cursor.continue();
+            }
+          };
+        }
+      };
+    } catch { /* ignore eviction failures */ }
+  }
+};
+
+// Run eviction on startup
+TileCache.evict();
+
+// === PMTiles Manifest ===
+// Tracks which PMTiles files are available for each dataset/year
+const pmtilesManifest = {};
+let manifestLoaded = false;
+
+// Load manifest (generated by download_all.sh)
+fetch(base + '/pmtiles_manifest.json')
+  .then(r => r.ok ? r.json() : null)
+  .then(data => {
+    if (data && data.files) {
+      Object.keys(data.files).forEach(f => { pmtilesManifest[f] = true; });
+    }
+    manifestLoaded = true;
+    console.log('[PMTiles] Manifest loaded:', Object.keys(pmtilesManifest).length, 'files');
+  })
+  .catch(() => {
+    manifestLoaded = true;
+    console.log('[PMTiles] No manifest found, will probe individual files');
+  });
+
+// Cache of HEAD request results for PMTiles availability
+const pmtilesAvailability = {};
+
+async function checkPmtilesAvailable(filename) {
+  if (pmtilesManifest[filename]) return true;
+  if (pmtilesAvailability[filename] !== undefined) return pmtilesAvailability[filename];
+  try {
+    const resp = await fetch(base + '/' + filename, { method: 'HEAD' });
+    pmtilesAvailability[filename] = resp.ok;
+    return resp.ok;
+  } catch {
+    pmtilesAvailability[filename] = false;
+    return false;
+  }
+}
+
+// Build PMTiles filename for a dataset/year
+function pmtilesFilename(id, year) {
+  if (!year || year === 'current') return id + '.pmtiles';
+  return id + year + '.pmtiles';
+}
+
+// Track active data source per layer (for UI indicator)
+const layerDataSource = {}; // { layerId: 'pmtiles' | 'wms' | 'vector' }
 
 // Build initial sources and layers for the style
 const initSources = {
@@ -1242,6 +1392,12 @@ LAYERS.forEach(L => {
   lbl.textContent = L.label;
   row.appendChild(lbl);
 
+  // Source badge (PMT/WMS/VEC indicator)
+  const badge = document.createElement('span');
+  badge.id = 'badge-' + L.id;
+  badge.style.cssText = 'display:none;font-size:8px;padding:1px 3px;border-radius:2px;color:#fff;margin-left:3px;font-weight:bold;vertical-align:middle;';
+  row.appendChild(badge);
+
   if (L.years && L.years.length > 1) {
     const sel = document.createElement('select');
     sel.id = 'year-' + L.id;
@@ -1310,23 +1466,59 @@ slider.addEventListener('input', () => {
 });
 
 // === Layer toggle and source update logic ===
+
+// Update the source indicator badge in the layer list
+function updateSourceBadge(layerId, source) {
+  layerDataSource[layerId] = source;
+  const badge = document.getElementById('badge-' + layerId);
+  if (!badge) return;
+  if (source === 'pmtiles') {
+    badge.textContent = 'PMT';
+    badge.title = 'Using cached PMTiles';
+    badge.style.background = '#4CAF50';
+    badge.style.display = 'inline-block';
+  } else if (source === 'wms') {
+    badge.textContent = 'WMS';
+    badge.title = 'Using live WMS';
+    badge.style.background = '#FF9800';
+    badge.style.display = 'inline-block';
+  } else if (source === 'vector') {
+    badge.textContent = 'VEC';
+    badge.title = 'Vector PMTiles';
+    badge.style.background = '#2196F3';
+    badge.style.display = 'inline-block';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
 function toggleLayer(L, on) {
   if (L.type === 'vector') {
     ['crome-fill', 'crome-outline'].forEach(lid => {
-      map.setLayoutProperty(lid, 'visibility', on ? 'visible' : 'none');
+      if (map.getLayer(lid)) map.setLayoutProperty(lid, 'visibility', on ? 'visible' : 'none');
     });
+    if (on) updateSourceBadge(L.id, 'vector');
+    else updateSourceBadge(L.id, null);
   } else if (L.type === 'vector-remote') {
     [L.id + '-fill', L.id + '-outline'].forEach(lid => {
-      map.setLayoutProperty(lid, 'visibility', on ? 'visible' : 'none');
+      if (map.getLayer(lid)) map.setLayoutProperty(lid, 'visibility', on ? 'visible' : 'none');
     });
     if (on) {
       map.setPaintProperty(L.id + '-fill', 'fill-opacity', currentOpacity * 0.67);
       map.setPaintProperty(L.id + '-outline', 'line-opacity', currentOpacity * 0.8);
+      updateSourceBadge(L.id, 'vector');
+    } else {
+      updateSourceBadge(L.id, null);
     }
   } else {
-    const lid = L.id + '-wms';
-    map.setLayoutProperty(lid, 'visibility', on ? 'visible' : 'none');
-    if (on) map.setPaintProperty(lid, 'raster-opacity', currentOpacity);
+    // Raster layer — try PMTiles first, then WMS
+    if (on) {
+      activateRasterWithFallback(L);
+    } else {
+      const lid = L.id + '-wms';
+      if (map.getLayer(lid)) map.setLayoutProperty(lid, 'visibility', 'none');
+      updateSourceBadge(L.id, null);
+    }
   }
   // Toggle country indicator if available
   if (L.countryNum && indicatorsReady) {
@@ -1336,6 +1528,84 @@ function toggleLayer(L, on) {
     if (map.getLayer(L.id + '-indicator-line'))
       map.setLayoutProperty(L.id + '-indicator-line', 'visibility', vis);
   }
+}
+
+// Try PMTiles first for raster layers, fall back to WMS
+async function activateRasterWithFallback(L) {
+  const yr = layerState[L.id].year;
+  const lid = L.id + '-wms';
+  const filename = pmtilesFilename(L.id, yr);
+
+  // Check if we have a PMTiles file for this dataset/year
+  const hasPmtiles = await checkPmtilesAvailable(filename);
+
+  if (hasPmtiles) {
+    console.log('[Fallback] Using PMTiles for', L.id, yr);
+    // Remove existing WMS layer/source and replace with PMTiles
+    if (map.getLayer(lid)) map.removeLayer(lid);
+    if (map.getSource(L.id)) map.removeSource(L.id);
+
+    map.addSource(L.id, {
+      type: 'raster',
+      url: 'pmtiles://' + base + '/' + filename,
+      attribution: L.attribution || ''
+    });
+    const layerDef = {
+      id: lid, type: 'raster', source: L.id,
+      paint: { 'raster-opacity': currentOpacity },
+      layout: { visibility: 'visible' }
+    };
+    if (L.minZoom) layerDef.minzoom = L.minZoom;
+    map.addLayer(layerDef);
+    updateSourceBadge(L.id, 'pmtiles');
+  } else {
+    console.log('[Fallback] Using WMS for', L.id, yr);
+    // Use WMS (already set up, just show it)
+    if (map.getLayer(lid)) {
+      map.setLayoutProperty(lid, 'visibility', 'visible');
+      map.setPaintProperty(lid, 'raster-opacity', currentOpacity);
+    }
+    updateSourceBadge(L.id, 'wms');
+  }
+}
+
+// Also check for vector PMTiles for WFS-derived datasets
+async function activateVectorPmtilesOrWms(L) {
+  const yr = layerState[L.id].year;
+  const filename = pmtilesFilename(L.id, yr);
+  const hasPmtiles = await checkPmtilesAvailable(filename);
+
+  if (hasPmtiles) {
+    console.log('[Fallback] Found vector PMTiles for', L.id, yr);
+    const lid = L.id + '-wms';
+    const srcLayer = L.id + (yr && yr !== 'current' ? yr : '');
+
+    // Remove existing WMS layer/source
+    if (map.getLayer(lid)) map.removeLayer(lid);
+    if (map.getSource(L.id)) map.removeSource(L.id);
+
+    // Add as vector source
+    map.addSource(L.id, {
+      type: 'vector',
+      url: 'pmtiles://' + base + '/' + filename,
+      attribution: L.attribution || ''
+    });
+    map.addLayer({
+      id: L.id + '-fill', type: 'fill', source: L.id, 'source-layer': srcLayer,
+      filter: ['==', ['geometry-type'], 'Polygon'],
+      paint: { 'fill-color': '#66bb6a', 'fill-opacity': currentOpacity * 0.67 },
+      layout: { visibility: 'visible' }
+    });
+    map.addLayer({
+      id: L.id + '-outline', type: 'line', source: L.id, 'source-layer': srcLayer,
+      filter: ['==', ['geometry-type'], 'Polygon'],
+      paint: { 'line-color': '#2e7d32', 'line-width': 0.5, 'line-opacity': currentOpacity * 0.8 },
+      layout: { visibility: 'visible' }
+    });
+    updateSourceBadge(L.id, 'vector');
+    return true;
+  }
+  return false;
 }
 
 function updateCromeSource(yr) {
@@ -1369,41 +1639,38 @@ function updateCromeSource(yr) {
       'line-opacity': currentOpacity * 0.4
     }
   });
-  // No need to rebind hover — unified handler queries layers dynamically
+  updateSourceBadge('crome', 'vector');
 }
 
 function updateWmsSource(L) {
   const yr = layerState[L.id].year;
   const lid = L.id + '-wms';
-  const newUrl = L.tileUrl(yr);
 
-  // Remove layer, remove source, re-add both
+  // Remove layer, remove source
   if (map.getLayer(lid)) map.removeLayer(lid);
+  if (map.getLayer(L.id + '-fill')) map.removeLayer(L.id + '-fill');
+  if (map.getLayer(L.id + '-outline')) map.removeLayer(L.id + '-outline');
   if (map.getSource(L.id)) map.removeSource(L.id);
 
-  map.addSource(L.id, {
-    type: 'raster', tileSize: 256,
-    tiles: [newUrl],
-    attribution: L.attribution || ''
-  });
-  map.addLayer({
-    id: lid, type: 'raster', source: L.id,
-    paint: { 'raster-opacity': currentOpacity },
-    layout: { visibility: 'visible' }
-  });
+  // Re-activate with fallback chain
+  activateRasterWithFallback(L);
 }
 
 function applyOpacity() {
   LAYERS.forEach(L => {
     if (!layerState[L.id].on) return;
     if (L.type === 'raster') {
-      map.setPaintProperty(L.id + '-wms', 'raster-opacity', currentOpacity);
+      try { map.setPaintProperty(L.id + '-wms', 'raster-opacity', currentOpacity); } catch {}
     } else if (L.type === 'vector-remote') {
-      map.setPaintProperty(L.id + '-fill', 'fill-opacity', currentOpacity * 0.67);
-      map.setPaintProperty(L.id + '-outline', 'line-opacity', currentOpacity * 0.8);
+      try {
+        map.setPaintProperty(L.id + '-fill', 'fill-opacity', currentOpacity * 0.67);
+        map.setPaintProperty(L.id + '-outline', 'line-opacity', currentOpacity * 0.8);
+      } catch {}
     } else {
-      map.setPaintProperty('crome-fill', 'fill-opacity', currentOpacity);
-      map.setPaintProperty('crome-outline', 'line-opacity', currentOpacity * 0.4);
+      try {
+        map.setPaintProperty('crome-fill', 'fill-opacity', currentOpacity);
+        map.setPaintProperty('crome-outline', 'line-opacity', currentOpacity * 0.4);
+      } catch {}
     }
   });
 }
@@ -1466,18 +1733,119 @@ function makeLegendCard(id, title, bodyContent) {
   return card;
 }
 
+// === Class toggle state for vector layers ===
+// Tracks which land cover classes are hidden per layer
+const hiddenClasses = {}; // { layerId: Set(['code1', 'code2', ...]) }
+
+function toggleCromeClass(code) {
+  if (!hiddenClasses.crome) hiddenClasses.crome = new Set();
+  if (hiddenClasses.crome.has(code)) {
+    hiddenClasses.crome.delete(code);
+  } else {
+    hiddenClasses.crome.add(code);
+  }
+  applyCromeFilter();
+}
+
+function applyCromeFilter() {
+  if (!map.getLayer('crome-fill')) return;
+  const hidden = hiddenClasses.crome;
+  if (!hidden || hidden.size === 0) {
+    map.setFilter('crome-fill', ['==', ['geometry-type'], 'Polygon']);
+    map.setFilter('crome-outline', ['==', ['geometry-type'], 'Polygon']);
+  } else {
+    const filter = ['all',
+      ['==', ['geometry-type'], 'Polygon'],
+      ['!', ['in', ['get', 'lucode'], ['literal', [...hidden]]]]
+    ];
+    map.setFilter('crome-fill', filter);
+    map.setFilter('crome-outline', filter);
+  }
+}
+
+function toggleEuroCropsClass(key) {
+  if (!hiddenClasses.eurocrops) hiddenClasses.eurocrops = new Set();
+  if (hiddenClasses.eurocrops.has(key)) {
+    hiddenClasses.eurocrops.delete(key);
+  } else {
+    hiddenClasses.eurocrops.add(key);
+  }
+  applyEuroCropsFilter();
+}
+
+function applyEuroCropsFilter() {
+  if (!map.getLayer('eurocrops-fill')) return;
+  const hidden = hiddenClasses.eurocrops;
+  if (!hidden || hidden.size === 0) {
+    map.setFilter('eurocrops-fill', ['==', ['geometry-type'], 'Polygon']);
+    map.setFilter('eurocrops-outline', ['==', ['geometry-type'], 'Polygon']);
+  } else {
+    const filter = ['all',
+      ['==', ['geometry-type'], 'Polygon'],
+      ['!', ['in', ['get', 'EC_hcat_n'], ['literal', [...hidden]]]]
+    ];
+    map.setFilter('eurocrops-fill', filter);
+    map.setFilter('eurocrops-outline', filter);
+  }
+}
+
 function buildCromeBody() {
   const frag = document.createDocumentFragment();
+  if (!hiddenClasses.crome) hiddenClasses.crome = new Set();
+
+  // Select all / none buttons
+  const btnRow = document.createElement('div');
+  btnRow.style.cssText = 'display:flex;gap:4px;margin-bottom:4px;';
+  const selAll = document.createElement('button');
+  selAll.textContent = 'All';
+  selAll.style.cssText = 'font-size:9px;padding:1px 4px;cursor:pointer;border:1px solid #ccc;border-radius:2px;background:#f5f5f5;';
+  selAll.addEventListener('click', () => {
+    hiddenClasses.crome.clear();
+    applyCromeFilter();
+    updateLegend();
+  });
+  const selNone = document.createElement('button');
+  selNone.textContent = 'None';
+  selNone.style.cssText = 'font-size:9px;padding:1px 4px;cursor:pointer;border:1px solid #ccc;border-radius:2px;background:#f5f5f5;';
+  selNone.addEventListener('click', () => {
+    Object.keys(LUCODE_LABELS).forEach(c => hiddenClasses.crome.add(c));
+    applyCromeFilter();
+    updateLegend();
+  });
+  btnRow.appendChild(selAll);
+  btnRow.appendChild(selNone);
+  frag.appendChild(btnRow);
+
   CATEGORIES.forEach(cat => {
     const ch = document.createElement('div');
-    ch.style.cssText = 'font-weight:bold;margin-top:4px;font-size:11px;';
-    ch.textContent = cat.name; frag.appendChild(ch);
+    ch.style.cssText = 'font-weight:bold;margin-top:4px;font-size:11px;cursor:pointer;';
+    ch.textContent = cat.name;
+    // Click category header to toggle all codes in that category
+    ch.addEventListener('click', () => {
+      const allHidden = cat.codes.every(c => hiddenClasses.crome.has(c));
+      cat.codes.forEach(c => {
+        if (allHidden) hiddenClasses.crome.delete(c);
+        else hiddenClasses.crome.add(c);
+      });
+      applyCromeFilter();
+      updateLegend();
+    });
+    frag.appendChild(ch);
     cat.codes.forEach(code => {
+      const isHidden = hiddenClasses.crome.has(code);
       const row = document.createElement('div'); row.className = 'legend-row';
+      row.style.cssText = 'cursor:pointer;' + (isHidden ? 'opacity:0.35;' : '');
+      row.addEventListener('click', () => {
+        toggleCromeClass(code);
+        updateLegend();
+      });
       const sw = document.createElement('div'); sw.className = 'legend-swatch';
-      sw.style.background = LUCODE_COLORS[code] || '#ccc'; row.appendChild(sw);
+      sw.style.background = isHidden ? '#ccc' : (LUCODE_COLORS[code] || '#ccc');
+      row.appendChild(sw);
       const lbl = document.createElement('span');
-      lbl.textContent = LUCODE_LABELS[code] || code; row.appendChild(lbl);
+      lbl.textContent = LUCODE_LABELS[code] || code;
+      if (isHidden) lbl.style.textDecoration = 'line-through';
+      row.appendChild(lbl);
       frag.appendChild(row);
     });
   });
@@ -1486,22 +1854,66 @@ function buildCromeBody() {
 
 function buildEuroCropsBody() {
   const frag = document.createDocumentFragment();
+  if (!hiddenClasses.eurocrops) hiddenClasses.eurocrops = new Set();
+
+  // Select all / none buttons
+  const btnRow = document.createElement('div');
+  btnRow.style.cssText = 'display:flex;gap:4px;margin-bottom:4px;';
+  const selAll = document.createElement('button');
+  selAll.textContent = 'All';
+  selAll.style.cssText = 'font-size:9px;padding:1px 4px;cursor:pointer;border:1px solid #ccc;border-radius:2px;background:#f5f5f5;';
+  selAll.addEventListener('click', () => {
+    hiddenClasses.eurocrops.clear();
+    applyEuroCropsFilter();
+    updateLegend();
+  });
+  const selNone = document.createElement('button');
+  selNone.textContent = 'None';
+  selNone.style.cssText = 'font-size:9px;padding:1px 4px;cursor:pointer;border:1px solid #ccc;border-radius:2px;background:#f5f5f5;';
+  selNone.addEventListener('click', () => {
+    Object.keys(EC_COLORS).forEach(k => hiddenClasses.eurocrops.add(k));
+    applyEuroCropsFilter();
+    updateLegend();
+  });
+  btnRow.appendChild(selAll);
+  btnRow.appendChild(selNone);
+  frag.appendChild(btnRow);
+
   EC_CATEGORIES.forEach(cat => {
     const ch = document.createElement('div');
-    ch.style.cssText = 'font-weight:bold;margin-top:4px;font-size:11px;';
-    ch.textContent = cat.name; frag.appendChild(ch);
+    ch.style.cssText = 'font-weight:bold;margin-top:4px;font-size:11px;cursor:pointer;';
+    ch.textContent = cat.name;
+    ch.addEventListener('click', () => {
+      const allHidden = cat.key.every(k => hiddenClasses.eurocrops.has(k));
+      cat.key.forEach(k => {
+        if (allHidden) hiddenClasses.eurocrops.delete(k);
+        else hiddenClasses.eurocrops.add(k);
+      });
+      applyEuroCropsFilter();
+      updateLegend();
+    });
+    frag.appendChild(ch);
     cat.key.forEach(k => {
+      const isHidden = hiddenClasses.eurocrops.has(k);
       const row = document.createElement('div'); row.className = 'legend-row';
+      row.style.cssText = 'cursor:pointer;' + (isHidden ? 'opacity:0.35;' : '');
+      row.addEventListener('click', () => {
+        toggleEuroCropsClass(k);
+        updateLegend();
+      });
       const sw = document.createElement('div'); sw.className = 'legend-swatch';
-      sw.style.background = EC_COLORS[k] || '#888'; row.appendChild(sw);
+      sw.style.background = isHidden ? '#ccc' : (EC_COLORS[k] || '#888');
+      row.appendChild(sw);
       const lbl = document.createElement('span');
-      lbl.textContent = cleanCropName(k); row.appendChild(lbl);
+      lbl.textContent = cleanCropName(k);
+      if (isHidden) lbl.style.textDecoration = 'line-through';
+      row.appendChild(lbl);
       frag.appendChild(row);
     });
   });
   const note = document.createElement('div');
   note.style.cssText = 'font-size:10px;color:#666;margin-top:4px;';
-  note.textContent = '16 EU countries · hover for details';
+  note.textContent = '16 EU countries · click classes to toggle';
   frag.appendChild(note);
   return frag;
 }

@@ -1,0 +1,324 @@
+{
+  "crome": {
+    "label": "England (CROME)",
+    "type": "wfs",
+    "wfs_url": "WFS:https://environment.data.gov.uk/spatialdata/crop-map-of-england-{YEAR}/wfs",
+    "layer_pattern": "Crop_Map_of_England_{YEAR}_{COUNTY}",
+    "discovery": "auto",
+    "years": [2020, 2021, 2022, 2023, 2024],
+    "bounds": [-6.5, 49.8, 2.0, 55.9],
+    "tippecanoe": {
+      "max_zoom": 12,
+      "simplification": 10,
+      "coalesce": true,
+      "drop_densest": true
+    },
+    "notes": "Multi-county layers discovered from GetCapabilities. All attributes preserved."
+  },
+  "netherlands": {
+    "label": "Netherlands (BRP)",
+    "type": "wfs",
+    "wfs_url": "WFS:https://service.pdok.nl/rvo/brpgewaspercelen/wfs/v1_0",
+    "layer_pattern": "brpgewaspercelen:BrpGewas",
+    "discovery": "fixed",
+    "years": ["current"],
+    "bounds": [3.3, 50.7, 7.3, 53.6],
+    "tippecanoe": {
+      "max_zoom": 14,
+      "simplification": 8,
+      "coalesce": true,
+      "drop_densest": true
+    },
+    "notes": "Single layer, no year in layer name. Contains gewas, categorie attributes."
+  },
+  "belgium-fl": {
+    "label": "Belgium - Flanders",
+    "type": "wfs",
+    "wfs_url": "WFS:https://geo.api.vlaanderen.be/ALV/wfs",
+    "layer_pattern": "ALV:LbGebrPerc{YEAR}",
+    "discovery": "fixed",
+    "years": [2020, 2021, 2022, 2023, 2024],
+    "bounds": [2.5, 50.7, 5.9, 51.5],
+    "tippecanoe": {
+      "max_zoom": 14,
+      "simplification": 8,
+      "coalesce": true,
+      "drop_densest": true
+    },
+    "notes": "Layer name includes year. Dutch language attributes."
+  },
+  "belgium-wa": {
+    "label": "Belgium - Wallonia",
+    "type": "wfs",
+    "wfs_url": "WFS:https://geoservices.wallonie.be/arcgis/services/AGRICULTURE/SIGEC_PARC_AGRI_ANON__{YEAR}/MapServer/WFSServer",
+    "layer_pattern": "SIGEC_PARC_AGRI_ANON__{YEAR}:Parcelles_agricoles_anonymisees_{YEAR}",
+    "discovery": "fixed",
+    "years": [2019, 2020, 2021, 2022, 2023],
+    "bounds": [2.8, 49.5, 6.4, 50.8],
+    "tippecanoe": {
+      "max_zoom": 14,
+      "simplification": 8,
+      "coalesce": true,
+      "drop_densest": true
+    },
+    "notes": "URL includes year. ArcGIS WFS. French language attributes."
+  },
+  "austria": {
+    "label": "Austria (INVEKOS)",
+    "type": "wfs",
+    "wfs_url": "WFS:https://inspire.lfrz.gv.at/009501/wfs",
+    "layer_pattern_pre2022": "inspire_schlaege_{YEAR}_polygon",
+    "layer_pattern_post2022": "inspire_schlaege_{YEAR}-2_polygon",
+    "discovery": "fixed",
+    "years": [2020, 2021, 2022, 2023, 2024, 2025],
+    "bounds": [9.5, 46.3, 17.2, 49.0],
+    "tippecanoe": {
+      "max_zoom": 14,
+      "simplification": 8,
+      "coalesce": true,
+      "drop_densest": true
+    },
+    "notes": "Layer naming changed in 2022 (added -2 suffix). German language attributes."
+  },
+  "denmark": {
+    "label": "Denmark (FVM Marker)",
+    "type": "wfs",
+    "wfs_url": "WFS:https://geodata.fvm.dk/geoserver/Marker/wfs",
+    "layer_pattern": "Marker:Marker_{YEAR}",
+    "discovery": "fixed",
+    "years": [2020, 2021, 2022, 2023, 2024, 2025],
+    "bounds": [7.9, 54.5, 15.2, 57.8],
+    "tippecanoe": {
+      "max_zoom": 14,
+      "simplification": 8,
+      "coalesce": true,
+      "drop_densest": true
+    },
+    "notes": "GeoServer WFS. Danish language attributes (Afgroede = crop type)."
+  },
+  "luxembourg": {
+    "label": "Luxembourg (ASTA LPIS)",
+    "type": "wfs",
+    "wfs_url": "WFS:https://wms.inspire.geoportail.lu/geoserver/af/wfs",
+    "layer_pattern": "af:LU.ExistingLandUseObject_LPIS_{YEAR}",
+    "discovery": "fixed",
+    "years": [2020, 2021, 2022, 2023, 2024, 2025],
+    "bounds": [5.7, 49.4, 6.5, 50.2],
+    "tippecanoe": {
+      "max_zoom": 14,
+      "simplification": 8,
+      "coalesce": true,
+      "drop_densest": true
+    },
+    "notes": "GeoServer WFS. French language attributes."
+  },
+  "portugal": {
+    "label": "Portugal (IFAP iSIP)",
+    "type": "wfs",
+    "wfs_url": "WFS:https://www.ifap.pt/isip/ows/isip.data/wfs",
+    "layer_pattern": "isip.data:parcelas.{REGION}.{YEAR}jun10",
+    "regions": ["AML", "Algarve", "Centro", "Norte", "Alentejo", "RAA", "RAM"],
+    "discovery": "fixed",
+    "years": [2017, 2018, 2019],
+    "bounds": [-9.5, 36.9, -6.2, 42.2],
+    "tippecanoe": {
+      "max_zoom": 14,
+      "simplification": 8,
+      "coalesce": true,
+      "drop_densest": true
+    },
+    "notes": "Multi-region layers. Portuguese language attributes."
+  },
+  "france": {
+    "label": "France (RPG)",
+    "type": "wfs",
+    "wfs_url": "WFS:https://data.geopf.fr/wfs/ows",
+    "layer_pattern": "RPG.LATEST:parcelles_graphiques",
+    "discovery": "fixed",
+    "years": ["current"],
+    "bounds": [-5.2, 41.3, 9.6, 51.1],
+    "tippecanoe": {
+      "max_zoom": 14,
+      "simplification": 8,
+      "coalesce": true,
+      "drop_densest": true
+    },
+    "notes": "French IGN GeoPortail WFS. Very large dataset. French language attributes."
+  },
+  "spain": {
+    "label": "Spain (SIGPAC)",
+    "type": "wfs",
+    "wfs_url": "WFS:https://wms.mapa.gob.es/sigpac/wfs",
+    "layer_pattern": "AU.Sigpac:recinto",
+    "discovery": "fixed",
+    "years": ["current"],
+    "bounds": [-9.4, 35.9, 4.3, 43.8],
+    "tippecanoe": {
+      "max_zoom": 14,
+      "simplification": 8,
+      "coalesce": true,
+      "drop_densest": true
+    },
+    "notes": "SIGPAC parcels. Spanish language. Very large dataset."
+  },
+  "czechia": {
+    "label": "Czech Republic (LPIS)",
+    "type": "wfs",
+    "wfs_url": "WFS:https://mze.gov.cz/public/app/wms/public_DPB_PB_OPV.fcgi",
+    "layer_pattern": "DPB_UCINNE",
+    "discovery": "fixed",
+    "years": ["current"],
+    "bounds": [12.1, 48.5, 18.9, 51.1],
+    "tippecanoe": {
+      "max_zoom": 14,
+      "simplification": 8,
+      "coalesce": true,
+      "drop_densest": true
+    },
+    "notes": "Czech MZe. May need WFS URL adjustment."
+  },
+  "slovenia": {
+    "label": "Slovenia (GERK)",
+    "type": "wfs",
+    "wfs_url": "WFS:https://storitve.eprostor.gov.si/ows-pub-wms/SI.MKGP.GERK/ows",
+    "layer_pattern": "RKG_BLOK_GERK",
+    "discovery": "fixed",
+    "years": ["current"],
+    "bounds": [13.4, 45.4, 16.6, 46.9],
+    "tippecanoe": {
+      "max_zoom": 14,
+      "simplification": 8,
+      "coalesce": true,
+      "drop_densest": true
+    },
+    "notes": "Slovenian MKGP INSPIRE service."
+  },
+  "croatia": {
+    "label": "Croatia (ARKOD)",
+    "type": "wfs",
+    "wfs_url": "WFS:https://servisi.apprrr.hr/NIPP/wfs",
+    "layer_pattern": "hr.land_parcels",
+    "discovery": "fixed",
+    "years": ["current"],
+    "bounds": [13.5, 42.4, 19.4, 46.6],
+    "tippecanoe": {
+      "max_zoom": 14,
+      "simplification": 8,
+      "coalesce": true,
+      "drop_densest": true
+    },
+    "notes": "Croatian ARKOD parcels."
+  },
+  "estonia": {
+    "label": "Estonia (GSAA)",
+    "type": "wfs",
+    "wfs_url": "WFS:https://kls.pria.ee/geoserver/inspire_gsaa/wfs",
+    "layer_pattern": "inspire_gsaa:inspire_gsaa",
+    "discovery": "fixed",
+    "years": ["current"],
+    "bounds": [21.8, 57.5, 28.2, 59.7],
+    "tippecanoe": {
+      "max_zoom": 14,
+      "simplification": 8,
+      "coalesce": true,
+      "drop_densest": true
+    },
+    "notes": "Estonian PRIA GeoServer. INSPIRE GSAA."
+  },
+  "latvia": {
+    "label": "Latvia (Field Blocks)",
+    "type": "wfs",
+    "wfs_url": "WFS:https://karte.lad.gov.lv/arcgis/services/lauku_bloki/MapServer/WFSServer",
+    "layer_pattern": "lauku_bloki",
+    "discovery": "fixed",
+    "years": ["current"],
+    "bounds": [20.9, 55.7, 28.2, 58.1],
+    "tippecanoe": {
+      "max_zoom": 14,
+      "simplification": 8,
+      "coalesce": true,
+      "drop_densest": true
+    },
+    "notes": "ArcGIS WFS. Latvian field blocks."
+  },
+  "poland": {
+    "label": "Poland (LPIS)",
+    "type": "wfs",
+    "wfs_url": "WFS:https://mapy.geoportal.gov.pl/wss/ext/arimr_lpis",
+    "layer_pattern": "LPIS",
+    "discovery": "fixed",
+    "years": ["current"],
+    "bounds": [14.1, 49.0, 24.2, 54.9],
+    "tippecanoe": {
+      "max_zoom": 14,
+      "simplification": 8,
+      "coalesce": true,
+      "drop_densest": true
+    },
+    "notes": "Polish ARiMR. Very large dataset. WFS may need alternative endpoint."
+  },
+  "sweden": {
+    "label": "Sweden (Jordbruk)",
+    "type": "wfs",
+    "wfs_url": "WFS:https://epub.sjv.se/inspire/inspire/wfs",
+    "layer_pattern": "inspire:jordbruksblock",
+    "discovery": "fixed",
+    "years": ["current"],
+    "bounds": [11.0, 55.3, 24.2, 69.1],
+    "tippecanoe": {
+      "max_zoom": 14,
+      "simplification": 8,
+      "coalesce": true,
+      "drop_densest": true
+    },
+    "notes": "Swedish SJV INSPIRE WFS."
+  },
+  "finland": {
+    "label": "Finland (Ruokavirasto LPIS)",
+    "type": "wfs",
+    "wfs_url": "WFS:https://inspire.ruokavirasto-awsa.com/geoserver/wfs",
+    "layer_pattern": "inspire:LC.LandCoverSurfaces.LPIS.{YEAR}",
+    "discovery": "fixed",
+    "years": [2020, 2021, 2022, 2023, 2024],
+    "bounds": [19.1, 59.7, 31.6, 70.1],
+    "tippecanoe": {
+      "max_zoom": 14,
+      "simplification": 8,
+      "coalesce": true,
+      "drop_densest": true
+    },
+    "notes": "Finnish Ruokavirasto GeoServer. Finnish language attributes."
+  },
+  "switzerland": {
+    "label": "Switzerland (BLW)",
+    "type": "wfs",
+    "wfs_url": "WFS:https://wms.geo.admin.ch/",
+    "layer_pattern": "ch.blw.landwirtschaftliche-nutzungsflaechen",
+    "discovery": "fixed",
+    "years": ["current"],
+    "bounds": [5.9, 45.8, 10.5, 47.8],
+    "tippecanoe": {
+      "max_zoom": 14,
+      "simplification": 8,
+      "coalesce": true,
+      "drop_densest": true
+    },
+    "notes": "Swiss geo.admin.ch. May need API endpoint instead of WFS. German/French/Italian attributes."
+  },
+  "norway": {
+    "label": "Norway (NIBIO AR5)",
+    "type": "wfs",
+    "wfs_url": "WFS:https://wms.nibio.no/cgi-bin/ar5",
+    "layer_pattern": "Arealtype",
+    "discovery": "fixed",
+    "years": ["current"],
+    "bounds": [4.5, 57.9, 31.2, 71.2],
+    "tippecanoe": {
+      "max_zoom": 14,
+      "simplification": 8,
+      "coalesce": true,
+      "drop_densest": true
+    },
+    "notes": "Norwegian NIBIO AR5 land type. WFS may not be available — may need WMS raster download instead."
+  }
+}
