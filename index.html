@@ -853,15 +853,21 @@ const LAYERS = [
   // --- Mexico / Central America ---
   {
     id: 'mexico-madmex', label: '🇲🇽 Mexico (CONABIO MAD-Mex)', type: 'raster', lang: 'es',
-    legendType: 'image',
+    legendType: 'list',
     years: [2017, 2018], defaultYear: 2018,
     pmtilesFile: (yr) => 'mexico-madmex' + yr + '.pmtiles',
-    tileUrl: (yr) => wms11('http://geonode.conabio.gob.mx/geoserver/ows',
-      'geonode:National_MAD-Mex_landsat8_lc_' + yr + '_31_classes'),
-    featureInfo: (yr, bbox, x, y) => gfi11('http://geonode.conabio.gob.mx/geoserver/ows',
-      'geonode:National_MAD-Mex_landsat8_lc_' + yr + '_31_classes', bbox, x, y),
-    legendImg: (yr) => 'http://geonode.conabio.gob.mx/geoserver/ows?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=geonode:National_MAD-Mex_landsat8_lc_' + yr + '_31_classes&format=image/png',
-    attribution: '&copy; <a href="https://madmex.conabio.gob.mx/">CONABIO</a> MAD-Mex'
+    legendItems: [
+      {color:'#003d00',label:'Temperate Coniferous'},{color:'#006600',label:'Tropical Evergreen'},
+      {color:'#008c00',label:'Tropical Deciduous'},{color:'#00b300',label:'Cloud Forest'},
+      {color:'#00cc00',label:'Oak Forest'},{color:'#59cc00',label:'Mixed Forest'},
+      {color:'#996600',label:'Xerophilous Shrub'},{color:'#cc9900',label:'Secondary Veg.'},
+      {color:'#e6e600',label:'Temperate Grassland'},{color:'#ffff73',label:'Tropical Grassland'},
+      {color:'#006699',label:'Wetland/Mangrove'},{color:'#ffff00',label:'Cropland'},
+      {color:'#ffc800',label:'Irrigated Agriculture'},{color:'#ff9600',label:'Rainfed Agriculture'},
+      {color:'#993366',label:'Barren'},{color:'#e60000',label:'Urban'},
+      {color:'#0000ff',label:'Water'},{color:'#808080',label:'Other'}
+    ],
+    attribution: '&copy; <a href="https://madmex.conabio.gob.mx/">CONABIO</a> MAD-Mex (PMTiles only — WMS unreliable)'
   },
   {
     id: 'nalcms', label: '🌎 N. America Land Cover (NALCMS)', type: 'raster', lang: 'en',
@@ -870,17 +876,17 @@ const LAYERS = [
     pmtilesFile: () => 'nalcms.pmtiles',
     legendItems: [
       {color:'#003d00',label:'Temperate/Subpolar Needleleaf'},{color:'#006600',label:'Subpolar Taiga'},
-      {color:'#008c00',label:'Tropical/Subtropical Broadleaf Evergreen'},{color:'#00b300',label:'Tropical/Subtropical Broadleaf Deciduous'},
+      {color:'#008c00',label:'Trop./Subtrop. Broadleaf Evergreen'},{color:'#00b300',label:'Trop./Subtrop. Broadleaf Deciduous'},
       {color:'#00cc00',label:'Temperate/Subpolar Broadleaf Deciduous'},{color:'#59cc00',label:'Mixed Forest'},
-      {color:'#996600',label:'Tropical/Subtropical Shrubland'},{color:'#cc9900',label:'Temperate/Subpolar Shrubland'},
-      {color:'#e6e600',label:'Tropical/Subtropical Grassland'},{color:'#ffff73',label:'Temperate/Subpolar Grassland'},
-      {color:'#b3b300',label:'Subpolar/Polar Shrubland-Lichen-Moss'},{color:'#999900',label:'Subpolar/Polar Grassland-Lichen-Moss'},
+      {color:'#996600',label:'Trop./Subtrop. Shrubland'},{color:'#cc9900',label:'Temperate/Subpolar Shrubland'},
+      {color:'#e6e600',label:'Trop./Subtrop. Grassland'},{color:'#ffff73',label:'Temperate/Subpolar Grassland'},
+      {color:'#b3b300',label:'Subpolar/Polar Shrub-Lichen-Moss'},{color:'#999900',label:'Subpolar/Polar Grass-Lichen-Moss'},
       {color:'#808000',label:'Subpolar/Polar Barren-Lichen-Moss'},{color:'#006699',label:'Wetland'},
       {color:'#ffff00',label:'Cropland'},{color:'#993366',label:'Barren Lands'},
       {color:'#e60000',label:'Urban'},{color:'#0000ff',label:'Water'},
       {color:'#ffffff',label:'Snow and Ice'}
     ],
-    attribution: '&copy; CEC/USGS/CONABIO NALCMS'
+    attribution: '&copy; CEC/USGS/CONABIO NALCMS (PMTiles only — download required)'
   },
   // --- South America ---
   {
