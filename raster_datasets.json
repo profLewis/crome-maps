@@ -166,11 +166,11 @@
     "srs": "EPSG:3857",
     "format": "image/png",
     "tile_size": 256,
-    "years": [2018, 2019, 2020, 2021, 2022],
+    "years": [2018, 2022],
     "bounds": [-11.0, 34.0, 40.0, 72.0],
     "min_zoom": 0,
-    "max_zoom": 12,
-    "notes": "JRC EU-wide crop type map."
+    "max_zoom": 13,
+    "notes": "JRC EU-wide crop type map. 10m native resolution (Sentinel-2). 2018 includes UK (pre-Brexit), 2022 does not."
   },
   "esa-worldcover": {
     "label": "ESA WorldCover",
@@ -241,5 +241,231 @@
     "min_zoom": 0,
     "max_zoom": 10,
     "notes": "ESA/VITO WorldCereal spring cereals."
+  },
+
+  "brazil-mapbiomas": {
+    "label": "Brazil MapBiomas Col.9",
+    "source_type": "geotiff",
+    "source_url": "https://storage.googleapis.com/mapbiomas-public/initiatives/brasil/collection_9/lclu/coverage/brasil_coverage_{YEAR}.tif",
+    "source_srs": "EPSG:4326",
+    "band_count": 1,
+    "color_table": "mapbiomas_col9.txt",
+    "nodata_value": 0,
+    "years": [2020, 2021, 2022, 2023],
+    "bounds": [-74.0, -34.0, -34.0, 6.0],
+    "min_zoom": 0,
+    "max_zoom": 12,
+    "version_check": {
+      "method": "http_head",
+      "check_url": "https://storage.googleapis.com/mapbiomas-public/initiatives/brasil/collection_9/lclu/coverage/brasil_coverage_{YEAR}.tif"
+    },
+    "notes": "GCS direct download. ~1GB per year. 30m Landsat-based LULC. CC-BY-SA 4.0."
+  },
+  "japan-cropland": {
+    "label": "Japan Cropland Classification 10m",
+    "source_type": "geotiff",
+    "source_url": "https://zenodo.org/api/records/7519274/files/Cropland_mapping_Japan.zip/content",
+    "source_srs": "EPSG:4326",
+    "band_count": 1,
+    "color_table": "japan_cropland.txt",
+    "nodata_value": 0,
+    "years": ["current"],
+    "bounds": [122.0, 24.0, 154.0, 46.0],
+    "min_zoom": 0,
+    "max_zoom": 13,
+    "version_check": {
+      "method": "zenodo_api",
+      "record_id": "7519274"
+    },
+    "notes": "Zenodo. 4.4GB ZIP. 10m parcel-based, 9 crop classes. Requires unzipping."
+  },
+  "china-cropland10m": {
+    "label": "China ChinaCropland10m",
+    "source_type": "geotiff",
+    "source_url": "https://ndownloader.figshare.com/files/43350300",
+    "source_srs": "EPSG:4326",
+    "band_count": 1,
+    "color_table": "china_cropland10m.txt",
+    "nodata_value": 255,
+    "years": ["current"],
+    "bounds": [73.0, 18.0, 135.5, 53.5],
+    "min_zoom": 0,
+    "max_zoom": 12,
+    "version_check": {
+      "method": "figshare_api",
+      "article_id": "24633228"
+    },
+    "notes": "Figshare. 4.5GB 7z archive. Very large. May need splitting by region."
+  },
+  "japan-hrlulc": {
+    "label": "Japan JAXA HRLULC 10m",
+    "source_type": "geotiff",
+    "source_url": "https://www.eorc.jaxa.jp/ALOS/en/dataset/lulc/data/{YEAR}JPN.tif",
+    "source_srs": "EPSG:4326",
+    "band_count": 1,
+    "color_table": "japan_hrlulc.txt",
+    "nodata_value": 0,
+    "years": [2020, 2022, 2024],
+    "bounds": [122.0, 24.0, 154.0, 46.0],
+    "min_zoom": 0,
+    "max_zoom": 12,
+    "version_check": {
+      "method": "none"
+    },
+    "notes": "JAXA EORC. Requires registration. Download URL may need auth token. 15 classes."
+  },
+
+  "china-clcd": {
+    "label": "China Land Cover (CLCD)",
+    "source_type": "geotiff",
+    "source_url": "https://zenodo.org/api/records/12779975/files/CLCD_v01_{YEAR}_albert.tif/content",
+    "source_srs": "EPSG:4326",
+    "band_count": 1,
+    "color_table": "clcd.txt",
+    "nodata_value": 0,
+    "years": [2020, 2021, 2022, 2023],
+    "bounds": [73.0, 18.0, 135.5, 53.5],
+    "min_zoom": 0,
+    "max_zoom": 12,
+    "version_check": {
+      "method": "zenodo_api",
+      "record_id": "12779975"
+    },
+    "notes": "Zenodo. ~770MB COG per year. 30m Landsat. 9 classes. No auth required. CC-BY-4.0."
+  },
+  "mexico-madmex": {
+    "label": "Mexico (CONABIO MAD-Mex)",
+    "wms_version": "1.1.1",
+    "wms_url": "http://geonode.conabio.gob.mx/geoserver/ows",
+    "layer": "geonode:National_MAD-Mex_landsat8_lc_{YEAR}_31_classes",
+    "srs": "EPSG:3857",
+    "format": "image/png",
+    "tile_size": 256,
+    "years": [2017, 2018],
+    "bounds": [-118.5, 14.5, -86.7, 32.7],
+    "min_zoom": 0,
+    "max_zoom": 12,
+    "notes": "CONABIO GeoNode WMS. Unreliable server (frequent 500 errors). Download as PMTiles recommended."
+  },
+  "nalcms": {
+    "label": "North America Land Cover (NALCMS)",
+    "wms_version": "1.1.1",
+    "wms_url": "https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi",
+    "layer": "NALCMS_Land_Cover_2020",
+    "srs": "EPSG:3857",
+    "format": "image/png",
+    "tile_size": 256,
+    "years": ["current"],
+    "bounds": [-170.0, 14.0, -50.0, 84.0],
+    "min_zoom": 0,
+    "max_zoom": 10,
+    "notes": "CEC/USGS/CONABIO. 30m. 19 land cover classes. Covers USA+Canada+Mexico."
+  },
+  "india-bhuvan": {
+    "label": "India (Bhuvan LULC)",
+    "wms_version": "1.1.1",
+    "wms_url": "https://bhuvan-ras2.nrsc.gov.in/cgi-bin/LULC250K.exe",
+    "layer": "LULC250K",
+    "srs": "EPSG:3857",
+    "format": "image/png",
+    "tile_size": 256,
+    "years": ["current"],
+    "bounds": [68.0, 6.0, 97.5, 37.0],
+    "min_zoom": 0,
+    "max_zoom": 12,
+    "notes": "NRSC/ISRO Bhuvan. ~56m AWiFS. WMS may be unreliable. Multiple LULC classes."
+  },
+  "southafrica-sanlc": {
+    "label": "South Africa (SANLC)",
+    "source_type": "geotiff",
+    "source_url": "https://egis.environment.gov.za/data_egis/data_download/current",
+    "source_srs": "EPSG:4326",
+    "band_count": 1,
+    "color_table": "sanlc.txt",
+    "nodata_value": 0,
+    "years": ["current"],
+    "bounds": [16.0, -35.0, 33.0, -22.0],
+    "min_zoom": 0,
+    "max_zoom": 12,
+    "version_check": {
+      "method": "none"
+    },
+    "notes": "DFFE EGIS. 20m Sentinel-2. 73 land cover classes. Requires registration to download."
+  },
+  "turkey-corine": {
+    "label": "Turkey (CORINE 2018)",
+    "wms_version": "1.1.1",
+    "wms_url": "https://image.discomap.eea.europa.eu/arcgis/services/Corine/CLC2018_WM/MapServer/WMSServer",
+    "layer": "12",
+    "srs": "EPSG:3857",
+    "format": "image/png",
+    "tile_size": 256,
+    "years": ["current"],
+    "bounds": [26.0, 36.0, 45.0, 42.0],
+    "min_zoom": 0,
+    "max_zoom": 12,
+    "notes": "Copernicus CORINE Land Cover 2018. 100m. Includes agricultural classes."
+  },
+  "indonesia-klhk": {
+    "label": "Indonesia (KLHK Land Cover)",
+    "wms_version": "1.1.1",
+    "wms_url": "https://geoportal.menlhk.go.id/server/services/dunekalks/PL_AR_250K/MapServer/WMSServer",
+    "layer": "0",
+    "srs": "EPSG:3857",
+    "format": "image/png",
+    "tile_size": 256,
+    "years": ["current"],
+    "bounds": [95.0, -11.0, 141.0, 6.0],
+    "min_zoom": 0,
+    "max_zoom": 12,
+    "notes": "KLHK. 1:250k. 23 classes incl. rice, dry agriculture, plantations."
+  },
+  "vietnam-jaxa": {
+    "label": "Vietnam (JAXA LULC 10m)",
+    "source_type": "geotiff",
+    "source_url": "https://www.eorc.jaxa.jp/ALOS/en/dataset/lulc/data/vnm/{YEAR}_VNM_10m.tif",
+    "source_srs": "EPSG:4326",
+    "band_count": 1,
+    "color_table": "vietnam_jaxa.txt",
+    "nodata_value": 0,
+    "years": [2020],
+    "bounds": [102.0, 8.0, 110.0, 24.0],
+    "min_zoom": 0,
+    "max_zoom": 13,
+    "version_check": {
+      "method": "none"
+    },
+    "notes": "JAXA EORC. 10m. Registration required. 10 level-1 classes incl. rice paddy."
+  },
+  "kenya-jrc": {
+    "label": "Kenya (JRC/GEOGLAM Crops)",
+    "source_type": "geotiff",
+    "source_url": "https://africa-knowledge-platform.ec.europa.eu/dataset/crop-mapping-geoglam-country-level-support-kenya",
+    "source_srs": "EPSG:4326",
+    "band_count": 1,
+    "color_table": "kenya_jrc.txt",
+    "nodata_value": 0,
+    "years": ["current"],
+    "bounds": [33.9, -4.7, 41.9, 5.5],
+    "min_zoom": 0,
+    "max_zoom": 13,
+    "version_check": {
+      "method": "none"
+    },
+    "notes": "JRC/GEOGLAM. 10m Sentinel-2. 2021 long rain season crop map."
+  },
+  "wapor-lcc": {
+    "label": "Africa/Middle East (WaPOR Land Cover)",
+    "wms_version": "1.1.1",
+    "wms_url": "https://io.apps.fao.org/geoserver/wms",
+    "layer": "WAPOR_2:L2_LCC_A",
+    "srs": "EPSG:3857",
+    "format": "image/png",
+    "tile_size": 256,
+    "years": ["current"],
+    "bounds": [-18.0, -35.0, 55.0, 40.0],
+    "min_zoom": 0,
+    "max_zoom": 10,
+    "notes": "FAO WaPOR v2. 100m. Annual land cover classification. Irrigated/rainfed distinction."
   }
 }

@@ -1,0 +1,16 @@
+# ChinaCropland10m — GDAL color-relief table
+# Source: Figshare DOI 10.6084/m9.figshare.24633228
+# Cropland use intensity classes for China
+# Format: value R G B A
+0    0    0    0    0
+1    0    150  0    255
+2    255  255  0    255
+3    255  200  0    255
+4    255  150  0    255
+5    255  100  0    255
+6    255  50   0    255
+7    255  0    0    255
+8    200  0    0    255
+9    150  0    0    255
+10   100  0    0    255
+255  0    0    0    0

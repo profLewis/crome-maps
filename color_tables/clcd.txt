@@ -1,0 +1,14 @@
+# CLCD (China Land Cover Dataset) — GDAL color-relief table
+# Source: Zenodo DOI 10.5281/zenodo.12779975
+# 9 land cover classes (Wuhan University, Yang & Huang)
+# Format: value R G B A
+0    0    0    0    0
+1    255  255  0    255
+2    0    130  0    255
+3    180  100  50   255
+4    0    200  0    255
+5    0    0    255  255
+6    255  255  255  255
+7    200  150  100  255
+8    255  0    0    255
+9    0    200  200  255

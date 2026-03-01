@@ -1,0 +1,15 @@
+# JAXA Vietnam LULC 10m — GDAL color-relief table
+# Source: JAXA EORC
+# 10 level-1 classes
+# Format: value R G B A
+0    0    0    0    0
+1    0    0    255  255
+2    255  0    0    255
+3    255  255  0    255
+4    0    180  0    255
+5    200  200  200  255
+6    255  200  0    255
+7    200  150  100  255
+8    0    200  0    255
+9    0    100  0    255
+10   0    200  200  255

@@ -1,0 +1,16 @@
+# Kenya JRC/GEOGLAM Crop Map — GDAL color-relief table
+# Source: JRC GEOGLAM
+# Crop type classes (approximate)
+# Format: value R G B A
+0    0    0    0    0
+1    255  255  0    255
+2    0    200  0    255
+3    255  200  0    255
+4    200  100  50   255
+5    0    255  0    255
+6    255  0    0    255
+7    150  150  255  255
+8    0    200  200  255
+9    200  200  200  255
+10   100  100  100  255
+255  0    0    0    0
