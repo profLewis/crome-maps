@@ -768,10 +768,10 @@ const LAYERS = [
     id: 'estonia', label: '🇪🇪 Estonia (GSAA)', type: 'raster', lang: 'et',
     legendType: 'image', minZoom: 12,
     years: null, defaultYear: null, dataYear: '2024',
-    tileUrl: () => wms13('https://kls.pria.ee/geoserver/inspire_gsaa/wms', 'inspire_gsaa'),
+    tileUrl: () => wms13('https://kls.pria.ee/geoserver/inspire_gsaa/wms', 'LU.GSAA.AGRICULTURAL_PARCELS'),
     featureInfo: (yr, bbox, i, j) => gfi13('https://kls.pria.ee/geoserver/inspire_gsaa/wms',
-      'inspire_gsaa', bbox, i, j),
-    legendImg: 'https://kls.pria.ee/geoserver/inspire_gsaa/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=inspire_gsaa&format=image/png',
+      'LU.GSAA.AGRICULTURAL_PARCELS', bbox, i, j),
+    legendImg: 'https://kls.pria.ee/geoserver/inspire_gsaa/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=LU.GSAA.AGRICULTURAL_PARCELS&format=image/png',
     attribution: '&copy; PRIA Estonia GSAA'
   },
   {
@@ -798,10 +798,10 @@ const LAYERS = [
     id: 'sweden', label: '🇸🇪 Sweden (Jordbruk)', type: 'raster', lang: 'sv',
     legendType: 'image', minZoom: 12,
     years: null, defaultYear: null, dataYear: '2024',
-    tileUrl: () => wms11('https://epub.sjv.se/inspire/inspire/wms', 'jordbruksblock'),
+    tileUrl: () => wms11('https://epub.sjv.se/inspire/inspire/wms', 'arslager_block'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://epub.sjv.se/inspire/inspire/wms',
-      'jordbruksblock', bbox, x, y),
-    legendImg: 'https://epub.sjv.se/inspire/inspire/wms?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=jordbruksblock&format=image/png',
+      'arslager_block', bbox, x, y),
+    legendImg: 'https://epub.sjv.se/inspire/inspire/wms?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=arslager_block&format=image/png',
     attribution: '&copy; SJV Sweden'
   },
   {
@@ -923,7 +923,7 @@ const LAYERS = [
   {
     id: 'china-clcd', label: '🇨🇳 China Land Cover (CLCD)', type: 'raster', lang: 'zh',
     legendType: 'list',
-    years: [2020, 2021, 2022, 2023], defaultYear: 2023,
+    years: [2022], defaultYear: 2022,
     pmtilesFile: (yr) => 'china-clcd' + yr + '.pmtiles',
     legendItems: [
       {color:'#ffff00',label:'Cropland'},{color:'#008200',label:'Forest'},
@@ -934,40 +934,7 @@ const LAYERS = [
     ],
     attribution: '&copy; <a href="https://zenodo.org/records/12779975">CLCD</a> Wuhan Univ. CC-BY-4.0'
   },
-  {
-    id: 'india-bhuvan', label: '🇮🇳 India (Bhuvan LULC)', type: 'raster', lang: 'hi',
-    legendType: 'image',
-    years: null, defaultYear: null, dataYear: '2022',
-    pmtilesFile: () => 'india-bhuvan.pmtiles',
-    tileUrl: () => wms11('https://bhuvan-ras2.nrsc.gov.in/cgi-bin/LULC250K.exe', 'LULC250K'),
-    featureInfo: (yr, bbox, x, y) => gfi11('https://bhuvan-ras2.nrsc.gov.in/cgi-bin/LULC250K.exe',
-      'LULC250K', bbox, x, y),
-    legendImg: 'https://bhuvan-ras2.nrsc.gov.in/cgi-bin/LULC250K.exe?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=LULC250K&format=image/png',
-    attribution: '&copy; NRSC/ISRO Bhuvan'
-  },
-  {
-    id: 'indonesia-klhk', label: '🇮🇩 Indonesia (KLHK)', type: 'raster', lang: 'id',
-    legendType: 'image',
-    years: null, defaultYear: null, dataYear: '2024',
-    pmtilesFile: () => 'indonesia-klhk.pmtiles',
-    tileUrl: () => wms11('https://geoportal.menlhk.go.id/server/services/dunekalks/PL_AR_250K/MapServer/WMSServer', '0'),
-    featureInfo: (yr, bbox, x, y) => gfi11('https://geoportal.menlhk.go.id/server/services/dunekalks/PL_AR_250K/MapServer/WMSServer',
-      '0', bbox, x, y),
-    legendImg: 'https://geoportal.menlhk.go.id/server/services/dunekalks/PL_AR_250K/MapServer/WMSServer?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=0&format=image/png',
-    attribution: '&copy; KLHK Indonesia'
-  },
   // --- Africa / Middle East ---
-  {
-    id: 'wapor-lcc', label: '🌍 Africa/ME (WaPOR Land Cover)', type: 'raster', lang: 'en',
-    legendType: 'image',
-    years: null, defaultYear: null, dataYear: '2021',
-    pmtilesFile: () => 'wapor-lcc.pmtiles',
-    tileUrl: () => wms11('https://io.apps.fao.org/geoserver/wms', 'WAPOR_2:L2_LCC_A'),
-    featureInfo: (yr, bbox, x, y) => gfi11('https://io.apps.fao.org/geoserver/wms',
-      'WAPOR_2:L2_LCC_A', bbox, x, y),
-    legendImg: 'https://io.apps.fao.org/geoserver/wms?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=WAPOR_2:L2_LCC_A&format=image/png',
-    attribution: '&copy; <a href="https://wapor.apps.fao.org">FAO WaPOR</a>'
-  },
   {
     id: 'turkey-corine', label: '🇹🇷 Turkey (CORINE 2018)', type: 'raster', lang: 'tr',
     legendType: 'image',
@@ -1554,7 +1521,8 @@ const sections = [
   { start: 'spain',          label: 'Europe — Parcels',        open: false },
   { start: 'usda-cdl',       label: 'Americas',                open: false },
   { start: 'australia',      label: 'Oceania',                 open: false },
-  { start: 'deafrica-crop',  label: 'Africa',                  open: false },
+  { start: 'deafrica-crop',  label: 'Africa / Middle East',    open: false },
+  { start: 'china-clcd',     label: 'Asia',                    open: false },
   { start: 'modis-landcover', label: 'Global / Satellite',      open: false },
 ];
 const sectionMap = {}; sections.forEach(s => { sectionMap[s.start] = s; });
