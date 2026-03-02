@@ -1070,11 +1070,11 @@ maplibregl.addProtocol('filtered', async (params) => {
   const z = parseInt(parts.pop());
   const pmtilesUrl = parts.join('/');
 
-  if (!filteredPMTilesInstances[layerId]) {
-    filteredPMTilesInstances[layerId] = new pmtiles.PMTiles(pmtilesUrl);
+  if (!filteredPMTilesInstances[pmtilesUrl]) {
+    filteredPMTilesInstances[pmtilesUrl] = new pmtiles.PMTiles(pmtilesUrl);
   }
 
-  const result = await filteredPMTilesInstances[layerId].getZxy(z, x, y);
+  const result = await filteredPMTilesInstances[pmtilesUrl].getZxy(z, x, y);
   if (!result || !result.data) {
     return { data: new Uint8Array(0) };
   }
