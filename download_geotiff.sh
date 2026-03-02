@@ -150,12 +150,31 @@ else
   if [ "$NODATA" != "none" ] && [ "$NODATA" != "null" ]; then
     NODATA_FLAGS="-srcnodata $NODATA -dstnodata 0"
   fi
-  gdalwarp -s_srs "$SOURCE_SRS" -t_srs EPSG:3857 \
+  # Read optional clip bounds (prevents edge pixels outside Web Mercator range)
+  CLIP_BOUNDS=$(echo "$DS" | jq -r '.clip_bounds // empty')
+  CLIP_FLAGS=""
+  if [ -n "$CLIP_BOUNDS" ]; then
+    WEST=$(echo "$CLIP_BOUNDS" | jq -r '.[0]')
+    SOUTH=$(echo "$CLIP_BOUNDS" | jq -r '.[1]')
+    EAST=$(echo "$CLIP_BOUNDS" | jq -r '.[2]')
+    NORTH=$(echo "$CLIP_BOUNDS" | jq -r '.[3]')
+    CLIP_FLAGS="-te_srs EPSG:4326 -te $WEST $SOUTH $EAST $NORTH"
+  fi
+
+  # Check if input already has alpha band (skip -dstalpha if so)
+  ALPHA_FLAG="-dstalpha"
+  NBANDS=$(gdalinfo "$RGBA_TIFF" 2>/dev/null | grep -c "^Band ")
+  if [ "$NBANDS" -ge 4 ]; then
+    ALPHA_FLAG=""
+  fi
+
+  gdalwarp -t_srs EPSG:3857 \
     -r nearest \
     -co COMPRESS=DEFLATE -co TILED=YES \
-    -dstalpha \
+    $ALPHA_FLAG \
     -wm 2048 -multi \
     -overwrite \
+    $CLIP_FLAGS \
     $NODATA_FLAGS \
     "$RGBA_TIFF" "$REPROJECTED_TIFF"
   RC=$?
@@ -191,7 +210,7 @@ else
   fi
 
   echo "  Building overviews..."
-  gdaladdo -r nearest "$MBTILES" 2 4 8 16
+  gdaladdo -r nearest "$MBTILES" 2 4 8 16 32 64 128 256
   RC=$?
   if [ $RC -ne 0 ]; then
     echo "WARNING: gdaladdo failed (non-fatal, overviews may be incomplete)"

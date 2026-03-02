@@ -323,8 +323,9 @@
     "band_count": 1,
     "color_table": "clcd.txt",
     "nodata_value": 0,
-    "years": [2020, 2021, 2022, 2023],
+    "years": [2017, 2018, 2019, 2020, 2021, 2022],
     "bounds": [73.0, 18.0, 135.5, 53.5],
+    "clip_bounds": [67, 15, 137, 54],
     "min_zoom": 0,
     "max_zoom": 12,
     "version_check": {
