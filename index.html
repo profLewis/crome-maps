@@ -850,44 +850,6 @@ const LAYERS = [
     legendImg: 'https://geo-backend.inta.gob.ar/geoserver/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=geonode:mnc_verano2024_f300268fd112b0ec3ef5f731edb78882&format=image/png',
     attribution: '&copy; INTA Argentina'
   },
-  // --- Mexico / Central America ---
-  {
-    id: 'mexico-madmex', label: '🇲🇽 Mexico (CONABIO MAD-Mex)', type: 'raster', lang: 'es',
-    legendType: 'list',
-    years: [2017, 2018], defaultYear: 2018,
-    pmtilesFile: (yr) => 'mexico-madmex' + yr + '.pmtiles',
-    legendItems: [
-      {color:'#003d00',label:'Temperate Coniferous'},{color:'#006600',label:'Tropical Evergreen'},
-      {color:'#008c00',label:'Tropical Deciduous'},{color:'#00b300',label:'Cloud Forest'},
-      {color:'#00cc00',label:'Oak Forest'},{color:'#59cc00',label:'Mixed Forest'},
-      {color:'#996600',label:'Xerophilous Shrub'},{color:'#cc9900',label:'Secondary Veg.'},
-      {color:'#e6e600',label:'Temperate Grassland'},{color:'#ffff73',label:'Tropical Grassland'},
-      {color:'#006699',label:'Wetland/Mangrove'},{color:'#ffff00',label:'Cropland'},
-      {color:'#ffc800',label:'Irrigated Agriculture'},{color:'#ff9600',label:'Rainfed Agriculture'},
-      {color:'#993366',label:'Barren'},{color:'#e60000',label:'Urban'},
-      {color:'#0000ff',label:'Water'},{color:'#808080',label:'Other'}
-    ],
-    attribution: '&copy; <a href="https://madmex.conabio.gob.mx/">CONABIO</a> MAD-Mex (PMTiles only — WMS unreliable)'
-  },
-  {
-    id: 'nalcms', label: '🌎 N. America Land Cover (NALCMS)', type: 'raster', lang: 'en',
-    legendType: 'list',
-    years: null, defaultYear: null, dataYear: '2020',
-    pmtilesFile: () => 'nalcms.pmtiles',
-    legendItems: [
-      {color:'#003d00',label:'Temperate/Subpolar Needleleaf'},{color:'#006600',label:'Subpolar Taiga'},
-      {color:'#008c00',label:'Trop./Subtrop. Broadleaf Evergreen'},{color:'#00b300',label:'Trop./Subtrop. Broadleaf Deciduous'},
-      {color:'#00cc00',label:'Temperate/Subpolar Broadleaf Deciduous'},{color:'#59cc00',label:'Mixed Forest'},
-      {color:'#996600',label:'Trop./Subtrop. Shrubland'},{color:'#cc9900',label:'Temperate/Subpolar Shrubland'},
-      {color:'#e6e600',label:'Trop./Subtrop. Grassland'},{color:'#ffff73',label:'Temperate/Subpolar Grassland'},
-      {color:'#b3b300',label:'Subpolar/Polar Shrub-Lichen-Moss'},{color:'#999900',label:'Subpolar/Polar Grass-Lichen-Moss'},
-      {color:'#808000',label:'Subpolar/Polar Barren-Lichen-Moss'},{color:'#006699',label:'Wetland'},
-      {color:'#ffff00',label:'Cropland'},{color:'#993366',label:'Barren Lands'},
-      {color:'#e60000',label:'Urban'},{color:'#0000ff',label:'Water'},
-      {color:'#ffffff',label:'Snow and Ice'}
-    ],
-    attribution: '&copy; CEC/USGS/CONABIO NALCMS (PMTiles only — download required)'
-  },
   // --- South America ---
   {
     id: 'brazil-mapbiomas', label: '🇧🇷 Brazil (MapBiomas)', type: 'raster', lang: 'pt',
@@ -994,96 +956,7 @@ const LAYERS = [
     legendImg: 'https://geoportal.menlhk.go.id/server/services/dunekalks/PL_AR_250K/MapServer/WMSServer?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=0&format=image/png',
     attribution: '&copy; KLHK Indonesia'
   },
-  {
-    id: 'vietnam-jaxa', label: '🇻🇳 Vietnam (JAXA LULC 10m)', type: 'raster', lang: 'vi',
-    legendType: 'list',
-    years: null, defaultYear: null, dataYear: '2020',
-    pmtilesFile: () => 'vietnam-jaxa.pmtiles',
-    legendItems: [
-      {color:'#0000ff',label:'Water'},{color:'#ff0000',label:'Urban'},
-      {color:'#ffff00',label:'Rice Paddy'},{color:'#00b400',label:'Other Crops'},
-      {color:'#c8c8c8',label:'Bare'},{color:'#ffc800',label:'Orchards/Plantations'},
-      {color:'#c89664',label:'Barren'},{color:'#00c800',label:'Forest'},
-      {color:'#006400',label:'Mangrove'},{color:'#00c8c8',label:'Wetland'}
-    ],
-    attribution: '&copy; JAXA EORC Vietnam LULC'
-  },
-  {
-    id: 'japan-hrlulc', label: '🇯🇵 Japan HRLULC (JAXA)', type: 'raster', lang: 'ja',
-    legendType: 'list',
-    years: [2020, 2022, 2024], defaultYear: 2024,
-    pmtilesFile: (yr) => 'japan-hrlulc' + yr + '.pmtiles',
-    legendItems: [
-      {color:'#0000ff',label:'Water'},{color:'#ff0000',label:'Urban'},
-      {color:'#808080',label:'Bare Land'},{color:'#006400',label:'Deciduous Broadleaf'},
-      {color:'#00c800',label:'Deciduous Needleleaf'},{color:'#32b432',label:'Evergreen Broadleaf'},
-      {color:'#c8ffc8',label:'Evergreen Needleleaf'},{color:'#ffff00',label:'Rice Paddy'},
-      {color:'#ffc800',label:'Other Crops'},{color:'#ffffb4',label:'Grassland'},
-      {color:'#dcc896',label:'Bamboo'},{color:'#c89664',label:'Bare Deciduous'},
-      {color:'#ffffff',label:'Snow/Ice'},{color:'#00c8c8',label:'Wetland'},
-      {color:'#9696ff',label:'Aquaculture'}
-    ],
-    attribution: '&copy; JAXA EORC HRLULC'
-  },
-  {
-    id: 'japan-cropland', label: '🇯🇵 Japan Cropland 10m', type: 'raster', lang: 'ja',
-    legendType: 'list',
-    years: null, defaultYear: null, dataYear: '2021',
-    pmtilesFile: () => 'japan-cropland.pmtiles',
-    legendItems: [
-      {color:'#ffff00',label:'Rice Paddy'},{color:'#00c800',label:'Vegetables'},
-      {color:'#ffc800',label:'Orchards'},{color:'#c86432',label:'Tea'},
-      {color:'#00ff00',label:'Pasture'},{color:'#ff0000',label:'Other Crops'},
-      {color:'#9696ff',label:'Flower/Nursery'},{color:'#00c8c8',label:'Aquaculture'},
-      {color:'#c8c8c8',label:'Fallow'}
-    ],
-    attribution: '&copy; <a href="https://doi.org/10.5281/zenodo.7519274">Zenodo</a> CC-BY 4.0'
-  },
-  {
-    id: 'china-cropland10m', label: '🇨🇳 China ChinaCropland10m', type: 'raster', lang: 'zh',
-    legendType: 'list',
-    years: null, defaultYear: null, dataYear: '2020',
-    pmtilesFile: () => 'china-cropland10m.pmtiles',
-    legendItems: [
-      {color:'#009600',label:'Single Crop'},{color:'#ffff00',label:'Double Crop'},
-      {color:'#ffc800',label:'Triple Crop'},{color:'#ff9600',label:'Continuous Crop'},
-      {color:'#ff6400',label:'Irrigated'},{color:'#ff3200',label:'Rainfed'},
-      {color:'#ff0000',label:'Paddy Rice'},{color:'#c80000',label:'Dry Farming'},
-      {color:'#960000',label:'Greenhouse'},{color:'#640000',label:'Orchard/Plantation'}
-    ],
-    attribution: '&copy; <a href="https://doi.org/10.6084/m9.figshare.24633228">Figshare</a>'
-  },
   // --- Africa / Middle East ---
-  {
-    id: 'southafrica-sanlc', label: '🇿🇦 South Africa (SANLC)', type: 'raster', lang: 'en',
-    legendType: 'list',
-    years: null, defaultYear: null, dataYear: '2022',
-    pmtilesFile: () => 'southafrica-sanlc.pmtiles',
-    legendItems: [
-      {color:'#960000',label:'Dense Settlement'},{color:'#ff3232',label:'Built-up'},
-      {color:'#006400',label:'Indigenous Forest'},{color:'#006600',label:'Woodland/Open Bush'},
-      {color:'#008c00',label:'Thicket/Dense Bush'},{color:'#00cc00',label:'Plantation Forest'},
-      {color:'#e6e600',label:'Grassland'},{color:'#b3b300',label:'Shrubland/Low Fynbos'},
-      {color:'#ffff00',label:'Commercial Cropland'},{color:'#ffc800',label:'Irrigated Crops'},
-      {color:'#ff9600',label:'Subsistence Crops'},{color:'#ff6400',label:'Orchards/Vines'},
-      {color:'#0000ff',label:'Water'},{color:'#00c8c8',label:'Wetland'},
-      {color:'#c89664',label:'Bare/Erosion'},{color:'#808080',label:'Mines/Quarries'}
-    ],
-    attribution: '&copy; DFFE South Africa SANLC'
-  },
-  {
-    id: 'kenya-jrc', label: '🇰🇪 Kenya (JRC/GEOGLAM Crops)', type: 'raster', lang: 'en',
-    legendType: 'list',
-    years: null, defaultYear: null, dataYear: '2021',
-    pmtilesFile: () => 'kenya-jrc.pmtiles',
-    legendItems: [
-      {color:'#ffff00',label:'Maize'},{color:'#00c800',label:'Beans'},
-      {color:'#ffc800',label:'Wheat'},{color:'#c86432',label:'Tea'},
-      {color:'#00ff00',label:'Sugarcane'},{color:'#ff0000',label:'Other Crops'},
-      {color:'#00c8c8',label:'Rice'},{color:'#c8c8c8',label:'Non-crop'}
-    ],
-    attribution: '&copy; JRC/EC GEOGLAM'
-  },
   {
     id: 'wapor-lcc', label: '🌍 Africa/ME (WaPOR Land Cover)', type: 'raster', lang: 'en',
     legendType: 'image',
