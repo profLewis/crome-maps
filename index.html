@@ -589,6 +589,26 @@ const LAYERS = [
     attribution: '&copy; <a href="https://github.com/maja601/EuroCrops">EuroCrops</a> CC-BY 4.0'
   },
   {
+    id: 'corine', label: '🇪🇺 Europe (CORINE Land Cover)', type: 'raster', lang: 'en',
+    legendType: 'image',
+    years: [2000, 2006, 2012, 2018], defaultYear: 2018,
+    tileUrl: (yr) => {
+      const layers = {2000:'Corine_Land_Cover_2000_raster11306',2006:'Corine_Land_Cover_2006_raster43084',
+        2012:'Corine_Land_Cover_2012_raster59601',2018:'12'};
+      return wms11('https://image.discomap.eea.europa.eu/arcgis/services/Corine/CLC'+yr+'_WM/MapServer/WMSServer',
+        layers[yr] || '12');
+    },
+    featureInfo: (yr, bbox, x, y) => {
+      const layers = {2000:'Corine_Land_Cover_2000_raster11306',2006:'Corine_Land_Cover_2006_raster43084',
+        2012:'Corine_Land_Cover_2012_raster59601',2018:'12'};
+      return gfi11('https://image.discomap.eea.europa.eu/arcgis/services/Corine/CLC'+yr+'_WM/MapServer/WMSServer',
+        layers[yr] || '12', bbox, x, y);
+    },
+    legendImg: (yr) => 'https://image.discomap.eea.europa.eu/arcgis/services/Corine/CLC'+(yr||2018)+'_WM/MapServer/WMSServer?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=' +
+      ({2000:'Corine_Land_Cover_2000_raster11306',2006:'Corine_Land_Cover_2006_raster43084',2012:'Corine_Land_Cover_2012_raster59601',2018:'12'}[yr||2018] || '12') + '&format=image/png',
+    attribution: '&copy; <a href="https://land.copernicus.eu/en/products/corine-land-cover">Copernicus</a> CORINE Land Cover'
+  },
+  {
     id: 'germany', label: '🇩🇪 Germany (DLR)', type: 'raster', lang: 'en',
     legendType: 'image',
     years: [2017,2018,2019,2020,2021,2022,2023,2024], defaultYear: 2024,
@@ -933,18 +953,6 @@ const LAYERS = [
       {color:'#00c8c8',label:'Wetland'}
     ],
     attribution: '&copy; <a href="https://zenodo.org/records/12779975">CLCD</a> Wuhan Univ. CC-BY-4.0'
-  },
-  // --- Africa / Middle East ---
-  {
-    id: 'turkey-corine', label: '🇹🇷 Turkey (CORINE 2018)', type: 'raster', lang: 'tr',
-    legendType: 'image',
-    years: null, defaultYear: null, dataYear: '2018',
-    pmtilesFile: () => 'turkey-corine.pmtiles',
-    tileUrl: () => wms11('https://image.discomap.eea.europa.eu/arcgis/services/Corine/CLC2018_WM/MapServer/WMSServer', '12'),
-    featureInfo: (yr, bbox, x, y) => gfi11('https://image.discomap.eea.europa.eu/arcgis/services/Corine/CLC2018_WM/MapServer/WMSServer',
-      '12', bbox, x, y),
-    legendImg: 'https://image.discomap.eea.europa.eu/arcgis/services/Corine/CLC2018_WM/MapServer/WMSServer?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=12&format=image/png',
-    attribution: '&copy; Copernicus CORINE Land Cover'
   },
   // --- Global layers ---
   {
@@ -1541,7 +1549,7 @@ const sections = [
   { start: 'spain',          label: 'Europe — Parcels',        open: false },
   { start: 'usda-cdl',       label: 'Americas',                open: false },
   { start: 'australia',      label: 'Oceania',                 open: false },
-  { start: 'deafrica-crop',  label: 'Africa / Middle East',    open: false },
+  { start: 'deafrica-crop',  label: 'Africa',                  open: false },
   { start: 'china-clcd',     label: 'Asia',                    open: false },
   { start: 'modis-landcover', label: 'Global / Satellite',      open: false },
 ];
