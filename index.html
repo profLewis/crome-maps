@@ -95,6 +95,7 @@
   .legend-card.collapsed .legend-card-header { border-bottom: none; }
   .legend-row { display: flex; align-items: center; gap: 6px; transition: opacity 0.15s; }
   .legend-row:hover { background: rgba(0,0,0,0.04); border-radius: 2px; }
+  .legend-separator { border-top: 1px dashed #bbb; margin: 4px 0 2px; padding-top: 3px; font-size: 9px; color: #999; }
   .legend-swatch { width: 14px; height: 14px; border-radius: 2px; flex-shrink: 0; }
   .legend-card-body img { max-width: 230px; display: block; }
   .zoom-hint { font-size: 10px; color: #e67e00; display: none; padding: 4px 0 0; }
@@ -1654,6 +1655,7 @@ LAYERS.forEach(L => {
 
 const map = new maplibregl.Map({
   container: 'map',
+  preserveDrawingBuffer: true,
   style: {
     version: 8,
     glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
@@ -1859,6 +1861,7 @@ LAYERS.forEach(L => {
     });
     sel.addEventListener('change', () => {
       layerState[L.id].year = parseInt(sel.value);
+      delete viewportClasses[L.id];
       if (layerState[L.id].on) {
         if (L.type === 'vector') updateCromeSource(layerState[L.id].year);
         else updateWmsSource(L);
@@ -1968,6 +1971,7 @@ function toggleLayer(L, on) {
       const lid = L.id + '-wms';
       if (map.getLayer(lid)) map.setLayoutProperty(lid, 'visibility', 'none');
       updateSourceBadge(L.id, null);
+      delete viewportClasses[L.id];
     }
   }
   // Toggle country indicator if available
@@ -2163,6 +2167,7 @@ map.on('zoom', updateZoomHints);
 const legendStack = document.getElementById('legend-stack');
 const legendCards = {}; // { layerId: cardElement }
 const legendClosed = {}; // { layerId: true } — user-dismissed cards stay hidden until layer toggled
+const viewportClasses = {}; // { layerId: Set of class labels visible in current viewport }
 
 function makeLegendCard(id, title, bodyContent) {
   const card = document.createElement('div');
@@ -2389,6 +2394,32 @@ function buildEuroCropsBody() {
   return frag;
 }
 
+function buildLegendRow(item, layerId, canFilter) {
+  const isHidden = canFilter && hiddenClasses[layerId].has(item.label);
+  const row = document.createElement('div');
+  row.className = 'legend-row';
+  row.dataset.label = item.label;
+  row.style.cssText = (canFilter ? 'cursor:pointer;' : '') + (isHidden ? 'opacity:0.35;' : '');
+  if (canFilter) {
+    row.addEventListener('click', () => {
+      if (hiddenClasses[layerId].has(item.label)) hiddenClasses[layerId].delete(item.label);
+      else hiddenClasses[layerId].add(item.label);
+      reloadFilteredSource(layerId);
+      if (legendCards[layerId]) { legendCards[layerId].remove(); delete legendCards[layerId]; }
+      updateLegend();
+    });
+  }
+  const sw = document.createElement('div'); sw.className = 'legend-swatch';
+  sw.style.background = isHidden ? '#ccc' : item.color;
+  row.appendChild(sw);
+  const lbl = document.createElement('span');
+  lbl.style.fontSize = '11px';
+  lbl.textContent = item.label;
+  if (isHidden) lbl.style.textDecoration = 'line-through';
+  row.appendChild(lbl);
+  return row;
+}
+
 function buildListBody(items, layerId) {
   const frag = document.createDocumentFragment();
   const L = LAYERS.find(l => l.id === layerId);
@@ -2423,30 +2454,21 @@ function buildListBody(items, layerId) {
     frag.appendChild(btnRow);
   }
 
-  items.forEach(item => {
-    const isHidden = canFilter && hiddenClasses[layerId].has(item.label);
-    const row = document.createElement('div');
-    row.className = 'legend-row';
-    row.style.cssText = (canFilter ? 'cursor:pointer;' : '') + (isHidden ? 'opacity:0.35;' : '');
-    if (canFilter) {
-      row.addEventListener('click', () => {
-        if (hiddenClasses[layerId].has(item.label)) hiddenClasses[layerId].delete(item.label);
-        else hiddenClasses[layerId].add(item.label);
-        reloadFilteredSource(layerId);
-        if (legendCards[layerId]) { legendCards[layerId].remove(); delete legendCards[layerId]; }
-        updateLegend();
-      });
-    }
-    const sw = document.createElement('div'); sw.className = 'legend-swatch';
-    sw.style.background = isHidden ? '#ccc' : item.color;
-    row.appendChild(sw);
-    const lbl = document.createElement('span');
-    lbl.style.fontSize = '11px';
-    lbl.textContent = item.label;
-    if (isHidden) lbl.style.textDecoration = 'line-through';
-    row.appendChild(lbl);
-    frag.appendChild(row);
-  });
+  // Sort visible-in-viewport classes first
+  const visible = viewportClasses[layerId];
+  const inView = visible && visible.size > 0 ? items.filter(i => visible.has(i.label)) : [];
+  const rest = visible && visible.size > 0 ? items.filter(i => !visible.has(i.label)) : items;
+
+  inView.forEach(item => frag.appendChild(buildLegendRow(item, layerId, canFilter)));
+
+  if (inView.length > 0 && rest.length > 0) {
+    const sep = document.createElement('div');
+    sep.className = 'legend-separator';
+    sep.textContent = rest.length + ' more class' + (rest.length !== 1 ? 'es' : '');
+    frag.appendChild(sep);
+  }
+
+  rest.forEach(item => frag.appendChild(buildLegendRow(item, layerId, canFilter)));
   return frag;
 }
 
@@ -2861,7 +2883,126 @@ map.on('idle', () => {
       validateSourceFeatures(L.id, L.sourceLayer);
     }
   });
+  // Viewport-aware legend: detect visible classes and reorder
+  detectAndReorderLegends();
 });
+
+// === Viewport-aware legend: detect visible land-cover classes ===
+function detectAndReorderLegends() {
+  const canvas = map.getCanvas();
+  if (!canvas || canvas.width === 0) return;
+
+  // Draw WebGL canvas onto a 2D canvas for pixel access
+  const w = canvas.width, h = canvas.height;
+  const offscreen = new OffscreenCanvas(w, h);
+  const ctx = offscreen.getContext('2d');
+  ctx.drawImage(canvas, 0, 0);
+  const imgData = ctx.getImageData(0, 0, w, h);
+  const px = imgData.data;
+
+  // Sample every 8th pixel (stride 8 in each axis)
+  const stride = 8;
+  const sampled = [];
+  for (let sy = 0; sy < h; sy += stride) {
+    for (let sx = 0; sx < w; sx += stride) {
+      const i = (sy * w + sx) * 4;
+      if (px[i + 3] < 128) continue; // skip transparent
+      sampled.push([px[i], px[i + 1], px[i + 2]]);
+    }
+  }
+
+  let changed = false;
+
+  LAYERS.forEach(L => {
+    if (L.legendType !== 'list' || !L.legendItems || !layerState[L.id] || !layerState[L.id].on) return;
+
+    const TOL = 16;
+    const detected = new Set();
+    const items = L.legendItems;
+
+    // Parse legend colors once
+    const legendRGB = items.map(item => {
+      const c = item.color;
+      let r, g, b;
+      if (c.startsWith('#')) {
+        const hex = c.length === 4
+          ? c[1]+c[1]+c[2]+c[2]+c[3]+c[3]
+          : c.slice(1);
+        r = parseInt(hex.substring(0,2), 16);
+        g = parseInt(hex.substring(2,4), 16);
+        b = parseInt(hex.substring(4,6), 16);
+      } else {
+        const m = c.match(/\d+/g);
+        r = +m[0]; g = +m[1]; b = +m[2];
+      }
+      return { label: item.label, r, g, b };
+    });
+
+    for (const [sr, sg, sb] of sampled) {
+      for (const lc of legendRGB) {
+        if (Math.abs(sr - lc.r) <= TOL && Math.abs(sg - lc.g) <= TOL && Math.abs(sb - lc.b) <= TOL) {
+          detected.add(lc.label);
+          break;
+        }
+      }
+      if (detected.size === items.length) break; // all found
+    }
+
+    // Check if set changed
+    const prev = viewportClasses[L.id];
+    if (!prev || prev.size !== detected.size || ![...detected].every(l => prev.has(l))) {
+      viewportClasses[L.id] = detected;
+      changed = true;
+    }
+  });
+
+  if (changed) reorderLegendBodies();
+}
+
+function reorderLegendBodies() {
+  LAYERS.forEach(L => {
+    if (L.legendType !== 'list' || !L.legendItems) return;
+    const card = legendCards[L.id];
+    if (!card) return;
+    const body = card.querySelector('.legend-card-body');
+    if (!body) return;
+
+    const visible = viewportClasses[L.id];
+    if (!visible) return;
+
+    const rows = [...body.querySelectorAll('.legend-row')];
+    if (rows.length === 0) return;
+
+    // Remove existing separator
+    const oldSep = body.querySelector('.legend-separator');
+    if (oldSep) oldSep.remove();
+
+    const inView = rows.filter(r => visible.has(r.dataset.label));
+    const rest = rows.filter(r => !visible.has(r.dataset.label));
+
+    // Move in-view rows to top (after buttons row if present)
+    const btnRow = body.querySelector('div[style*="display:flex"][style*="gap:4px"]');
+    let insertBefore = btnRow ? btnRow.nextSibling : body.firstChild;
+
+    inView.forEach(r => body.insertBefore(r, insertBefore));
+
+    // Add separator if both sections have items
+    if (inView.length > 0 && rest.length > 0) {
+      const sep = document.createElement('div');
+      sep.className = 'legend-separator';
+      sep.textContent = rest.length + ' more class' + (rest.length !== 1 ? 'es' : '');
+      // Insert separator after last in-view row
+      const lastInView = inView[inView.length - 1];
+      body.insertBefore(sep, lastInView.nextSibling);
+      // Move rest rows in order after separator
+      let cursor = sep;
+      rest.forEach(r => { body.insertBefore(r, cursor.nextSibling); cursor = r; });
+    } else if (inView.length === 0) {
+      // No classes detected in view — keep original order
+      rows.forEach(r => body.appendChild(r));
+    }
+  });
+}
 </script>
 </body>
 </html>
