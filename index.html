@@ -1074,7 +1074,27 @@ maplibregl.addProtocol('filtered', async (params) => {
     filteredPMTilesInstances[pmtilesUrl] = new pmtiles.PMTiles(pmtilesUrl);
   }
 
-  const result = await filteredPMTilesInstances[pmtilesUrl].getZxy(z, x, y);
+  const p = filteredPMTilesInstances[pmtilesUrl];
+  let result = await p.getZxy(z, x, y);
+
+  // If no tile at this zoom, try parent tiles (overzoom: z > maxzoom)
+  if (!result || !result.data) {
+    let pz = z, px = x, py = y;
+    while (pz > 0 && (!result || !result.data)) {
+      pz--; px = Math.floor(px / 2); py = Math.floor(py / 2);
+      result = await p.getZxy(pz, px, py);
+    }
+  }
+  // Still nothing? Try child tiles (underzoom: z < minzoom)
+  if (!result || !result.data) {
+    const header = await p.getHeader();
+    if (z < header.minZoom) {
+      // Get the top-left child at minZoom that covers this tile
+      let cz = z, cx = x, cy = y;
+      while (cz < header.minZoom) { cz++; cx *= 2; cy *= 2; }
+      result = await p.getZxy(cz, cx, cy);
+    }
+  }
   if (!result || !result.data) {
     return { data: new Uint8Array(0) };
   }
