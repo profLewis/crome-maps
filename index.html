@@ -590,7 +590,7 @@ const LAYERS = [
   },
   {
     id: 'corine', label: '🇪🇺 Europe (CORINE Land Cover)', type: 'raster', lang: 'en',
-    legendType: 'image',
+    legendType: 'list',
     years: [2000, 2006, 2012, 2018], defaultYear: 2018,
     tileUrl: (yr) => {
       const layers = {2000:'Corine_Land_Cover_2000_raster11306',2006:'Corine_Land_Cover_2006_raster43084',
@@ -604,20 +604,51 @@ const LAYERS = [
       return gfi11('https://image.discomap.eea.europa.eu/arcgis/services/Corine/CLC'+yr+'_WM/MapServer/WMSServer',
         layers[yr] || '12', bbox, x, y);
     },
-    legendImg: (yr) => 'https://image.discomap.eea.europa.eu/arcgis/services/Corine/CLC'+(yr||2018)+'_WM/MapServer/WMSServer?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=' +
-      ({2000:'Corine_Land_Cover_2000_raster11306',2006:'Corine_Land_Cover_2006_raster43084',2012:'Corine_Land_Cover_2012_raster59601',2018:'12'}[yr||2018] || '12') + '&format=image/png',
+    legendItems: [
+      {color:'#e6004d',label:'Continuous Urban'},{color:'#ff0000',label:'Discontinuous Urban'},
+      {color:'#cc4df2',label:'Industrial/Commercial'},{color:'#ffffa8',label:'Arable Land'},
+      {color:'#e6e600',label:'Rice Fields'},{color:'#e68000',label:'Vineyards'},
+      {color:'#f2a64d',label:'Fruit Trees'},{color:'#e6e64d',label:'Pastures'},
+      {color:'#ffe64d',label:'Complex Cultivation'},{color:'#e6cc4d',label:'Ag. + Natural Veg.'},
+      {color:'#80ff00',label:'Broad-leaved Forest'},{color:'#00a600',label:'Coniferous Forest'},
+      {color:'#4dff00',label:'Mixed Forest'},{color:'#ccf24d',label:'Natural Grassland'},
+      {color:'#a6ff80',label:'Transitional Woodland'},{color:'#cccccc',label:'Bare/Sparse'},
+      {color:'#a6a6e6',label:'Wetlands'},{color:'#80f2e6',label:'Water Bodies'},
+      {color:'#e6f2ff',label:'Sea/Ocean'}
+    ],
     attribution: '&copy; <a href="https://land.copernicus.eu/en/products/corine-land-cover">Copernicus</a> CORINE Land Cover'
   },
   {
-    id: 'germany', label: '🇩🇪 Germany (DLR)', type: 'raster', lang: 'en',
+    // JRC EU Crop Map — WMS lacks CORS, requires PMTiles conversion
+    id: 'jrc-eucropmap', label: '🇪🇺 JRC EU Crop Map', type: 'raster', lang: 'en',
     legendType: 'image',
+    years: [2018, 2022], defaultYear: 2018,
+    tileUrl: (yr) => wms11('https://jeodpp.jrc.ec.europa.eu/jeodpp/services/ows/wms/landcover/eucropmap',
+      'LC.EUCROPMAP.' + yr),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://jeodpp.jrc.ec.europa.eu/jeodpp/services/ows/wms/landcover/eucropmap',
+      'LC.EUCROPMAP.' + yr, bbox, x, y),
+    legendImg: (yr) => 'https://jeodpp.jrc.ec.europa.eu/jeodpp/services/ows/wms/landcover/eucropmap?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=LC.EUCROPMAP.' + yr + '&format=image/png',
+    attribution: '&copy; JRC/EC EU Crop Map'
+  },
+  {
+    id: 'germany', label: '🇩🇪 Germany (DLR)', type: 'raster', lang: 'en',
+    legendType: 'list',
     years: [2017,2018,2019,2020,2021,2022,2023,2024], defaultYear: 2024,
     pmtilesFile: (yr) => 'germany' + yr + '.pmtiles',
     tileUrl: (yr) => wms11('https://geoservice.dlr.de/eoc/land/wms', 'CROPTYPES_DE_P1Y',
       '&TIME=' + yr + '-01-01T00:00:00Z'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://geoservice.dlr.de/eoc/land/wms',
       'CROPTYPES_DE_P1Y', bbox, x, y, '&TIME=' + yr + '-01-01T00:00:00Z'),
-    legendImg: 'https://geoservice.dlr.de/eoc/land/wms?request=GetLegendGraphic&version=1.1.1&format=image/png&width=20&height=20&layer=CROPTYPES_DE_P1Y',
+    legendItems: [
+      {color:'#ffff73',label:'Winter Wheat'},{color:'#d1ff73',label:'Corn/Maize'},
+      {color:'#e600a9',label:'Canola/Rapeseed'},{color:'#ff7f7f',label:'Sugar Beet'},
+      {color:'#a87000',label:'Potatoes'},{color:'#ffaa00',label:'Root Crops'},
+      {color:'#70a800',label:'Grassland/Pasture'},{color:'#89cd66',label:'Vegetables/Other'},
+      {color:'#8400a8',label:'Legumes'},{color:'#e69800',label:'Spring Cereals'},
+      {color:'#d7c29e',label:'Fallow/Bare'},{color:'#cccccc',label:'Urban/Infrastructure'},
+      {color:'#0070ff',label:'Water'},{color:'#73dfff',label:'Other'},
+      {color:'#73b2ff',label:'Mixed/Unknown'}
+    ],
     attribution: '&copy; <a href="https://geoservice.dlr.de">DLR EOC</a> CC-BY 4.0'
   },
   {
@@ -725,22 +756,32 @@ const LAYERS = [
   },
   {
     id: 'switzerland', label: '🇨🇭 Switzerland (BLW)', type: 'raster', lang: 'de',
-    legendType: 'image',
+    legendType: 'list',
     years: null, defaultYear: null, dataYear: '2025',
     tileUrl: () => wms13('https://wms.geo.admin.ch/', 'ch.blw.landwirtschaftliche-nutzungsflaechen'),
     featureInfo: (yr, bbox, i, j) => gfi13('https://wms.geo.admin.ch/',
       'ch.blw.landwirtschaftliche-nutzungsflaechen', bbox, i, j),
-    legendImg: 'https://wms.geo.admin.ch/?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=ch.blw.landwirtschaftliche-nutzungsflaechen&format=image/png',
+    legendItems: [
+      {color:'#ffff99',label:'Arable Land'},{color:'#66c0cc',label:'Permanent Grassland'},
+      {color:'#cc9966',label:'Permanent Crops'},{color:'#99cc99',label:'Other Agricultural'},
+      {color:'#006400',label:'Alpine Pasture'}
+    ],
     attribution: '&copy; <a href="https://geo.admin.ch">swisstopo</a>/BLW'
   },
   {
     id: 'norway', label: '🇳🇴 Norway (NIBIO AR5)', type: 'raster', lang: 'no',
-    legendType: 'image', minZoom: 15, countryNum: 578, indicatorColor: '#2196F3',
+    legendType: 'list', minZoom: 15, countryNum: 578, indicatorColor: '#2196F3',
     years: null, defaultYear: null, dataYear: 'current',
     tileUrl: () => wms11('https://wms.nibio.no/cgi-bin/ar5', 'Arealtype'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://wms.nibio.no/cgi-bin/ar5',
       'Arealtype', bbox, x, y).replace('info_format=application/json', 'info_format=application/vnd.ogc.gml'),
-    legendImg: 'https://wms.nibio.no/cgi-bin/ar5?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=Arealtype&format=image/png',
+    legendItems: [
+      {color:'#ffff00',label:'Fully Cultivated'},{color:'#d2b48c',label:'Surface Cultivated'},
+      {color:'#90ee90',label:'Infield Pasture'},{color:'#006400',label:'Forest'},
+      {color:'#deb887',label:'Bog/Mire'},{color:'#a9dfbf',label:'Open Firm Land'},
+      {color:'#ff0000',label:'Built-up'},{color:'#808080',label:'Transport'},
+      {color:'#0000ff',label:'Water'},{color:'#ffffff',label:'Glacier'}
+    ],
     attribution: '&copy; <a href="https://nibio.no">NIBIO</a> Norway'
   },
   // --- Additional European parcel layers (from ARCcrop) ---
@@ -839,7 +880,7 @@ const LAYERS = [
   {
     id: 'usda-cdl', label: '🇺🇸 USA (USDA CDL)', type: 'raster', lang: 'en',
     legendType: 'list',
-    years: [2020, 2021, 2022, 2023, 2024], defaultYear: 2024,
+    years: Array.from({length:17}, (_,i) => 2008+i), defaultYear: 2024,
     pmtilesFile: (yr) => 'usda-cdl' + yr + '.pmtiles',
     legendItems: [
       {color:'#ffd400',label:'Corn'},{color:'#ff2626',label:'Cotton'},
@@ -861,7 +902,7 @@ const LAYERS = [
   },
   {
     id: 'canada', label: '🇨🇦 Canada (AAFC)', type: 'raster', lang: 'en',
-    legendType: 'image',
+    legendType: 'list', filterable: false,
     years: Array.from({length:16}, (_,i) => 2009+i), defaultYear: 2024,
     tileUrl: (yr) => wms11(
       'https://www.agr.gc.ca/imagery-images/services/annual_crop_inventory/' + yr + '/ImageServer/WMSServer',
@@ -869,7 +910,16 @@ const LAYERS = [
     featureInfo: (yr, bbox, x, y) => gfi11(
       'https://www.agr.gc.ca/imagery-images/services/annual_crop_inventory/' + yr + '/ImageServer/WMSServer',
       yr + ':annual_crop_inventory', bbox, x, y),
-    legendImg: (yr) => 'https://www.agr.gc.ca/imagery-images/services/annual_crop_inventory/' + yr + '/ImageServer/WMSServer?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=' + yr + ':annual_crop_inventory&format=image/png',
+    legendItems: [
+      {color:'#cccc00',label:'Wheat'},{color:'#ffcc33',label:'Barley'},
+      {color:'#993399',label:'Canola/Rapeseed'},{color:'#ffff00',label:'Corn'},
+      {color:'#dae31d',label:'Soybeans'},{color:'#cc9900',label:'Lentils'},
+      {color:'#cc9933',label:'Oats'},{color:'#b85900',label:'Flaxseed'},
+      {color:'#cc6699',label:'Peas'},{color:'#d6ff70',label:'Grassland/Pasture'},
+      {color:'#92a55b',label:'Forage'},{color:'#00cc00',label:'Other Crops'},
+      {color:'#006600',label:'Forest'},{color:'#3333ff',label:'Water'},
+      {color:'#996666',label:'Fallow/Exposed'},{color:'#8f6c3d',label:'Developed/Urban'}
+    ],
     attribution: '&copy; AAFC Canada Annual Crop Inventory'
   },
   {
@@ -909,7 +959,7 @@ const LAYERS = [
   // --- Oceania ---
   {
     id: 'australia', label: '🇦🇺 Australia (ABARES)', type: 'raster', lang: 'en',
-    legendType: 'image',
+    legendType: 'list',
     years: null, defaultYear: null, dataYear: '2023',
     tileUrl: () => wms13(
       'https://di-daa.img.arcgis.com/arcgis/services/Land_and_vegetation/Catchment_Scale_Land_Use_Simplified/ImageServer/WMSServer',
@@ -917,39 +967,64 @@ const LAYERS = [
     featureInfo: (yr, bbox, i, j) => gfi13(
       'https://di-daa.img.arcgis.com/arcgis/services/Land_and_vegetation/Catchment_Scale_Land_Use_Simplified/ImageServer/WMSServer',
       'Catchment_Scale_Land_Use_Simplified', bbox, i, j),
-    legendImg: 'https://di-daa.img.arcgis.com/arcgis/services/Land_and_vegetation/Catchment_Scale_Land_Use_Simplified/ImageServer/WMSServer?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=Catchment_Scale_Land_Use_Simplified&format=image/png',
+    legendItems: [
+      {color:'#298944',label:'Nature Conservation'},{color:'#ffffe5',label:'Grazing Modified Pastures'},
+      {color:'#9666cc',label:'Grazing Native Vegetation'},{color:'#c9beff',label:'Production Forestry'},
+      {color:'#ffff00',label:'Cropping'},{color:'#ffd37f',label:'Perennial Horticulture'},
+      {color:'#de87dd',label:'Other Agriculture'},{color:'#adffb5',label:'Irrigated Agriculture'},
+      {color:'#c9b854',label:'Land in Transition'},{color:'#ffaa00',label:'Intensive Uses'},
+      {color:'#ff0000',label:'Intensive Animal'},{color:'#9b0000',label:'Manufacturing'},
+      {color:'#9c542e',label:'Mining'},{color:'#b2b2b2',label:'Transport/Infrastructure'},
+      {color:'#ffc9be',label:'Residential'},{color:'#47828f',label:'Estuary/Coastal'},
+      {color:'#0000ff',label:'Water'}
+    ],
     attribution: '&copy; ABARES Australia'
   },
   {
     id: 'dea-landcover', label: '🇦🇺 Australia Land Cover (DEA)', type: 'raster', lang: 'en',
-    legendType: 'image',
+    legendType: 'list',
     years: Array.from({length:33}, (_,i) => 1988+i), defaultYear: 2020,
     tileUrl: (yr) => wms11('https://ows.dea.ga.gov.au/', 'ga_ls_landcover',
       '&time=' + yr + '-01-01'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://ows.dea.ga.gov.au/',
       'ga_ls_landcover', bbox, x, y, '&time=' + yr + '-01-01'),
-    legendImg: 'https://ows.dea.ga.gov.au/legend/ga_ls_landcover/level3/legend.png',
+    legendItems: [
+      {color:'#0e7912',label:'Dense Vegetation'},{color:'#2d8d2f',label:'Closed Vegetation'},
+      {color:'#50a052',label:'Open Vegetation'},{color:'#75b476',label:'Sparse Vegetation'},
+      {color:'#e4e034',label:'Cultivated'},{color:'#fad26e',label:'Natural Bare'},
+      {color:'#f3ab69',label:'Bare/Cleared'},{color:'#85cafd',label:'Water'},
+      {color:'#da5c69',label:'Artificial/Urban'}
+    ],
     attribution: '&copy; <a href="https://www.dea.ga.gov.au/">Digital Earth Australia</a> CC-BY 4.0'
   },
   {
     id: 'newzealand', label: '🇳🇿 New Zealand (LCDB)', type: 'raster', lang: 'en',
-    legendType: 'image',
+    legendType: 'list',
     years: null, defaultYear: null, dataYear: '2024',
     tileUrl: () => wms11('https://maps.scinfo.org.nz/lcdb/wms', 'lcdb_lcdb6'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://maps.scinfo.org.nz/lcdb/wms',
       'lcdb_lcdb6', bbox, x, y),
-    legendImg: 'https://maps.scinfo.org.nz/lcdb/wms?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=lcdb_lcdb6&format=image/png',
+    legendItems: [
+      {color:'#284600',label:'Indigenous Forest'},{color:'#38a800',label:'Broadleaved Hardwoods'},
+      {color:'#a3d400',label:'Exotic Forest'},{color:'#beff8c',label:'High Producing Grassland'},
+      {color:'#e6e68c',label:'Low Producing Grassland'},{color:'#ffd37f',label:'Cropland'},
+      {color:'#8c7922',label:'Manuka/Kanuka'},{color:'#b8ab6a',label:'Depleted Grassland'},
+      {color:'#9cba9c',label:'Sub Alpine Shrubland'},{color:'#d4cdae',label:'Sand/Gravel'},
+      {color:'#bee8ff',label:'Lake/Pond'},{color:'#a87000',label:'Built-up/Urban'}
+    ],
     attribution: '&copy; Manaaki Whenua / Landcare Research NZ'
   },
   // --- Africa ---
   {
     id: 'deafrica-crop', label: '🌍 Africa Cropland (DE Africa)', type: 'raster', lang: 'en',
-    legendType: 'image',
+    legendType: 'list',
     years: null, defaultYear: null, dataYear: '2019',
     tileUrl: () => wms13('https://ows.digitalearth.africa/wms', 'crop_mask'),
     featureInfo: (yr, bbox, i, j) => gfi13('https://ows.digitalearth.africa/wms',
       'crop_mask', bbox, i, j),
-    legendImg: 'https://ows.digitalearth.africa/legend/crop_mask/green/legend.png',
+    legendItems: [
+      {color:'#00ff00',label:'Cropland'}
+    ],
     attribution: '&copy; Digital Earth Africa'
   },
   // --- Asia ---
@@ -970,45 +1045,63 @@ const LAYERS = [
   // --- Global layers ---
   {
     id: 'modis-landcover', label: '🛰️ MODIS Land Cover (Global)', type: 'raster', lang: 'en',
-    legendType: 'image',
+    legendType: 'list',
     years: Array.from({length:24}, (_,i) => 2001+i), defaultYear: 2023,
     tileUrl: (yr) => wms11('https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi',
       'MODIS_Combined_L3_IGBP_Land_Cover_Type_Annual', '&time=' + yr + '-01-01'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi',
       'MODIS_Combined_L3_IGBP_Land_Cover_Type_Annual', bbox, x, y, '&time=' + yr + '-01-01'),
-    legendImg: 'https://gibs.earthdata.nasa.gov/legends/MODIS_IGBP_Land_Cover_Type_H.png',
+    legendItems: [
+      {color:'#05450a',label:'Evergreen Needleleaf'},{color:'#086a10',label:'Evergreen Broadleaf'},
+      {color:'#54a708',label:'Deciduous Needleleaf'},{color:'#78d203',label:'Deciduous Broadleaf'},
+      {color:'#009900',label:'Mixed Forests'},{color:'#c6b044',label:'Closed Shrublands'},
+      {color:'#dcd159',label:'Open Shrublands'},{color:'#dade48',label:'Woody Savannas'},
+      {color:'#fbff13',label:'Savannas'},{color:'#b6ff05',label:'Grasslands'},
+      {color:'#27ff87',label:'Permanent Wetlands'},{color:'#c24f44',label:'Croplands'},
+      {color:'#a5a5a5',label:'Urban/Built-up'},{color:'#ff6d4c',label:'Cropland/Natural Mosaic'},
+      {color:'#69fff8',label:'Snow/Ice'},{color:'#f9ffa4',label:'Barren'},
+      {color:'#1c0dff',label:'Water Bodies'}
+    ],
     attribution: '&copy; NASA EOSDIS GIBS / MODIS MCD12Q1'
   },
   {
     id: 'gfsad-croplands', label: '🌾 Global Croplands (GFSAD)', type: 'raster', lang: 'en',
-    legendType: 'image',
+    legendType: 'slider',
     years: null, defaultYear: null, dataYear: '2000',
     tileUrl: () => wms11('https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi',
       'Agricultural_Lands_Croplands_2000'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi',
       'Agricultural_Lands_Croplands_2000', bbox, x, y),
-    legendImg: 'https://gibs.earthdata.nasa.gov/legends/Agricultural_Lands_Croplands_2000_H.png',
+    sliderConfig: {
+      min: 0, max: 100, step: 5, default: 0,
+      label: 'Min. Cropland %',
+      lumMax: 242, lumMin: 37
+    },
+    legendItems: [
+      {color:'#fef4dd',label:'0-10%'},{color:'#feedd0',label:'10-20%'},
+      {color:'#fee4bf',label:'20-30%'},{color:'#fddaad',label:'30-40%'},
+      {color:'#fcc389',label:'40-50%'},{color:'#faae6d',label:'50-60%'},
+      {color:'#f88f43',label:'60-70%'},{color:'#e06117',label:'70-80%'},
+      {color:'#d2510c',label:'80-90%'},{color:'#6b2704',label:'90-100%'}
+    ],
     attribution: '&copy; NASA EOSDIS GIBS / Ramankutty et al. 2008'
   },
-  {
-    id: 'jrc-eucropmap', label: '🇪🇺 JRC EU Crop Map', type: 'raster', lang: 'en',
-    legendType: 'image',
-    years: [2018, 2022], defaultYear: 2018,
-    tileUrl: (yr) => wms11('https://jeodpp.jrc.ec.europa.eu/jeodpp/services/ows/wms/landcover/eucropmap',
-      'LC.EUCROPMAP.' + yr),
-    featureInfo: (yr, bbox, x, y) => gfi11('https://jeodpp.jrc.ec.europa.eu/jeodpp/services/ows/wms/landcover/eucropmap',
-      'LC.EUCROPMAP.' + yr, bbox, x, y),
-    legendImg: (yr) => 'https://jeodpp.jrc.ec.europa.eu/jeodpp/services/ows/wms/landcover/eucropmap?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=LC.EUCROPMAP.' + yr + '&format=image/png',
-    attribution: '&copy; JRC/EC EU Crop Map'
-  },
+  // JRC EU Crop Map moved to Europe — Classification section
   {
     id: 'esa-worldcover', label: '🛰️ ESA WorldCover', type: 'raster', lang: 'en',
-    legendType: 'image',
+    legendType: 'list',
     years: [2020, 2021], defaultYear: 2021,
     tileUrl: (yr) => wms11('https://services.terrascope.be/wms/v2', 'WORLDCOVER_' + yr + '_MAP'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://services.terrascope.be/wms/v2',
       'WORLDCOVER_' + yr + '_MAP', bbox, x, y),
-    legendImg: (yr) => 'https://services.terrascope.be/wms/v2?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=WORLDCOVER_' + yr + '_MAP&format=image/png',
+    legendItems: [
+      {color:'#006400',label:'Tree Cover'},{color:'#ffbb22',label:'Shrubland'},
+      {color:'#ffff4c',label:'Grassland'},{color:'#f096ff',label:'Cropland'},
+      {color:'#fa0000',label:'Built-up'},{color:'#b4b4b4',label:'Bare/Sparse'},
+      {color:'#f0f0f0',label:'Snow/Ice'},{color:'#0064c8',label:'Permanent Water'},
+      {color:'#0096a0',label:'Herbaceous Wetland'},{color:'#00cf75',label:'Mangroves'},
+      {color:'#fae6a0',label:'Moss/Lichen'}
+    ],
     attribution: '&copy; ESA/Copernicus WorldCover'
   },
   {
@@ -1075,6 +1168,7 @@ maplibregl.addProtocol('pmtiles', protocol.tile);
 // make hidden-class pixels transparent based on their color.
 const filteredPMTilesInstances = {};
 let filteredCacheBuster = {}; // per-layer counter to force tile reload on toggle
+const layerThreshold = {}; // per-layer threshold for slider-type layers
 
 maplibregl.addProtocol('filtered', async (params) => {
   // URL format: filtered://layerId/pmtilesUrl/{z}/{x}/{y}
@@ -1214,6 +1308,90 @@ maplibregl.addProtocol('filtered', async (params) => {
   return { data: new Uint8Array(arrayBuffer) };
 });
 
+// === Filtered WMS tile protocol ===
+// For WMS-backed raster layers with legendType 'list', fetch tiles via fetch()
+// and apply the same pixel-level class filtering as the PMTiles filtered protocol.
+maplibregl.addProtocol('filtered-wms', async (params) => {
+  // URL format: filtered-wms://layerId/wmsUrl?cb=N
+  const url = params.url.replace('filtered-wms://', '');
+  const firstSlash = url.indexOf('/');
+  const layerId = url.substring(0, firstSlash);
+  const wmsUrl = url.substring(firstSlash + 1).replace(/\?cb=\d+$/, '');
+
+  // Fetch the WMS tile
+  let data;
+  try {
+    const resp = await fetch(wmsUrl);
+    if (!resp.ok) return { data: new Uint8Array(0) };
+    data = await resp.arrayBuffer();
+  } catch (e) {
+    return { data: new Uint8Array(0) };
+  }
+  if (!data || data.byteLength === 0) return { data: new Uint8Array(0) };
+
+  const L = LAYERS.find(l => l.id === layerId);
+  const hasHidden = hiddenClasses[layerId] && hiddenClasses[layerId].size > 0;
+  const hasThreshold = L && L.legendType === 'slider' && L.sliderConfig && (layerThreshold[layerId] || 0) > 0;
+
+  // If no filtering needed, return raw tile
+  if (!hasHidden && !hasThreshold) {
+    return { data: new Uint8Array(data) };
+  }
+
+  // Decode PNG, apply filtering, re-encode
+  const blob = new Blob([data], { type: 'image/png' });
+  const imageBitmap = await createImageBitmap(blob);
+  const canvas = new OffscreenCanvas(imageBitmap.width, imageBitmap.height);
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(imageBitmap, 0, 0);
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const d = imageData.data;
+
+  // Threshold-based filtering for slider layers (luminance → percentage)
+  if (hasThreshold) {
+    const threshold = layerThreshold[layerId];
+    const {lumMax, lumMin} = L.sliderConfig;
+    for (let i = 0; i < d.length; i += 4) {
+      if (d[i+3] === 0) continue;
+      const lum = 0.299 * d[i] + 0.587 * d[i+1] + 0.114 * d[i+2];
+      const pct = Math.max(0, Math.min(100, (lumMax - lum) / (lumMax - lumMin) * 100));
+      if (pct < threshold) d[i+3] = 0;
+    }
+  }
+
+  // Class-based filtering for list layers
+  if (hasHidden && L && L.legendItems) {
+    const hiddenRGBs = [];
+    L.legendItems.forEach(item => {
+      if (hiddenClasses[layerId].has(item.label)) {
+        const hex = item.color;
+        hiddenRGBs.push([
+          parseInt(hex.slice(1,3), 16),
+          parseInt(hex.slice(3,5), 16),
+          parseInt(hex.slice(5,7), 16)
+        ]);
+      }
+    });
+    if (hiddenRGBs.length > 0) {
+      const tol = 12;
+      for (let i = 0; i < d.length; i += 4) {
+        if (d[i+3] === 0) continue;
+        for (const [hr, hg, hb] of hiddenRGBs) {
+          if (Math.abs(d[i] - hr) < tol && Math.abs(d[i+1] - hg) < tol && Math.abs(d[i+2] - hb) < tol) {
+            d[i+3] = 0;
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  ctx.putImageData(imageData, 0, 0);
+  const filteredBlob = await canvas.convertToBlob({ type: 'image/png' });
+  const arrayBuffer = await filteredBlob.arrayBuffer();
+  return { data: new Uint8Array(arrayBuffer) };
+});
+
 // Force reload of filtered tiles when classes change
 function reloadFilteredSource(layerId) {
   const lid = layerId + '-wms';
@@ -1221,16 +1399,23 @@ function reloadFilteredSource(layerId) {
   const L = LAYERS.find(l => l.id === layerId);
   if (!L) return;
   const yr = layerState[layerId].year;
-  const filename = L.pmtilesFile ? L.pmtilesFile(yr) : pmtilesFilename(layerId, yr);
   filteredCacheBuster[layerId] = (filteredCacheBuster[layerId] || 0) + 1;
   const cb = filteredCacheBuster[layerId];
-  // Remove and re-add source with new cache buster to force tile reload
   const opacity = map.getPaintProperty(lid, 'raster-opacity') || currentOpacity;
   if (map.getLayer(lid)) map.removeLayer(lid);
   if (map.getSource(layerId)) map.removeSource(layerId);
+
+  // Use filtered-wms for WMS-backed layers, filtered for PMTiles-backed
+  let tileUrl;
+  if (L.tileUrl) {
+    tileUrl = 'filtered-wms://' + layerId + '/' + L.tileUrl(yr) + '?cb=' + cb;
+  } else {
+    const filename = L.pmtilesFile ? L.pmtilesFile(yr) : pmtilesFilename(layerId, yr);
+    tileUrl = 'filtered://' + layerId + '/' + pmtilesBase + '/' + filename + '/{z}/{x}/{y}?cb=' + cb;
+  }
   map.addSource(layerId, {
     type: 'raster', tileSize: 256,
-    tiles: ['filtered://' + layerId + '/' + pmtilesBase + '/' + filename + '/{z}/{x}/{y}?cb=' + cb],
+    tiles: [tileUrl],
     attribution: L.attribution || ''
   });
   map.addLayer({
@@ -1406,12 +1591,21 @@ LAYERS.forEach(L => {
   if (L.type === 'raster') {
     const yr = L.defaultYear;
     if (L.tileUrl) {
-      // WMS-backed raster — set up WMS tile source (PMTiles will override later if available)
-      initSources[L.id] = {
-        type: 'raster', tileSize: 256,
-        tiles: [L.tileUrl(yr)],
-        attribution: L.attribution || ''
-      };
+      // WMS-backed raster — use filtered-wms protocol for filterable list/slider layers
+      const wmsUrl = L.tileUrl(yr);
+      if ((L.legendType === 'list' || L.legendType === 'slider') && L.legendItems && L.filterable !== false) {
+        initSources[L.id] = {
+          type: 'raster', tileSize: 256,
+          tiles: ['filtered-wms://' + L.id + '/' + wmsUrl],
+          attribution: L.attribution || ''
+        };
+      } else {
+        initSources[L.id] = {
+          type: 'raster', tileSize: 256,
+          tiles: [wmsUrl],
+          attribution: L.attribution || ''
+        };
+      }
     } else {
       // PMTiles-only raster — use filtered protocol for all (supports class toggle + underzoom compositing)
       const fn = typeof L.pmtilesFile === 'function' ? L.pmtilesFile(yr) : (L.id + '.pmtiles');
@@ -1818,8 +2012,24 @@ async function activateRasterWithFallback(L) {
     updateSourceBadge(L.id, 'pmtiles');
   } else if (L.tileUrl) {
     console.log('[Fallback] Using WMS for', L.id, yr);
-    // Use WMS (already set up, just show it)
-    if (map.getLayer(lid)) {
+    // For filterable list/slider WMS layers, re-create source with filtered-wms protocol
+    if ((L.legendType === 'list' || L.legendType === 'slider') && L.legendItems && L.filterable !== false) {
+      if (map.getLayer(lid)) map.removeLayer(lid);
+      if (map.getSource(L.id)) map.removeSource(L.id);
+      const cb = filteredCacheBuster[L.id] || 0;
+      map.addSource(L.id, {
+        type: 'raster', tileSize: 256,
+        tiles: ['filtered-wms://' + L.id + '/' + L.tileUrl(yr) + '?cb=' + cb],
+        attribution: L.attribution || ''
+      });
+      const layerDef = {
+        id: lid, type: 'raster', source: L.id,
+        paint: { 'raster-opacity': currentOpacity },
+        layout: { visibility: 'visible' }
+      };
+      if (L.minZoom) layerDef.minzoom = L.minZoom;
+      map.addLayer(layerDef);
+    } else if (map.getLayer(lid)) {
       map.setLayoutProperty(lid, 'visibility', 'visible');
       map.setPaintProperty(lid, 'raster-opacity', currentOpacity);
     }
@@ -2181,45 +2391,52 @@ function buildEuroCropsBody() {
 
 function buildListBody(items, layerId) {
   const frag = document.createDocumentFragment();
+  const L = LAYERS.find(l => l.id === layerId);
+  const canFilter = !L || L.filterable !== false;
+
   if (!hiddenClasses[layerId]) hiddenClasses[layerId] = new Set();
 
-  // All / None buttons
-  const btnRow = document.createElement('div');
-  btnRow.style.cssText = 'display:flex;gap:4px;margin-bottom:4px;';
-  const selAll = document.createElement('button');
-  selAll.textContent = 'All';
-  selAll.style.cssText = 'font-size:9px;padding:1px 4px;cursor:pointer;border:1px solid #ccc;border-radius:2px;background:#f5f5f5;';
-  selAll.addEventListener('click', () => {
-    hiddenClasses[layerId].clear();
-    reloadFilteredSource(layerId);
-    if (legendCards[layerId]) { legendCards[layerId].remove(); delete legendCards[layerId]; }
-    updateLegend();
-  });
-  const selNone = document.createElement('button');
-  selNone.textContent = 'None';
-  selNone.style.cssText = selAll.style.cssText;
-  selNone.addEventListener('click', () => {
-    items.forEach(item => hiddenClasses[layerId].add(item.label));
-    reloadFilteredSource(layerId);
-    if (legendCards[layerId]) { legendCards[layerId].remove(); delete legendCards[layerId]; }
-    updateLegend();
-  });
-  btnRow.appendChild(selAll);
-  btnRow.appendChild(selNone);
-  frag.appendChild(btnRow);
-
-  items.forEach(item => {
-    const isHidden = hiddenClasses[layerId].has(item.label);
-    const row = document.createElement('div');
-    row.className = 'legend-row';
-    row.style.cssText = 'cursor:pointer;' + (isHidden ? 'opacity:0.35;' : '');
-    row.addEventListener('click', () => {
-      if (hiddenClasses[layerId].has(item.label)) hiddenClasses[layerId].delete(item.label);
-      else hiddenClasses[layerId].add(item.label);
+  if (canFilter) {
+    // All / None buttons
+    const btnRow = document.createElement('div');
+    btnRow.style.cssText = 'display:flex;gap:4px;margin-bottom:4px;';
+    const selAll = document.createElement('button');
+    selAll.textContent = 'All';
+    selAll.style.cssText = 'font-size:9px;padding:1px 4px;cursor:pointer;border:1px solid #ccc;border-radius:2px;background:#f5f5f5;';
+    selAll.addEventListener('click', () => {
+      hiddenClasses[layerId].clear();
       reloadFilteredSource(layerId);
       if (legendCards[layerId]) { legendCards[layerId].remove(); delete legendCards[layerId]; }
       updateLegend();
     });
+    const selNone = document.createElement('button');
+    selNone.textContent = 'None';
+    selNone.style.cssText = selAll.style.cssText;
+    selNone.addEventListener('click', () => {
+      items.forEach(item => hiddenClasses[layerId].add(item.label));
+      reloadFilteredSource(layerId);
+      if (legendCards[layerId]) { legendCards[layerId].remove(); delete legendCards[layerId]; }
+      updateLegend();
+    });
+    btnRow.appendChild(selAll);
+    btnRow.appendChild(selNone);
+    frag.appendChild(btnRow);
+  }
+
+  items.forEach(item => {
+    const isHidden = canFilter && hiddenClasses[layerId].has(item.label);
+    const row = document.createElement('div');
+    row.className = 'legend-row';
+    row.style.cssText = (canFilter ? 'cursor:pointer;' : '') + (isHidden ? 'opacity:0.35;' : '');
+    if (canFilter) {
+      row.addEventListener('click', () => {
+        if (hiddenClasses[layerId].has(item.label)) hiddenClasses[layerId].delete(item.label);
+        else hiddenClasses[layerId].add(item.label);
+        reloadFilteredSource(layerId);
+        if (legendCards[layerId]) { legendCards[layerId].remove(); delete legendCards[layerId]; }
+        updateLegend();
+      });
+    }
     const sw = document.createElement('div'); sw.className = 'legend-swatch';
     sw.style.background = isHidden ? '#ccc' : item.color;
     row.appendChild(sw);
@@ -2230,6 +2447,47 @@ function buildListBody(items, layerId) {
     row.appendChild(lbl);
     frag.appendChild(row);
   });
+  return frag;
+}
+
+function buildSliderBody(L) {
+  const frag = document.createDocumentFragment();
+  const config = L.sliderConfig;
+  const threshold = layerThreshold[L.id] || config.default;
+
+  // Gradient bar showing the color ramp
+  const gradient = document.createElement('div');
+  gradient.style.cssText = 'height:12px;border-radius:3px;margin-bottom:6px;border:1px solid #ccc;' +
+    'background:linear-gradient(to right,' + L.legendItems.map(i => i.color).join(',') + ');';
+  frag.appendChild(gradient);
+
+  // Slider label
+  const label = document.createElement('div');
+  label.style.cssText = 'font-size:11px;margin-bottom:2px;font-weight:500;';
+  label.textContent = config.label + ': \u2265 ' + threshold + '%';
+  frag.appendChild(label);
+
+  // Range slider
+  const slider = document.createElement('input');
+  slider.type = 'range';
+  slider.min = config.min;
+  slider.max = config.max;
+  slider.step = config.step;
+  slider.value = threshold;
+  slider.style.cssText = 'width:100%;margin:4px 0;';
+  slider.addEventListener('input', () => {
+    layerThreshold[L.id] = parseInt(slider.value);
+    label.textContent = config.label + ': \u2265 ' + slider.value + '%';
+    reloadFilteredSource(L.id);
+  });
+  frag.appendChild(slider);
+
+  // Min/max labels
+  const range = document.createElement('div');
+  range.style.cssText = 'display:flex;justify-content:space-between;font-size:9px;color:#666;';
+  range.innerHTML = '<span>' + config.min + '%</span><span>' + config.max + '%</span>';
+  frag.appendChild(range);
+
   return frag;
 }
 
@@ -2279,6 +2537,9 @@ function updateLegend() {
     } else if (L.legendType === 'list') {
       title = L.label + (yr ? ' ' + yr : (L.dataYear ? ' ' + L.dataYear : ''));
       body = buildListBody(L.legendItems, L.id);
+    } else if (L.legendType === 'slider') {
+      title = L.label + (yr ? ' ' + yr : (L.dataYear ? ' ' + L.dataYear : ''));
+      body = buildSliderBody(L);
     } else if (L.legendType === 'image') {
       try {
         const url = typeof L.legendImg === 'function' ? L.legendImg(yr) : L.legendImg;
