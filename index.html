@@ -838,12 +838,25 @@ const LAYERS = [
   // --- Non-European layers ---
   {
     id: 'usda-cdl', label: '🇺🇸 USA (USDA CDL)', type: 'raster', lang: 'en',
-    legendType: 'image',
-    years: Array.from({length:16}, (_,i) => 2008+i), defaultYear: 2023,
-    tileUrl: (yr) => wms11('https://nassgeodata.gmu.edu/CropScapeService/wms_cdlall.cgi', 'cdl_' + yr),
-    featureInfo: (yr, bbox, x, y) => gfi11('https://nassgeodata.gmu.edu/CropScapeService/wms_cdlall.cgi',
-      'cdl_' + yr, bbox, x, y),
-    legendImg: (yr) => 'https://nassgeodata.gmu.edu/CropScapeService/wms_cdlall.cgi?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=cdl_' + yr + '&format=image/png',
+    legendType: 'list',
+    years: [2020, 2021, 2022, 2023, 2024], defaultYear: 2024,
+    pmtilesFile: (yr) => 'usda-cdl' + yr + '.pmtiles',
+    legendItems: [
+      {color:'#ffd400',label:'Corn'},{color:'#ff2626',label:'Cotton'},
+      {color:'#00a9e6',label:'Rice'},{color:'#ff9e0f',label:'Sorghum'},
+      {color:'#267300',label:'Soybeans'},{color:'#ffff00',label:'Sunflower'},
+      {color:'#e2007f',label:'Barley'},{color:'#d9b56c',label:'Spring Wheat'},
+      {color:'#a87000',label:'Winter Wheat'},{color:'#ae017e',label:'Rye'},
+      {color:'#a15889',label:'Oats'},{color:'#d1ff00',label:'Canola'},
+      {color:'#ffa8e3',label:'Alfalfa'},{color:'#a5f58d',label:'Other Hay'},
+      {color:'#a900e6',label:'Sugarbeets'},{color:'#a80000',label:'Dry Beans'},
+      {color:'#732600',label:'Potatoes'},{color:'#b380ff',label:'Sugarcane'},
+      {color:'#53ff00',label:'Peas'},{color:'#f5a27a',label:'Tomatoes'},
+      {color:'#bfbf7a',label:'Fallow/Idle'},{color:'#e9ffbe',label:'Grass/Pasture'},
+      {color:'#95ce93',label:'Forest'},{color:'#c7d79e',label:'Shrubland'},
+      {color:'#9c9c9c',label:'Developed'},{color:'#4d70a3',label:'Water'},
+      {color:'#80b3b3',label:'Wetlands'},{color:'#ccbfa3',label:'Barren'}
+    ],
     attribution: '&copy; USDA NASS CropScape'
   },
   {
@@ -1083,24 +1096,72 @@ maplibregl.addProtocol('filtered', async (params) => {
   }
 
   const p = filteredPMTilesInstances[pmtilesUrl];
+  const header = await p.getHeader();
   let result = await p.getZxy(z, x, y);
 
-  // If no tile at this zoom, try parent tiles (overzoom: z > maxzoom)
+  // Overzoom (z > maxZoom): extract correct sub-quadrant from parent tile at maxZoom
   if (!result || !result.data) {
-    let pz = z, px = x, py = y;
-    while (pz > 0 && (!result || !result.data)) {
-      pz--; px = Math.floor(px / 2); py = Math.floor(py / 2);
-      result = await p.getZxy(pz, px, py);
+    if (z > header.maxZoom) {
+      const mz = header.maxZoom;
+      const diff = z - mz;
+      const parentX = x >> diff;
+      const parentY = y >> diff;
+      const parentResult = await p.getZxy(mz, parentX, parentY);
+      if (parentResult && parentResult.data) {
+        const scale = Math.pow(2, diff);
+        const subSize = 256 / scale;
+        const subX = (x - parentX * scale) * subSize;
+        const subY = (y - parentY * scale) * subSize;
+        const blob = new Blob([parentResult.data], { type: 'image/png' });
+        const bmp = await createImageBitmap(blob);
+        const canvas = new OffscreenCanvas(256, 256);
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(bmp, subX, subY, subSize, subSize, 0, 0, 256, 256);
+        bmp.close();
+        const compositeBlob = await canvas.convertToBlob({ type: 'image/png' });
+        result = { data: await compositeBlob.arrayBuffer() };
+      }
     }
   }
-  // Still nothing? Try child tiles (underzoom: z < minzoom)
+  // Underzoom (z < minZoom): composite child tiles at minZoom
   if (!result || !result.data) {
-    const header = await p.getHeader();
     if (z < header.minZoom) {
-      // Get the top-left child at minZoom that covers this tile
-      let cz = z, cx = x, cy = y;
-      while (cz < header.minZoom) { cz++; cx *= 2; cy *= 2; }
-      result = await p.getZxy(cz, cx, cy);
+      const mz = header.minZoom;
+      const scale = Math.pow(2, mz - z);
+      const tileSize = 256;
+      const childSize = tileSize / scale;
+      const baseX = x * scale;
+      const baseY = y * scale;
+
+      // Fetch all child tiles in parallel
+      const fetches = [];
+      for (let dy = 0; dy < scale; dy++) {
+        for (let dx = 0; dx < scale; dx++) {
+          fetches.push(
+            p.getZxy(mz, baseX + dx, baseY + dy).then(t => ({ dx, dy, t }))
+          );
+        }
+      }
+      const children = (await Promise.all(fetches)).filter(c => c.t && c.t.data);
+
+      if (children.length > 0) {
+        // Decode all child tile images in parallel
+        const bitmaps = await Promise.all(children.map(async ({ dx, dy, t }) => {
+          const blob = new Blob([t.data], { type: 'image/png' });
+          const bmp = await createImageBitmap(blob);
+          return { dx, dy, bmp };
+        }));
+
+        // Draw each child tile into its position on a composite canvas
+        const canvas = new OffscreenCanvas(tileSize, tileSize);
+        const ctx = canvas.getContext('2d');
+        for (const { dx, dy, bmp } of bitmaps) {
+          ctx.drawImage(bmp, dx * childSize, dy * childSize, childSize, childSize);
+          bmp.close();
+        }
+        const compositeBlob = await canvas.convertToBlob({ type: 'image/png' });
+        result = { data: await compositeBlob.arrayBuffer() };
+      }
     }
   }
   if (!result || !result.data) {
@@ -1352,21 +1413,13 @@ LAYERS.forEach(L => {
         attribution: L.attribution || ''
       };
     } else {
-      // PMTiles-only raster — use filtered protocol for list-type layers (supports class toggle)
+      // PMTiles-only raster — use filtered protocol for all (supports class toggle + underzoom compositing)
       const fn = typeof L.pmtilesFile === 'function' ? L.pmtilesFile(yr) : (L.id + '.pmtiles');
-      if (L.legendType === 'list' && L.legendItems) {
-        initSources[L.id] = {
-          type: 'raster', tileSize: 256,
-          tiles: ['filtered://' + L.id + '/' + pmtilesBase + '/' + fn + '/{z}/{x}/{y}'],
-          attribution: L.attribution || ''
-        };
-      } else {
-        initSources[L.id] = {
-          type: 'raster', tileSize: 256,
-          url: 'pmtiles://' + pmtilesBase + '/' + fn,
-          attribution: L.attribution || ''
-        };
-      }
+      initSources[L.id] = {
+        type: 'raster', tileSize: 256,
+        tiles: ['filtered://' + L.id + '/' + pmtilesBase + '/' + fn + '/{z}/{x}/{y}'],
+        attribution: L.attribution || ''
+      };
     }
     const layerDef = {
       id: L.id + '-wms', type: 'raster', source: L.id,
@@ -1749,20 +1802,12 @@ async function activateRasterWithFallback(L) {
     if (map.getSource(L.id)) map.removeSource(L.id);
 
     // Use filtered protocol for list-type layers (supports class toggle)
-    if (L.legendType === 'list' && L.legendItems) {
-      const cb = filteredCacheBuster[L.id] || 0;
-      map.addSource(L.id, {
-        type: 'raster', tileSize: 256,
-        tiles: ['filtered://' + L.id + '/' + pmtilesBase + '/' + filename + '/{z}/{x}/{y}?cb=' + cb],
-        attribution: L.attribution || ''
-      });
-    } else {
-      map.addSource(L.id, {
-        type: 'raster', tileSize: 256,
-        url: 'pmtiles://' + pmtilesBase + '/' + filename,
-        attribution: L.attribution || ''
-      });
-    }
+    const cb = filteredCacheBuster[L.id] || 0;
+    map.addSource(L.id, {
+      type: 'raster', tileSize: 256,
+      tiles: ['filtered://' + L.id + '/' + pmtilesBase + '/' + filename + '/{z}/{x}/{y}?cb=' + cb],
+      attribution: L.attribution || ''
+    });
     const layerDef = {
       id: lid, type: 'raster', source: L.id,
       paint: { 'raster-opacity': currentOpacity },
