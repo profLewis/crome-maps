@@ -177,7 +177,7 @@ def download_tile(tile):
     url = build_url(bbox)
     for attempt in range(MAX_RETRIES):
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": "crome-maps-downloader/1.0"})
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"})
             with urllib.request.urlopen(req, timeout=30) as resp:
                 data = resp.read()
                 if len(data) > 100:

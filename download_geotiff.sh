@@ -93,7 +93,7 @@ else
   echo "[1/5] Downloading GeoTIFF..."
   curl -L -C - --retry 3 --retry-delay 10 \
     --progress-bar \
-    -H "User-Agent: crome-maps-downloader/1.0" \
+    -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36" \
     -o "$RAW_TIFF" "$SOURCE_URL"
   RC=$?
   if [ $RC -ne 0 ] || [ ! -f "$RAW_TIFF" ]; then
@@ -103,6 +103,25 @@ else
   fi
   RAW_SIZE=$(ls -lh "$RAW_TIFF" | awk '{print $5}')
   echo "  Downloaded: $RAW_SIZE"
+fi
+
+# If download is a ZIP, extract the .tif file from it
+if file "$RAW_TIFF" 2>/dev/null | grep -q "Zip archive"; then
+  echo "  Extracting .tif from ZIP archive..."
+  TIF_NAME=$(unzip -Z1 "$RAW_TIFF" | grep '\.tif$' | head -1)
+  if [ -z "$TIF_NAME" ]; then
+    echo "ERROR: No .tif found in ZIP archive"
+    exit 1
+  fi
+  echo "  Found: $TIF_NAME"
+  ZIP_FILE="${RAW_TIFF}.zip"
+  mv "$RAW_TIFF" "$ZIP_FILE"
+  unzip -o -j "$ZIP_FILE" "$TIF_NAME" -d "$WORKDIR"
+  EXTRACTED="$WORKDIR/$(basename "$TIF_NAME")"
+  mv "$EXTRACTED" "$RAW_TIFF"
+  rm -f "$ZIP_FILE"
+  RAW_SIZE=$(ls -lh "$RAW_TIFF" | awk '{print $5}')
+  echo "  Extracted: $RAW_SIZE"
 fi
 
 # ---- Step 2: Apply color table (single-band categorical → RGBA) ----
