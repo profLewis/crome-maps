@@ -566,12 +566,12 @@ function gfi13(base, layers, bbox, i, j, extra) {
 const LAYERS = [
   {
     id: 'crome', label: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 England (CROME)', type: 'vector',
-    legendType: 'crome', defaultOn: true,
+    legendType: 'crome', defaultOn: true, bounds: [-5.7, 49.9, 1.8, 55.8],
     years: [2020, 2021, 2022, 2023, 2024], defaultYear: 2024
   },
   {
     id: 'crome-raster', label: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 England (CROME Raster)', type: 'raster', lang: 'en',
-    legendType: 'crome',
+    legendType: 'crome', bounds: [-5.7, 49.9, 1.8, 55.8],
     years: [2020, 2021, 2022, 2023, 2024], defaultYear: 2020,
     pmtilesFile: (yr) => 'crome-raster' + yr + '.pmtiles',
     tileUrl: (yr) => wms11('https://environment.data.gov.uk/spatialdata/crop-map-of-england-' + yr + '/wms',
@@ -592,7 +592,7 @@ const LAYERS = [
   },
   {
     id: 'corine', label: '🇪🇺 Europe (CORINE Land Cover)', type: 'raster', lang: 'en',
-    legendType: 'list',
+    legendType: 'list', bounds: [-32, 27, 45, 72],
     years: [2000, 2006, 2012, 2018], defaultYear: 2018,
     tileUrl: (yr) => {
       const layers = {2000:'Corine_Land_Cover_2000_raster11306',2006:'Corine_Land_Cover_2006_raster43084',
@@ -623,7 +623,7 @@ const LAYERS = [
   {
     // JRC EU Crop Map — WMS lacks CORS, so no pixel filtering
     id: 'jrc-eucropmap', label: '🇪🇺 JRC EU Crop Map', type: 'raster', lang: 'en',
-    legendType: 'list', filterable: false,
+    legendType: 'list', filterable: false, bounds: [-12, 35, 45, 72],
     years: [2018, 2022], defaultYear: 2018,
     tileUrl: (yr) => wms11('https://jeodpp.jrc.ec.europa.eu/jeodpp/services/ows/wms/landcover/eucropmap',
       'LC.EUCROPMAP.' + yr),
@@ -641,7 +641,7 @@ const LAYERS = [
   },
   {
     id: 'germany', label: '🇩🇪 Germany (DLR)', type: 'raster', lang: 'en',
-    legendType: 'list',
+    legendType: 'list', bounds: [5.9, 47.3, 15.0, 55.1],
     years: [2017,2018,2019,2020,2021,2022,2023,2024], defaultYear: 2024,
     pmtilesFile: (yr) => 'germany' + yr + '.pmtiles',
     tileUrl: (yr) => wms11('https://geoservice.dlr.de/eoc/land/wms', 'CROPTYPES_DE_P1Y',
@@ -662,7 +662,7 @@ const LAYERS = [
   },
   {
     id: 'france', label: '🇫🇷 France (RPG)', type: 'raster', lang: 'fr',
-    legendType: 'list', filterable: false,
+    legendType: 'list', filterable: false, bounds: [-5.1, 41.3, 9.6, 51.1],
     years: Array.from({length:18}, (_,i) => 2007+i), defaultYear: 2024,
     pmtilesFile: (yr) => 'france' + yr + '.pmtiles',
     tileUrl: (yr) => wms13('https://data.geopf.fr/wms-r/wms', 'LANDUSE.AGRICULTURE' + yr),
@@ -795,7 +795,7 @@ const LAYERS = [
   },
   {
     id: 'switzerland', label: '🇨🇭 Switzerland (BLW)', type: 'raster', lang: 'de',
-    legendType: 'list',
+    legendType: 'list', bounds: [5.9, 45.8, 10.5, 47.8],
     years: null, defaultYear: null, dataYear: '2025',
     tileUrl: () => wms13('https://wms.geo.admin.ch/', 'ch.blw.landwirtschaftliche-nutzungsflaechen'),
     featureInfo: (yr, bbox, i, j) => gfi13('https://wms.geo.admin.ch/',
@@ -946,7 +946,7 @@ const LAYERS = [
   // --- Non-European layers ---
   {
     id: 'usda-cdl', label: '🇺🇸 USA (USDA CDL)', type: 'raster', lang: 'en',
-    legendType: 'list',
+    legendType: 'list', bounds: [-125, 24.4, -66.9, 49.4],
     years: Array.from({length:17}, (_,i) => 2008+i), defaultYear: 2024,
     pmtilesFile: (yr) => 'usda-cdl' + yr + '.pmtiles',
     legendItems: [
@@ -969,7 +969,7 @@ const LAYERS = [
   },
   {
     id: 'canada', label: '🇨🇦 Canada (AAFC)', type: 'raster', lang: 'en',
-    legendType: 'list', filterable: false,
+    legendType: 'list', filterable: false, bounds: [-141, 41.7, -52, 72],
     years: Array.from({length:16}, (_,i) => 2009+i), defaultYear: 2024,
     tileUrl: (yr) => wms11(
       'https://www.agr.gc.ca/imagery-images/services/annual_crop_inventory/' + yr + '/ImageServer/WMSServer',
@@ -991,7 +991,7 @@ const LAYERS = [
   },
   {
     id: 'argentina', label: '🇦🇷 Argentina (GeoINTA)', type: 'raster', lang: 'es',
-    legendType: 'list', filterable: false,
+    legendType: 'list', filterable: false, bounds: [-73.6, -55.1, -53.6, -21.8],
     years: null, defaultYear: null, dataYear: '2024',
     tileUrl: () => wms13('https://geo-backend.inta.gob.ar/geoserver/wms',
       'geonode:mnc_verano2024_f300268fd112b0ec3ef5f731edb78882'),
@@ -1005,7 +1005,7 @@ const LAYERS = [
   // --- South America ---
   {
     id: 'brazil-mapbiomas', label: '🇧🇷 Brazil (MapBiomas)', type: 'raster', lang: 'pt',
-    legendType: 'list',
+    legendType: 'list', bounds: [-74, -33.8, -34, 5.3],
     years: [2020, 2021, 2022, 2023], defaultYear: 2023,
     pmtilesFile: (yr) => 'brazil-mapbiomas' + yr + '.pmtiles',
     legendItems: [
@@ -1028,7 +1028,7 @@ const LAYERS = [
   // --- Oceania ---
   {
     id: 'australia', label: '🇦🇺 Australia (ABARES)', type: 'raster', lang: 'en',
-    legendType: 'list',
+    legendType: 'list', bounds: [112, -44, 154, -10],
     years: null, defaultYear: null, dataYear: '2023',
     tileUrl: () => wms13(
       'https://di-daa.img.arcgis.com/arcgis/services/Land_and_vegetation/Catchment_Scale_Land_Use_Simplified/ImageServer/WMSServer',
@@ -1051,7 +1051,7 @@ const LAYERS = [
   },
   {
     id: 'dea-landcover', label: '🇦🇺 Australia Land Cover (DEA)', type: 'raster', lang: 'en',
-    legendType: 'list',
+    legendType: 'list', bounds: [112, -44, 154, -10],
     years: Array.from({length:33}, (_,i) => 1988+i), defaultYear: 2020,
     tileUrl: (yr) => wms11('https://ows.dea.ga.gov.au/', 'ga_ls_landcover',
       '&time=' + yr + '-01-01'),
@@ -1068,7 +1068,7 @@ const LAYERS = [
   },
   {
     id: 'newzealand', label: '🇳🇿 New Zealand (LCDB)', type: 'raster', lang: 'en',
-    legendType: 'list',
+    legendType: 'list', bounds: [166, -47.5, 178.6, -34.4],
     years: null, defaultYear: null, dataYear: '2024',
     tileUrl: () => wms11('https://maps.scinfo.org.nz/lcdb/wms', 'lcdb_lcdb6'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://maps.scinfo.org.nz/lcdb/wms',
@@ -1086,7 +1086,7 @@ const LAYERS = [
   // --- Africa ---
   {
     id: 'deafrica-crop', label: '🌍 Africa Cropland (DE Africa)', type: 'raster', lang: 'en',
-    legendType: 'list',
+    legendType: 'list', bounds: [-18, -35, 52, 38],
     years: null, defaultYear: null, dataYear: '2019',
     tileUrl: () => wms13('https://ows.digitalearth.africa/wms', 'crop_mask'),
     featureInfo: (yr, bbox, i, j) => gfi13('https://ows.digitalearth.africa/wms',
@@ -1109,7 +1109,8 @@ const LAYERS = [
       {color:'#c89664',label:'Barren'},{color:'#ff0000',label:'Impervious'},
       {color:'#00c8c8',label:'Wetland'}
     ],
-    attribution: '&copy; <a href="https://zenodo.org/records/12779975">CLCD</a> Wuhan Univ. CC-BY-4.0'
+    attribution: '&copy; <a href="https://zenodo.org/records/12779975">CLCD</a> Wuhan Univ. CC-BY-4.0',
+    bounds: [73, 18, 135, 54]
   },
   // --- Global layers ---
   {
