@@ -654,51 +654,70 @@ const LAYERS = [
   },
   {
     id: 'france', label: '🇫🇷 France (RPG)', type: 'raster', lang: 'fr',
-    legendType: 'image',
+    legendType: 'list', filterable: false,
     years: Array.from({length:18}, (_,i) => 2007+i), defaultYear: 2024,
     pmtilesFile: (yr) => 'france' + yr + '.pmtiles',
     tileUrl: (yr) => wms13('https://data.geopf.fr/wms-r/wms', 'LANDUSE.AGRICULTURE' + yr),
     featureInfo: (yr, bbox, i, j) => gfi13('https://data.geopf.fr/wms-r/wms',
       'LANDUSE.AGRICULTURE' + yr, bbox, i, j, '&format=image/png'),
-    legendImg: (yr) => 'https://data.geopf.fr/wms-r/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=LANDUSE.AGRICULTURE' + yr + '&format=image/png',
+    legendItems: [
+      {color:'#ffff90',label:'Wheat'},{color:'#ffecb0',label:'Barley'},
+      {color:'#f0ff70',label:'Maize'},{color:'#e0e050',label:'Other Cereals'},
+      {color:'#ff0000',label:'Rapeseed'},{color:'#ffa0d0',label:'Sunflower'},
+      {color:'#80ff80',label:'Protein Crops'},{color:'#90c0ff',label:'Fodder'},
+      {color:'#c8ff64',label:'Temp. Grassland'},{color:'#70cc40',label:'Perm. Grassland'},
+      {color:'#8000ff',label:'Vineyards'},{color:'#c040c0',label:'Orchards'},
+      {color:'#e0e0e0',label:'Other'}
+    ],
     attribution: '&copy; <a href="https://geoservices.ign.fr/">IGN</a> RPG Licence Ouverte'
   },
   {
     id: 'netherlands', label: '🇳🇱 Netherlands (BRP)', type: 'raster', lang: 'nl',
-    legendType: 'image', minZoom: 12, countryNum: 528, indicatorColor: '#FF9800',
+    legendType: 'list', filterable: false, minZoom: 12, countryNum: 528, indicatorColor: '#FF9800',
     years: null, defaultYear: null, dataYear: '2024',
     tileUrl: () => wms11('https://service.pdok.nl/rvo/brpgewaspercelen/wms/v1_0', 'BrpGewas'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://service.pdok.nl/rvo/brpgewaspercelen/wms/v1_0',
       'BrpGewas', bbox, x, y),
-    legendImg: 'https://service.pdok.nl/rvo/brpgewaspercelen/wms/v1_0?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=BrpGewas&format=image/png',
+    legendItems: [
+      {color:'#66bb6a',label:'Crop Parcels'}
+    ],
     attribution: '&copy; <a href="https://www.pdok.nl/">PDOK</a>/RVO CC0'
   },
   {
     id: 'belgium-fl', label: '🇧🇪 Belgium - Flanders', type: 'raster', lang: 'nl',
-    legendType: 'image', minZoom: 12, countryNum: 56, indicatorColor: '#E91E63',
+    legendType: 'list', minZoom: 12, countryNum: 56, indicatorColor: '#E91E63',
     years: Array.from({length:17}, (_,i) => 2008+i), defaultYear: 2024,
     tileUrl: (yr) => wms13('https://geo.api.vlaanderen.be/ALV/wms', 'LbGebrPerc' + yr),
     featureInfo: (yr, bbox, i, j) => gfi13('https://geo.api.vlaanderen.be/ALV/wms',
       'LbGebrPerc' + yr, bbox, i, j),
-    legendImg: (yr) => 'https://geo.api.vlaanderen.be/ALV/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=LbGebrPerc' + yr + '&format=image/png',
+    legendItems: [
+      {color:'#ff0000',label:'Ag. Infrastructure'},{color:'#ff7fff',label:'Vegetables/Herbs'},
+      {color:'#bfff7f',label:'Grassland'},{color:'#ffff7f',label:'Fodder Crops'},
+      {color:'#7f1f00',label:'Potatoes'},{color:'#7f5f00',label:'Sugar Beets'},
+      {color:'#ffdf7f',label:'Cereals/Legumes'},{color:'#ffff00',label:'Maize'},
+      {color:'#7fffff',label:'Flax/Hemp'},{color:'#cccc66',label:'Other Crops'},
+      {color:'#ffbf7f',label:'Fruit/Nuts'},{color:'#7fcc66',label:'Woody Crops'},
+      {color:'#7fbfff',label:'Water'}
+    ],
     attribution: '&copy; Dept. Landbouw &amp; Visserij Vlaanderen'
   },
   {
     id: 'belgium-wa', label: '🇧🇪 Belgium - Wallonia', type: 'raster', lang: 'fr',
-    legendType: 'image', minZoom: 12, countryNum: 56, indicatorColor: '#AD1457',
+    legendType: 'list', filterable: false, minZoom: 12, countryNum: 56, indicatorColor: '#AD1457',
     years: [2019,2020,2021,2022,2023], defaultYear: 2022,
     tileUrl: (yr) => wms13(
       'https://geoservices.wallonie.be/arcgis/services/AGRICULTURE/SIGEC_PARC_AGRI_ANON__' + yr + '/MapServer/WMSServer', '1'),
     featureInfo: (yr, bbox, i, j) => gfi13(
       'https://geoservices.wallonie.be/arcgis/services/AGRICULTURE/SIGEC_PARC_AGRI_ANON__' + yr + '/MapServer/WMSServer',
       '1', bbox, i, j),
-    legendImg: (yr) => 'https://geoservices.wallonie.be/arcgis/services/AGRICULTURE/SIGEC_PARC_AGRI_ANON__' + yr
-      + '/MapServer/WMSServer?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=1&format=image/png',
+    legendItems: [
+      {color:'#66bb6a',label:'Agricultural Parcels'}
+    ],
     attribution: '&copy; SPW Wallonie SIGEC'
   },
   {
     id: 'austria', label: '🇦🇹 Austria (INVEKOS)', type: 'raster', lang: 'de',
-    legendType: 'image', minZoom: 12, countryNum: 40, indicatorColor: '#9C27B0',
+    legendType: 'list', filterable: false, minZoom: 12, countryNum: 40, indicatorColor: '#9C27B0',
     years: Array.from({length:11}, (_,i) => 2015+i), defaultYear: 2024,
     tileUrl: (yr) => {
       const lyr = yr <= 2021 ? 'inspire_schlaege_' + yr + '_polygon'
@@ -710,37 +729,39 @@ const LAYERS = [
                              : 'inspire_schlaege_' + yr + '-2_polygon';
       return gfi13('https://inspire.lfrz.gv.at/009501/wms', lyr, bbox, i, j);
     },
-    legendImg: (yr) => {
-      const lyr = yr <= 2021 ? 'inspire_schlaege_' + yr + '_polygon'
-                             : 'inspire_schlaege_' + yr + '-2_polygon';
-      return 'https://inspire.lfrz.gv.at/009501/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=' + lyr + '&format=image/png';
-    },
+    legendItems: [
+      {color:'#555555',label:'Agricultural Parcels'}
+    ],
     attribution: '&copy; AMA/BML Austria INVEKOS'
   },
   {
     id: 'denmark', label: '🇩🇰 Denmark (FVM Marker)', type: 'raster', lang: 'da',
-    legendType: 'image',
+    legendType: 'list', filterable: false,
     years: Array.from({length:18}, (_,i) => 2008+i), defaultYear: 2025,
     tileUrl: (yr) => wms11('https://geodata.fvm.dk/geoserver/Marker/wms', 'Marker_' + yr),
     featureInfo: (yr, bbox, x, y) => gfi11('https://geodata.fvm.dk/geoserver/Marker/wms',
       'Marker_' + yr, bbox, x, y),
-    legendImg: (yr) => 'https://geodata.fvm.dk/geoserver/Marker/wms?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=Marker_' + yr + '&format=image/png',
+    legendItems: [
+      {color:'#ffe4b2',label:'Field Parcels'}
+    ],
     attribution: '&copy; <a href="https://fvm.dk">FVM Denmark</a>'
   },
   {
     id: 'luxembourg', label: '🇱🇺 Luxembourg (ASTA LPIS)', type: 'raster', lang: 'fr',
-    legendType: 'image', minZoom: 12, countryNum: 442, indicatorColor: '#00BCD4',
+    legendType: 'list', filterable: false, minZoom: 12, countryNum: 442, indicatorColor: '#00BCD4',
     years: Array.from({length:10}, (_,i) => 2016+i), defaultYear: 2025,
     tileUrl: (yr) => wms13('https://wms.inspire.geoportail.lu/geoserver/af/wms',
       'LU.ExistingLandUseObject_LPIS_' + yr),
     featureInfo: (yr, bbox, i, j) => gfi13('https://wms.inspire.geoportail.lu/geoserver/af/wms',
       'LU.ExistingLandUseObject_LPIS_' + yr, bbox, i, j),
-    legendImg: (yr) => 'https://wms.inspire.geoportail.lu/geoserver/af/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=LU.ExistingLandUseObject_LPIS_' + yr + '&format=image/png',
+    legendItems: [
+      {color:'#b4e66e',label:'LPIS Parcels'}
+    ],
     attribution: '&copy; ASTA Luxembourg'
   },
   {
     id: 'portugal', label: '🇵🇹 Portugal (IFAP iSIP)', type: 'raster', lang: 'pt',
-    legendType: 'image', minZoom: 12, countryNum: 620, indicatorColor: '#FF5722',
+    legendType: 'list', filterable: false, minZoom: 12, countryNum: 620, indicatorColor: '#FF5722',
     years: [2017,2018,2019], defaultYear: 2019,
     tileUrl: (yr) => {
       const regions = ['AML','Algarve','Centro','Norte',
@@ -752,7 +773,9 @@ const LAYERS = [
       const layers = 'isip.data:parcelas.AML.' + yr + 'jun10';
       return gfi11('https://www.ifap.pt/isip/ows/isip.data/wms', layers, bbox, x, y);
     },
-    legendImg: (yr) => 'https://www.ifap.pt/isip/ows/isip.data/wms?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=isip.data:parcelas.AML.' + yr + 'jun10&format=image/png',
+    legendItems: [
+      {color:'#000000',label:'Agricultural Parcels'}
+    ],
     attribution: '&copy; IFAP Portugal iSIP'
   },
   {
@@ -788,93 +811,111 @@ const LAYERS = [
   // --- Additional European parcel layers (from ARCcrop) ---
   {
     id: 'spain', label: '🇪🇸 Spain (SIGPAC)', type: 'raster', lang: 'es',
-    legendType: 'image', minZoom: 12,
+    legendType: 'list', filterable: false, minZoom: 12,
     years: null, defaultYear: null, dataYear: '2025',
     tileUrl: () => wms13('https://wms.mapa.gob.es/sigpac/wms', 'AU.Sigpac:recinto'),
     featureInfo: (yr, bbox, i, j) => gfi13('https://wms.mapa.gob.es/sigpac/wms',
       'AU.Sigpac:recinto', bbox, i, j),
-    legendImg: 'https://wms.mapa.gob.es/sigpac/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=AU.Sigpac:recinto&format=image/png',
+    legendItems: [
+      {color:'#66bb6a',label:'SIGPAC Parcels'}
+    ],
     attribution: '&copy; FEGA/MAPA Spain SIGPAC'
   },
   {
     id: 'czechia', label: '🇨🇿 Czechia (LPIS)', type: 'raster', lang: 'cs',
-    legendType: 'image', minZoom: 12,
+    legendType: 'list', filterable: false, minZoom: 12,
     years: null, defaultYear: null, dataYear: '2024',
     tileUrl: () => wms11('https://mze.gov.cz/public/app/wms/public_DPB_PB_OPV.fcgi', 'DPB_UCINNE'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://mze.gov.cz/public/app/wms/public_DPB_PB_OPV.fcgi',
       'DPB_UCINNE', bbox, x, y),
-    legendImg: 'https://mze.gov.cz/public/app/wms/public_DPB_PB_OPV.fcgi?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=DPB_UCINNE&format=image/png',
+    legendItems: [
+      {color:'#66bb6a',label:'LPIS Parcels'}
+    ],
     attribution: '&copy; MZe Czech Republic LPIS'
   },
   {
     id: 'slovenia', label: '🇸🇮 Slovenia (GERK)', type: 'raster', lang: 'sl',
-    legendType: 'image', minZoom: 12,
+    legendType: 'list', filterable: false, minZoom: 12,
     years: null, defaultYear: null, dataYear: '2024',
     tileUrl: () => wms13('https://storitve.eprostor.gov.si/ows-pub-wms/SI.MKGP.GERK/ows', 'RKG_BLOK_GERK'),
     featureInfo: (yr, bbox, i, j) => gfi13('https://storitve.eprostor.gov.si/ows-pub-wms/SI.MKGP.GERK/ows',
       'RKG_BLOK_GERK', bbox, i, j),
-    legendImg: 'https://storitve.eprostor.gov.si/ows-pub-wms/SI.MKGP.GERK/ows?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=RKG_BLOK_GERK&format=image/png',
+    legendItems: [
+      {color:'#66bb6a',label:'Field Blocks (GERK)'}
+    ],
     attribution: '&copy; MKGP Slovenia GERK'
   },
   {
     id: 'croatia', label: '🇭🇷 Croatia (ARKOD)', type: 'raster', lang: 'hr',
-    legendType: 'image', minZoom: 12,
+    legendType: 'list', filterable: false, minZoom: 12,
     years: null, defaultYear: null, dataYear: '2024',
     tileUrl: () => wms11('https://servisi.apprrr.hr/NIPP/wms', 'hr.land_parcels'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://servisi.apprrr.hr/NIPP/wms',
       'hr.land_parcels', bbox, x, y),
-    legendImg: 'https://servisi.apprrr.hr/NIPP/wms?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=hr.land_parcels&format=image/png',
+    legendItems: [
+      {color:'#66bb6a',label:'Land Parcels (ARKOD)'}
+    ],
     attribution: '&copy; APPRRR Croatia ARKOD'
   },
   {
     id: 'estonia', label: '🇪🇪 Estonia (GSAA)', type: 'raster', lang: 'et',
-    legendType: 'image', minZoom: 12,
+    legendType: 'list', filterable: false, minZoom: 12,
     years: null, defaultYear: null, dataYear: '2024',
     tileUrl: () => wms13('https://kls.pria.ee/geoserver/inspire_gsaa/wms', 'LU.GSAA.AGRICULTURAL_PARCELS'),
     featureInfo: (yr, bbox, i, j) => gfi13('https://kls.pria.ee/geoserver/inspire_gsaa/wms',
       'LU.GSAA.AGRICULTURAL_PARCELS', bbox, i, j),
-    legendImg: 'https://kls.pria.ee/geoserver/inspire_gsaa/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=LU.GSAA.AGRICULTURAL_PARCELS&format=image/png',
+    legendItems: [
+      {color:'#66bb6a',label:'GSAA Parcels'}
+    ],
     attribution: '&copy; PRIA Estonia GSAA'
   },
   {
     id: 'latvia', label: '🇱🇻 Latvia (Field Blocks)', type: 'raster', lang: 'lv',
-    legendType: 'image', minZoom: 12,
+    legendType: 'list', filterable: false, minZoom: 12,
     years: null, defaultYear: null, dataYear: '2024',
     tileUrl: () => wms11('https://karte.lad.gov.lv/arcgis/services/lauku_bloki/MapServer/WMSServer', '0'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://karte.lad.gov.lv/arcgis/services/lauku_bloki/MapServer/WMSServer',
       '0', bbox, x, y),
-    legendImg: 'https://karte.lad.gov.lv/arcgis/services/lauku_bloki/MapServer/WMSServer?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=0&format=image/png',
+    legendItems: [
+      {color:'#66bb6a',label:'Field Blocks'}
+    ],
     attribution: '&copy; LAD Latvia'
   },
   {
     id: 'poland', label: '🇵🇱 Poland (LPIS)', type: 'raster', lang: 'pl',
-    legendType: 'image', minZoom: 12,
+    legendType: 'list', filterable: false, minZoom: 12,
     years: null, defaultYear: null, dataYear: '2024',
     tileUrl: () => wms11('https://mapy.geoportal.gov.pl/wss/ext/arimr_lpis', '14'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://mapy.geoportal.gov.pl/wss/ext/arimr_lpis',
       '14', bbox, x, y),
-    legendImg: 'https://mapy.geoportal.gov.pl/wss/ext/arimr_lpis?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=14&format=image/png',
+    legendItems: [
+      {color:'#66bb6a',label:'LPIS Parcels'}
+    ],
     attribution: '&copy; ARiMR/GUGiK Poland LPIS'
   },
   {
     id: 'sweden', label: '🇸🇪 Sweden (Jordbruk)', type: 'raster', lang: 'sv',
-    legendType: 'image', minZoom: 12,
+    legendType: 'list', filterable: false, minZoom: 12,
     years: null, defaultYear: null, dataYear: '2024',
     tileUrl: () => wms11('https://epub.sjv.se/inspire/inspire/wms', 'arslager_block'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://epub.sjv.se/inspire/inspire/wms',
       'arslager_block', bbox, x, y),
-    legendImg: 'https://epub.sjv.se/inspire/inspire/wms?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=arslager_block&format=image/png',
+    legendItems: [
+      {color:'#66bb6a',label:'Agricultural Blocks'}
+    ],
     attribution: '&copy; SJV Sweden'
   },
   {
     id: 'finland', label: '🇫🇮 Finland (Ruokavirasto LPIS)', type: 'raster', lang: 'fi',
-    legendType: 'image', minZoom: 12,
+    legendType: 'list', filterable: false, minZoom: 12,
     years: [2020, 2021, 2022, 2023, 2024], defaultYear: 2024,
     tileUrl: (yr) => wms13('https://inspire.ruokavirasto-awsa.com/geoserver/wms',
       'inspire:LC.LandCoverSurfaces.LPIS.' + yr),
     featureInfo: (yr, bbox, i, j) => gfi13('https://inspire.ruokavirasto-awsa.com/geoserver/wms',
       'inspire:LC.LandCoverSurfaces.LPIS.' + yr, bbox, i, j),
-    legendImg: (yr) => 'https://inspire.ruokavirasto-awsa.com/geoserver/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=inspire:LC.LandCoverSurfaces.LPIS.' + yr + '&format=image/png',
+    legendItems: [
+      {color:'#ffffd6',label:'LPIS Parcels'}
+    ],
     attribution: '&copy; Ruokavirasto Finland'
   },
   // --- Non-European layers ---
@@ -925,13 +966,15 @@ const LAYERS = [
   },
   {
     id: 'argentina', label: '🇦🇷 Argentina (GeoINTA)', type: 'raster', lang: 'es',
-    legendType: 'image',
+    legendType: 'list', filterable: false,
     years: null, defaultYear: null, dataYear: '2024',
     tileUrl: () => wms13('https://geo-backend.inta.gob.ar/geoserver/wms',
       'geonode:mnc_verano2024_f300268fd112b0ec3ef5f731edb78882'),
     featureInfo: (yr, bbox, i, j) => gfi13('https://geo-backend.inta.gob.ar/geoserver/wms',
       'geonode:mnc_verano2024_f300268fd112b0ec3ef5f731edb78882', bbox, i, j),
-    legendImg: 'https://geo-backend.inta.gob.ar/geoserver/wms?service=WMS&version=1.3.0&request=GetLegendGraphic&layer=geonode:mnc_verano2024_f300268fd112b0ec3ef5f731edb78882&format=image/png',
+    legendItems: [
+      {color:'#66bb6a',label:'Crop Map'}
+    ],
     attribution: '&copy; INTA Argentina'
   },
   // --- South America ---
@@ -1317,7 +1360,7 @@ maplibregl.addProtocol('filtered-wms', async (params) => {
   const url = params.url.replace('filtered-wms://', '');
   const firstSlash = url.indexOf('/');
   const layerId = url.substring(0, firstSlash);
-  const wmsUrl = url.substring(firstSlash + 1).replace(/\?cb=\d+$/, '');
+  const wmsUrl = url.substring(firstSlash + 1).replace(/[?&]cb=\d+$/, '');
 
   // Fetch the WMS tile
   let data;
@@ -1406,10 +1449,13 @@ function reloadFilteredSource(layerId) {
   if (map.getLayer(lid)) map.removeLayer(lid);
   if (map.getSource(layerId)) map.removeSource(layerId);
 
-  // Use filtered-wms for WMS-backed layers, filtered for PMTiles-backed
+  // Respect the current data source type (PMTiles or WMS)
   let tileUrl;
-  if (L.tileUrl) {
-    tileUrl = 'filtered-wms://' + layerId + '/' + L.tileUrl(yr) + '?cb=' + cb;
+  if (layerDataSource[layerId] === 'pmtiles') {
+    const filename = L.pmtilesFile ? L.pmtilesFile(yr) : pmtilesFilename(layerId, yr);
+    tileUrl = 'filtered://' + layerId + '/' + pmtilesBase + '/' + filename + '/{z}/{x}/{y}?cb=' + cb;
+  } else if (L.tileUrl) {
+    tileUrl = 'filtered-wms://' + layerId + '/' + L.tileUrl(yr) + '&cb=' + cb;
   } else {
     const filename = L.pmtilesFile ? L.pmtilesFile(yr) : pmtilesFilename(layerId, yr);
     tileUrl = 'filtered://' + layerId + '/' + pmtilesBase + '/' + filename + '/{z}/{x}/{y}?cb=' + cb;
@@ -2023,7 +2069,7 @@ async function activateRasterWithFallback(L) {
       const cb = filteredCacheBuster[L.id] || 0;
       map.addSource(L.id, {
         type: 'raster', tileSize: 256,
-        tiles: ['filtered-wms://' + L.id + '/' + L.tileUrl(yr) + '?cb=' + cb],
+        tiles: ['filtered-wms://' + L.id + '/' + L.tileUrl(yr) + '&cb=' + cb],
         attribution: L.attribution || ''
       });
       const layerDef = {
