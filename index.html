@@ -1694,13 +1694,31 @@ LAYERS.forEach(L => {
     // Use crop-type colors and Europe bbox filter for EuroCrops; plain filter for others
     const isEurocrops = L.id === 'eurocrops';
     const vFilter = ['==', ['geometry-type'], 'Polygon'];
+    // EuroCrops: circle dots at low zoom for visibility, polygons at higher zoom
+    if (isEurocrops) {
+      initLayers.push({
+        id: L.id + '-circle', type: 'circle', source: L.id,
+        'source-layer': L.sourceLayer,
+        maxzoom: 9,
+        paint: {
+          'circle-color': EC_COLOR_EXPR,
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 0, 2, 5, 3, 8, 5],
+          'circle-opacity': 0.85,
+          'circle-stroke-width': 0,
+        },
+        layout: { visibility: 'none' }
+      });
+    }
     initLayers.push({
       id: L.id + '-fill', type: 'fill', source: L.id,
       'source-layer': L.sourceLayer,
       filter: vFilter,
+      ...(isEurocrops ? { minzoom: 7 } : {}),
       paint: {
         'fill-color': isEurocrops ? EC_COLOR_EXPR : '#66bb6a',
-        'fill-opacity': 0.5
+        'fill-opacity': isEurocrops
+          ? ['interpolate', ['linear'], ['zoom'], 7, 0.3, 9, 0.55, 12, 0.6]
+          : 0.5
       },
       layout: { visibility: 'none' }
     });
@@ -1708,6 +1726,7 @@ LAYERS.forEach(L => {
       id: L.id + '-outline', type: 'line', source: L.id,
       'source-layer': L.sourceLayer,
       filter: vFilter,
+      ...(isEurocrops ? { minzoom: 9 } : {}),
       paint: { 'line-color': isEurocrops ? '#555' : '#2e7d32', 'line-width': 0.5, 'line-opacity': 0.6 },
       layout: { visibility: 'none' }
     });
@@ -2014,12 +2033,14 @@ function toggleLayer(L, on) {
     if (on) updateSourceBadge(L.id, 'vector');
     else updateSourceBadge(L.id, null);
   } else if (L.type === 'vector-remote') {
-    [L.id + '-fill', L.id + '-outline'].forEach(lid => {
+    [L.id + '-circle', L.id + '-fill', L.id + '-outline'].forEach(lid => {
       if (map.getLayer(lid)) map.setLayoutProperty(lid, 'visibility', on ? 'visible' : 'none');
     });
     if (on) {
       map.setPaintProperty(L.id + '-fill', 'fill-opacity', currentOpacity * 0.67);
       map.setPaintProperty(L.id + '-outline', 'line-opacity', currentOpacity * 0.8);
+      if (map.getLayer(L.id + '-circle'))
+        map.setPaintProperty(L.id + '-circle', 'circle-opacity', currentOpacity * 0.85);
       updateSourceBadge(L.id, 'vector');
     } else {
       updateSourceBadge(L.id, null);
@@ -2316,13 +2337,18 @@ function applyEuroCropsFilter() {
   if (!hidden || hidden.size === 0) {
     map.setFilter('eurocrops-fill', ['==', ['geometry-type'], 'Polygon']);
     map.setFilter('eurocrops-outline', ['==', ['geometry-type'], 'Polygon']);
+    if (map.getLayer('eurocrops-circle'))
+      map.setFilter('eurocrops-circle', null);
   } else {
-    const filter = ['all',
+    const polyFilter = ['all',
       ['==', ['geometry-type'], 'Polygon'],
       ['!', ['in', ['get', 'EC_hcat_n'], ['literal', [...hidden]]]]
     ];
-    map.setFilter('eurocrops-fill', filter);
-    map.setFilter('eurocrops-outline', filter);
+    const circleFilter = ['!', ['in', ['get', 'EC_hcat_n'], ['literal', [...hidden]]]];
+    map.setFilter('eurocrops-fill', polyFilter);
+    map.setFilter('eurocrops-outline', polyFilter);
+    if (map.getLayer('eurocrops-circle'))
+      map.setFilter('eurocrops-circle', circleFilter);
   }
 }
 
@@ -2515,21 +2541,24 @@ function buildListBody(items, layerId) {
     frag.appendChild(btnRow);
   }
 
-  // Sort visible-in-viewport classes first
+  // Sort: in-view crop classes first, then other crop classes, then non-crop classes below separator
   const visible = viewportClasses[layerId];
-  const inView = visible && visible.size > 0 ? items.filter(i => visible.has(i.label)) : [];
-  const rest = visible && visible.size > 0 ? items.filter(i => !visible.has(i.label)) : items;
+  const NON_CROP_RE = /\b(urban|city|cities|developed|industrial|commercial|residential|sea|ocean|water|lake|river|bare|barren|rock|sand|snow|ice|glacier|wetland|infrastructure)\b/i;
+  const primary = items.filter(i => !NON_CROP_RE.test(i.label));
+  const secondary = items.filter(i => NON_CROP_RE.test(i.label));
+  // Within primary: show in-view first, then not-in-view
+  const pInView = visible && visible.size > 0 ? primary.filter(i => visible.has(i.label)) : [];
+  const pRest = visible && visible.size > 0 ? primary.filter(i => !visible.has(i.label)) : primary;
+  pInView.forEach(item => frag.appendChild(buildLegendRow(item, layerId, canFilter)));
+  pRest.forEach(item => frag.appendChild(buildLegendRow(item, layerId, canFilter)));
 
-  inView.forEach(item => frag.appendChild(buildLegendRow(item, layerId, canFilter)));
-
-  if (inView.length > 0 && rest.length > 0) {
+  if (secondary.length > 0) {
     const sep = document.createElement('div');
     sep.className = 'legend-separator';
-    sep.textContent = rest.length + ' more class' + (rest.length !== 1 ? 'es' : '');
+    sep.textContent = secondary.length + ' non-crop class' + (secondary.length !== 1 ? 'es' : '');
     frag.appendChild(sep);
+    secondary.forEach(item => frag.appendChild(buildLegendRow(item, layerId, canFilter)));
   }
-
-  rest.forEach(item => frag.appendChild(buildLegendRow(item, layerId, canFilter)));
   return frag;
 }
 
@@ -2753,7 +2782,9 @@ map.on('mousemove', e => {
 
   // Vector layers: EuroCrops
   if (layerState.eurocrops && layerState.eurocrops.on && map.getLayer('eurocrops-fill')) {
-    const fs = map.queryRenderedFeatures(e.point, { layers: ['eurocrops-fill'] });
+    const queryLayers = ['eurocrops-fill'];
+    if (map.getLayer('eurocrops-circle')) queryLayers.push('eurocrops-circle');
+    const fs = map.queryRenderedFeatures(e.point, { layers: queryLayers });
     fs.forEach(f => {
       const p = f.properties;
       const name = cleanCropName(p.EC_hcat_n) || p.EC_trans_n || '(unknown)';
@@ -3021,6 +3052,7 @@ function detectAndReorderLegends() {
 }
 
 function reorderLegendBodies() {
+  const NON_CROP_RE = /\b(urban|city|cities|developed|industrial|commercial|residential|sea|ocean|water|lake|river|bare|barren|rock|sand|snow|ice|glacier|wetland|infrastructure)\b/i;
   LAYERS.forEach(L => {
     if (L.legendType !== 'list' || !L.legendItems) return;
     const card = legendCards[L.id];
@@ -3038,29 +3070,29 @@ function reorderLegendBodies() {
     const oldSep = body.querySelector('.legend-separator');
     if (oldSep) oldSep.remove();
 
-    const inView = rows.filter(r => visible.has(r.dataset.label));
-    const rest = rows.filter(r => !visible.has(r.dataset.label));
+    // Split into primary (crop-related) and secondary (non-crop)
+    const primary = rows.filter(r => !NON_CROP_RE.test(r.dataset.label));
+    const secondary = rows.filter(r => NON_CROP_RE.test(r.dataset.label));
+    // Within primary: show in-view first
+    const pInView = primary.filter(r => visible.has(r.dataset.label));
+    const pRest = primary.filter(r => !visible.has(r.dataset.label));
 
-    // Move in-view rows to top (after buttons row if present)
+    // Move in-view primary rows to top (after buttons row if present)
     const btnRow = body.querySelector('div[style*="display:flex"][style*="gap:4px"]');
     let insertBefore = btnRow ? btnRow.nextSibling : body.firstChild;
+    pInView.forEach(r => body.insertBefore(r, insertBefore));
+    pRest.forEach(r => body.insertBefore(r, insertBefore));
 
-    inView.forEach(r => body.insertBefore(r, insertBefore));
-
-    // Add separator if both sections have items
-    if (inView.length > 0 && rest.length > 0) {
+    // Add separator and non-crop items
+    if (secondary.length > 0) {
       const sep = document.createElement('div');
       sep.className = 'legend-separator';
-      sep.textContent = rest.length + ' more class' + (rest.length !== 1 ? 'es' : '');
-      // Insert separator after last in-view row
-      const lastInView = inView[inView.length - 1];
-      body.insertBefore(sep, lastInView.nextSibling);
-      // Move rest rows in order after separator
+      sep.textContent = secondary.length + ' non-crop class' + (secondary.length !== 1 ? 'es' : '');
+      const lastPrimary = pRest.length > 0 ? pRest[pRest.length - 1] : (pInView.length > 0 ? pInView[pInView.length - 1] : btnRow);
+      if (lastPrimary) body.insertBefore(sep, lastPrimary.nextSibling);
+      else body.appendChild(sep);
       let cursor = sep;
-      rest.forEach(r => { body.insertBefore(r, cursor.nextSibling); cursor = r; });
-    } else if (inView.length === 0) {
-      // No classes detected in view — keep original order
-      rows.forEach(r => body.appendChild(r));
+      secondary.forEach(r => { body.insertBefore(r, cursor.nextSibling); cursor = r; });
     }
   });
 }
