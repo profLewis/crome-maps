@@ -137,6 +137,7 @@
 <div id="settings-popover">
   <div class="settings-title">Settings</div>
   <label><input type="checkbox" id="setting-close-layer"> Dismiss legend also hides layer</label>
+  <label><input type="checkbox" id="setting-viewport-legend" checked> Smart legend (in-view classes first)</label>
 </div>
 
 <div id="legend-stack"></div>
@@ -681,6 +682,7 @@ const LAYERS = [
   {
     id: 'netherlands', label: '🇳🇱 Netherlands (BRP)', type: 'raster', lang: 'nl',
     legendType: 'list', filterable: false, minZoom: 12, countryNum: 528, indicatorColor: '#FF9800',
+    bounds: [3.3, 50.7, 7.2, 53.6],
     years: null, defaultYear: null, dataYear: '2024',
     tileUrl: () => wms11('https://service.pdok.nl/rvo/brpgewaspercelen/wms/v1_0', 'BrpGewas'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://service.pdok.nl/rvo/brpgewaspercelen/wms/v1_0',
@@ -692,7 +694,8 @@ const LAYERS = [
   },
   {
     id: 'belgium-fl', label: '🇧🇪 Belgium - Flanders', type: 'raster', lang: 'nl',
-    legendType: 'list', minZoom: 12, countryNum: 56, indicatorColor: '#E91E63',
+    legendType: 'list', minZoom: 13, countryNum: 56, indicatorColor: '#E91E63',
+    bounds: [2.5, 50.7, 5.9, 51.5],
     years: Array.from({length:17}, (_,i) => 2008+i), defaultYear: 2024,
     tileUrl: (yr) => wms13('https://geo.api.vlaanderen.be/ALV/wms', 'LbGebrPerc' + yr),
     featureInfo: (yr, bbox, i, j) => gfi13('https://geo.api.vlaanderen.be/ALV/wms',
@@ -711,6 +714,7 @@ const LAYERS = [
   {
     id: 'belgium-wa', label: '🇧🇪 Belgium - Wallonia', type: 'raster', lang: 'fr',
     legendType: 'list', filterable: false, minZoom: 12, countryNum: 56, indicatorColor: '#AD1457',
+    bounds: [2.8, 49.5, 6.4, 50.8],
     years: [2019,2020,2021,2022,2023], defaultYear: 2022,
     tileUrl: (yr) => wms13(
       'https://geoservices.wallonie.be/arcgis/services/AGRICULTURE/SIGEC_PARC_AGRI_ANON__' + yr + '/MapServer/WMSServer', '1'),
@@ -725,6 +729,7 @@ const LAYERS = [
   {
     id: 'austria', label: '🇦🇹 Austria (INVEKOS)', type: 'raster', lang: 'de',
     legendType: 'list', filterable: false, minZoom: 12, countryNum: 40, indicatorColor: '#9C27B0',
+    bounds: [9.5, 46.4, 17.2, 49.0],
     years: Array.from({length:11}, (_,i) => 2015+i), defaultYear: 2024,
     tileUrl: (yr) => {
       const lyr = yr <= 2021 ? 'inspire_schlaege_' + yr + '_polygon'
@@ -743,7 +748,8 @@ const LAYERS = [
   },
   {
     id: 'denmark', label: '🇩🇰 Denmark (FVM Marker)', type: 'raster', lang: 'da',
-    legendType: 'list', filterable: false,
+    legendType: 'list', filterable: false, minZoom: 12,
+    bounds: [8.0, 54.5, 15.2, 57.8],
     years: Array.from({length:18}, (_,i) => 2008+i), defaultYear: 2025,
     tileUrl: (yr) => wms11('https://geodata.fvm.dk/geoserver/Marker/wms', 'Marker_' + yr),
     featureInfo: (yr, bbox, x, y) => gfi11('https://geodata.fvm.dk/geoserver/Marker/wms',
@@ -756,6 +762,7 @@ const LAYERS = [
   {
     id: 'luxembourg', label: '🇱🇺 Luxembourg (ASTA LPIS)', type: 'raster', lang: 'fr',
     legendType: 'list', filterable: false, minZoom: 12, countryNum: 442, indicatorColor: '#00BCD4',
+    bounds: [5.7, 49.4, 6.5, 50.2],
     years: Array.from({length:10}, (_,i) => 2016+i), defaultYear: 2025,
     tileUrl: (yr) => wms13('https://wms.inspire.geoportail.lu/geoserver/af/wms',
       'LU.ExistingLandUseObject_LPIS_' + yr),
@@ -769,6 +776,7 @@ const LAYERS = [
   {
     id: 'portugal', label: '🇵🇹 Portugal (IFAP iSIP)', type: 'raster', lang: 'pt',
     legendType: 'list', filterable: false, minZoom: 12, countryNum: 620, indicatorColor: '#FF5722',
+    bounds: [-9.5, 36.9, -6.2, 42.2],
     years: [2017,2018,2019], defaultYear: 2019,
     tileUrl: (yr) => {
       const regions = ['AML','Algarve','Centro','Norte',
@@ -802,6 +810,7 @@ const LAYERS = [
   {
     id: 'norway', label: '🇳🇴 Norway (NIBIO AR5)', type: 'raster', lang: 'no',
     legendType: 'list', minZoom: 15, countryNum: 578, indicatorColor: '#2196F3',
+    bounds: [4.5, 57.9, 31.2, 71.2],
     years: null, defaultYear: null, dataYear: 'current',
     tileUrl: () => wms11('https://wms.nibio.no/cgi-bin/ar5', 'Arealtype'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://wms.nibio.no/cgi-bin/ar5',
@@ -819,6 +828,7 @@ const LAYERS = [
   {
     id: 'spain', label: '🇪🇸 Spain (SIGPAC)', type: 'raster', lang: 'es',
     legendType: 'list', filterable: false, minZoom: 12,
+    bounds: [-9.4, 36.0, 4.3, 43.8],
     years: null, defaultYear: null, dataYear: '2025',
     tileUrl: () => wms13('https://wms.mapa.gob.es/sigpac/wms', 'AU.Sigpac:recinto'),
     featureInfo: (yr, bbox, i, j) => gfi13('https://wms.mapa.gob.es/sigpac/wms',
@@ -831,6 +841,7 @@ const LAYERS = [
   {
     id: 'czechia', label: '🇨🇿 Czechia (LPIS)', type: 'raster', lang: 'cs',
     legendType: 'list', filterable: false, minZoom: 12,
+    bounds: [12.1, 48.5, 18.9, 51.1],
     years: null, defaultYear: null, dataYear: '2024',
     tileUrl: () => wms11('https://mze.gov.cz/public/app/wms/public_DPB_PB_OPV.fcgi', 'DPB_UCINNE'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://mze.gov.cz/public/app/wms/public_DPB_PB_OPV.fcgi',
@@ -843,6 +854,7 @@ const LAYERS = [
   {
     id: 'slovenia', label: '🇸🇮 Slovenia (GERK)', type: 'raster', lang: 'sl',
     legendType: 'list', filterable: false, minZoom: 12,
+    bounds: [13.4, 45.4, 16.6, 46.9],
     years: null, defaultYear: null, dataYear: '2024',
     tileUrl: () => wms13('https://storitve.eprostor.gov.si/ows-pub-wms/SI.MKGP.GERK/ows', 'RKG_BLOK_GERK'),
     featureInfo: (yr, bbox, i, j) => gfi13('https://storitve.eprostor.gov.si/ows-pub-wms/SI.MKGP.GERK/ows',
@@ -855,6 +867,7 @@ const LAYERS = [
   {
     id: 'croatia', label: '🇭🇷 Croatia (ARKOD)', type: 'raster', lang: 'hr',
     legendType: 'list', filterable: false, minZoom: 12,
+    bounds: [13.5, 42.4, 19.5, 46.6],
     years: null, defaultYear: null, dataYear: '2024',
     tileUrl: () => wms11('https://servisi.apprrr.hr/NIPP/wms', 'hr.land_parcels'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://servisi.apprrr.hr/NIPP/wms',
@@ -867,6 +880,7 @@ const LAYERS = [
   {
     id: 'estonia', label: '🇪🇪 Estonia (GSAA)', type: 'raster', lang: 'et',
     legendType: 'list', filterable: false, minZoom: 12,
+    bounds: [21.8, 57.5, 28.2, 59.7],
     years: null, defaultYear: null, dataYear: '2024',
     tileUrl: () => wms13('https://kls.pria.ee/geoserver/inspire_gsaa/wms', 'LU.GSAA.AGRICULTURAL_PARCELS'),
     featureInfo: (yr, bbox, i, j) => gfi13('https://kls.pria.ee/geoserver/inspire_gsaa/wms',
@@ -879,6 +893,7 @@ const LAYERS = [
   {
     id: 'latvia', label: '🇱🇻 Latvia (Field Blocks)', type: 'raster', lang: 'lv',
     legendType: 'list', filterable: false, minZoom: 12,
+    bounds: [20.9, 55.7, 28.2, 58.1],
     years: null, defaultYear: null, dataYear: '2024',
     tileUrl: () => wms11('https://karte.lad.gov.lv/arcgis/services/lauku_bloki/MapServer/WMSServer', '0'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://karte.lad.gov.lv/arcgis/services/lauku_bloki/MapServer/WMSServer',
@@ -891,6 +906,7 @@ const LAYERS = [
   {
     id: 'poland', label: '🇵🇱 Poland (LPIS)', type: 'raster', lang: 'pl',
     legendType: 'list', filterable: false, minZoom: 12,
+    bounds: [14.1, 49.0, 24.2, 54.8],
     years: null, defaultYear: null, dataYear: '2024',
     tileUrl: () => wms11('https://mapy.geoportal.gov.pl/wss/ext/arimr_lpis', '14'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://mapy.geoportal.gov.pl/wss/ext/arimr_lpis',
@@ -903,6 +919,7 @@ const LAYERS = [
   {
     id: 'sweden', label: '🇸🇪 Sweden (Jordbruk)', type: 'raster', lang: 'sv',
     legendType: 'list', filterable: false, minZoom: 12,
+    bounds: [11.1, 55.3, 24.2, 69.1],
     years: null, defaultYear: null, dataYear: '2024',
     tileUrl: () => wms11('https://epub.sjv.se/inspire/inspire/wms', 'arslager_block'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://epub.sjv.se/inspire/inspire/wms',
@@ -915,6 +932,7 @@ const LAYERS = [
   {
     id: 'finland', label: '🇫🇮 Finland (Ruokavirasto LPIS)', type: 'raster', lang: 'fi',
     legendType: 'list', filterable: false, minZoom: 12,
+    bounds: [20.6, 59.8, 31.6, 70.1],
     years: [2020, 2021, 2022, 2023, 2024], defaultYear: 2024,
     tileUrl: (yr) => wms13('https://inspire.ruokavirasto-awsa.com/geoserver/wms',
       'inspire:LC.LandCoverSurfaces.LPIS.' + yr),
@@ -1755,7 +1773,7 @@ map.addControl(new maplibregl.ScaleControl({ maxWidth: 200, unit: 'metric' }), '
 // a colored country outline so the user can see which countries have data enabled.
 let indicatorsReady = false;
 map.on('load', () => {
-  fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+  fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json')
     .then(r => r.json())
     .then(world => {
       const countries = topojson.feature(world, world.objects.countries);
@@ -1866,6 +1884,14 @@ closeLyrCb.checked = SETTINGS.closeLegendClosesLayer;
 closeLyrCb.addEventListener('change', () => {
   SETTINGS.closeLegendClosesLayer = closeLyrCb.checked;
   saveSettings();
+});
+const vpLegendCb = document.getElementById('setting-viewport-legend');
+vpLegendCb.checked = viewportLegendEnabled;
+vpLegendCb.addEventListener('change', () => {
+  viewportLegendEnabled = vpLegendCb.checked;
+  // Rebuild all active legends to reflect change
+  Object.keys(legendCards).forEach(id => { legendCards[id].remove(); delete legendCards[id]; });
+  updateLegend();
 });
 
 // === Build layer list UI ===
@@ -2064,6 +2090,16 @@ function toggleLayer(L, on) {
     if (map.getLayer(L.id + '-indicator-line'))
       map.setLayoutProperty(L.id + '-indicator-line', 'visibility', vis);
   }
+  // Auto-zoom to layer bounds when toggling on (if bounds defined and minZoom set)
+  if (on && L.bounds) {
+    const [w, s, e, n] = L.bounds;
+    const targetZoom = L.minZoom || 10;
+    const curZoom = map.getZoom();
+    // Only fly if we're too zoomed out to see the data
+    if (curZoom < targetZoom - 1) {
+      map.fitBounds([[w, s], [e, n]], { padding: 20, maxZoom: targetZoom });
+    }
+  }
 }
 
 // Try PMTiles first for raster layers, fall back to WMS
@@ -2250,6 +2286,7 @@ const legendStack = document.getElementById('legend-stack');
 const legendCards = {}; // { layerId: cardElement }
 const legendClosed = {}; // { layerId: true } — user-dismissed cards stay hidden until layer toggled
 const viewportClasses = {}; // { layerId: Set of class labels visible in current viewport }
+let viewportLegendEnabled = true; // toggle for viewport-aware legend ordering
 
 function makeLegendCard(id, title, bodyContent) {
   const card = document.createElement('div');
@@ -2541,24 +2578,19 @@ function buildListBody(items, layerId) {
     frag.appendChild(btnRow);
   }
 
-  // Sort: in-view crop classes first, then other crop classes, then non-crop classes below separator
-  const visible = viewportClasses[layerId];
-  const NON_CROP_RE = /\b(urban|city|cities|developed|industrial|commercial|residential|sea|ocean|water|lake|river|bare|barren|rock|sand|snow|ice|glacier|wetland|infrastructure)\b/i;
-  const primary = items.filter(i => !NON_CROP_RE.test(i.label));
-  const secondary = items.filter(i => NON_CROP_RE.test(i.label));
-  // Within primary: show in-view first, then not-in-view
-  const pInView = visible && visible.size > 0 ? primary.filter(i => visible.has(i.label)) : [];
-  const pRest = visible && visible.size > 0 ? primary.filter(i => !visible.has(i.label)) : primary;
-  pInView.forEach(item => frag.appendChild(buildLegendRow(item, layerId, canFilter)));
-  pRest.forEach(item => frag.appendChild(buildLegendRow(item, layerId, canFilter)));
+  // Sort: in-view classes first, then rest below separator (if viewport detection enabled)
+  const visible = viewportLegendEnabled ? viewportClasses[layerId] : null;
+  const inView = visible && visible.size > 0 ? items.filter(i => visible.has(i.label)) : [];
+  const rest = visible && visible.size > 0 ? items.filter(i => !visible.has(i.label)) : items;
 
-  if (secondary.length > 0) {
+  inView.forEach(item => frag.appendChild(buildLegendRow(item, layerId, canFilter)));
+  if (inView.length > 0 && rest.length > 0) {
     const sep = document.createElement('div');
     sep.className = 'legend-separator';
-    sep.textContent = secondary.length + ' non-crop class' + (secondary.length !== 1 ? 'es' : '');
+    sep.textContent = rest.length + ' more class' + (rest.length !== 1 ? 'es' : '');
     frag.appendChild(sep);
-    secondary.forEach(item => frag.appendChild(buildLegendRow(item, layerId, canFilter)));
   }
+  rest.forEach(item => frag.appendChild(buildLegendRow(item, layerId, canFilter)));
   return frag;
 }
 
@@ -2976,7 +3008,7 @@ map.on('idle', () => {
     }
   });
   // Viewport-aware legend: detect visible classes and reorder
-  detectAndReorderLegends();
+  if (viewportLegendEnabled) detectAndReorderLegends();
 });
 
 // === Viewport-aware legend: detect visible land-cover classes ===
@@ -3052,7 +3084,7 @@ function detectAndReorderLegends() {
 }
 
 function reorderLegendBodies() {
-  const NON_CROP_RE = /\b(urban|city|cities|developed|industrial|commercial|residential|sea|ocean|water|lake|river|bare|barren|rock|sand|snow|ice|glacier|wetland|infrastructure)\b/i;
+  if (!viewportLegendEnabled) return;
   LAYERS.forEach(L => {
     if (L.legendType !== 'list' || !L.legendItems) return;
     const card = legendCards[L.id];
@@ -3070,29 +3102,25 @@ function reorderLegendBodies() {
     const oldSep = body.querySelector('.legend-separator');
     if (oldSep) oldSep.remove();
 
-    // Split into primary (crop-related) and secondary (non-crop)
-    const primary = rows.filter(r => !NON_CROP_RE.test(r.dataset.label));
-    const secondary = rows.filter(r => NON_CROP_RE.test(r.dataset.label));
-    // Within primary: show in-view first
-    const pInView = primary.filter(r => visible.has(r.dataset.label));
-    const pRest = primary.filter(r => !visible.has(r.dataset.label));
+    const inView = rows.filter(r => visible.has(r.dataset.label));
+    const rest = rows.filter(r => !visible.has(r.dataset.label));
 
-    // Move in-view primary rows to top (after buttons row if present)
+    // Move in-view rows to top (after buttons row if present)
     const btnRow = body.querySelector('div[style*="display:flex"][style*="gap:4px"]');
     let insertBefore = btnRow ? btnRow.nextSibling : body.firstChild;
-    pInView.forEach(r => body.insertBefore(r, insertBefore));
-    pRest.forEach(r => body.insertBefore(r, insertBefore));
+    inView.forEach(r => body.insertBefore(r, insertBefore));
 
-    // Add separator and non-crop items
-    if (secondary.length > 0) {
+    // Add separator if both sections have items
+    if (inView.length > 0 && rest.length > 0) {
       const sep = document.createElement('div');
       sep.className = 'legend-separator';
-      sep.textContent = secondary.length + ' non-crop class' + (secondary.length !== 1 ? 'es' : '');
-      const lastPrimary = pRest.length > 0 ? pRest[pRest.length - 1] : (pInView.length > 0 ? pInView[pInView.length - 1] : btnRow);
-      if (lastPrimary) body.insertBefore(sep, lastPrimary.nextSibling);
-      else body.appendChild(sep);
+      sep.textContent = rest.length + ' more class' + (rest.length !== 1 ? 'es' : '');
+      const lastInView = inView[inView.length - 1];
+      body.insertBefore(sep, lastInView.nextSibling);
       let cursor = sep;
-      secondary.forEach(r => { body.insertBefore(r, cursor.nextSibling); cursor = r; });
+      rest.forEach(r => { body.insertBefore(r, cursor.nextSibling); cursor = r; });
+    } else if (inView.length === 0) {
+      rows.forEach(r => body.appendChild(r));
     }
   });
 }
