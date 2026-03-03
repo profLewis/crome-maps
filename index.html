@@ -620,15 +620,22 @@ const LAYERS = [
     attribution: '&copy; <a href="https://land.copernicus.eu/en/products/corine-land-cover">Copernicus</a> CORINE Land Cover'
   },
   {
-    // JRC EU Crop Map — WMS lacks CORS, requires PMTiles conversion
+    // JRC EU Crop Map — WMS lacks CORS, so no pixel filtering
     id: 'jrc-eucropmap', label: '🇪🇺 JRC EU Crop Map', type: 'raster', lang: 'en',
-    legendType: 'image',
+    legendType: 'list', filterable: false,
     years: [2018, 2022], defaultYear: 2018,
     tileUrl: (yr) => wms11('https://jeodpp.jrc.ec.europa.eu/jeodpp/services/ows/wms/landcover/eucropmap',
       'LC.EUCROPMAP.' + yr),
     featureInfo: (yr, bbox, x, y) => gfi11('https://jeodpp.jrc.ec.europa.eu/jeodpp/services/ows/wms/landcover/eucropmap',
       'LC.EUCROPMAP.' + yr, bbox, x, y),
-    legendImg: (yr) => 'https://jeodpp.jrc.ec.europa.eu/jeodpp/services/ows/wms/landcover/eucropmap?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=LC.EUCROPMAP.' + yr + '&format=image/png',
+    legendItems: [
+      {color:'#dca028',label:'Wheat'},{color:'#fe0100',label:'Maize'},
+      {color:'#a57000',label:'Barley'},{color:'#ffff01',label:'Rapeseed'},
+      {color:'#d5a6bd',label:'Sunflower'},{color:'#a64c79',label:'Sugar Beet'},
+      {color:'#267000',label:'Potatoes'},{color:'#00a884',label:'Rye'},
+      {color:'#70a500',label:'Oats'},{color:'#00af4c',label:'Peas'},
+      {color:'#dda50a',label:'Soy'},{color:'#a0c8a0',label:'Other Crops'}
+    ],
     attribution: '&copy; JRC/EC EU Crop Map'
   },
   {
@@ -1150,42 +1157,50 @@ const LAYERS = [
   },
   {
     id: 'worldcereal', label: '🌾 WorldCereal Temp. Crops', type: 'raster', lang: 'en',
-    legendType: 'image',
+    legendType: 'list', filterable: false,
     years: null, defaultYear: null, dataYear: '2021',
     tileUrl: () => wms11('https://services.terrascope.be/wms/v2', 'WORLDCEREAL_TEMPORARYCROPS_V1'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://services.terrascope.be/wms/v2',
       'WORLDCEREAL_TEMPORARYCROPS_V1', bbox, x, y),
-    legendImg: 'https://services.terrascope.be/wms/v2?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=WORLDCEREAL_TEMPORARYCROPS_V1&format=image/png',
+    legendItems: [
+      {color:'#ff9900',label:'Temporary Crops'}
+    ],
     attribution: '&copy; ESA/VITO WorldCereal'
   },
   {
     id: 'worldcereal-maize', label: '🌽 WorldCereal Maize', type: 'raster', lang: 'en',
-    legendType: 'image',
+    legendType: 'list', filterable: false,
     years: null, defaultYear: null, dataYear: '2021',
     tileUrl: () => wms11('https://services.terrascope.be/wms/v2', 'WORLDCEREAL_MAIZE_V1'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://services.terrascope.be/wms/v2',
       'WORLDCEREAL_MAIZE_V1', bbox, x, y),
-    legendImg: 'https://services.terrascope.be/wms/v2?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=WORLDCEREAL_MAIZE_V1&format=image/png',
+    legendItems: [
+      {color:'#ffcc00',label:'Maize'}
+    ],
     attribution: '&copy; ESA/VITO WorldCereal'
   },
   {
     id: 'worldcereal-winter', label: '🌾 WorldCereal Winter Cereals', type: 'raster', lang: 'en',
-    legendType: 'image',
+    legendType: 'list', filterable: false,
     years: null, defaultYear: null, dataYear: '2021',
     tileUrl: () => wms11('https://services.terrascope.be/wms/v2', 'WORLDCEREAL_WINTERCEREALS_V1'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://services.terrascope.be/wms/v2',
       'WORLDCEREAL_WINTERCEREALS_V1', bbox, x, y),
-    legendImg: 'https://services.terrascope.be/wms/v2?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=WORLDCEREAL_WINTERCEREALS_V1&format=image/png',
+    legendItems: [
+      {color:'#cc6600',label:'Winter Cereals'}
+    ],
     attribution: '&copy; ESA/VITO WorldCereal'
   },
   {
     id: 'worldcereal-spring', label: '🌾 WorldCereal Spring Cereals', type: 'raster', lang: 'en',
-    legendType: 'image',
+    legendType: 'list', filterable: false,
     years: null, defaultYear: null, dataYear: '2021',
     tileUrl: () => wms11('https://services.terrascope.be/wms/v2', 'WORLDCEREAL_SPRINGCEREALS_V1'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://services.terrascope.be/wms/v2',
       'WORLDCEREAL_SPRINGCEREALS_V1', bbox, x, y),
-    legendImg: 'https://services.terrascope.be/wms/v2?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=WORLDCEREAL_SPRINGCEREALS_V1&format=image/png',
+    legendItems: [
+      {color:'#99cc33',label:'Spring Cereals'}
+    ],
     attribution: '&copy; ESA/VITO WorldCereal'
   }
 ];
