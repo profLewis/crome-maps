@@ -1,2 +1,6 @@
 # SQLite journals
 *.pmtiles-journal
+*.mbtiles-journal
+
+# MBTiles intermediates (generated from PMTiles or WMS downloads)
+*.mbtiles
