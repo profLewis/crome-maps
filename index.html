@@ -713,16 +713,19 @@ const LAYERS = [
   },
   {
     id: 'belgium-wa', label: '🇧🇪 Belgium - Wallonia', type: 'raster', lang: 'fr',
-    legendType: 'list', filterable: false, minZoom: 12, countryNum: 56, indicatorColor: '#AD1457',
+    legendType: 'list', filterable: false, minZoom: 10, countryNum: 56, indicatorColor: '#AD1457',
     bounds: [2.8, 49.5, 6.4, 50.8],
     years: [2019,2020,2021,2022,2023], defaultYear: 2022,
     tileUrl: (yr) => wms13(
-      'https://geoservices.wallonie.be/arcgis/services/AGRICULTURE/SIGEC_PARC_AGRI_ANON__' + yr + '/MapServer/WMSServer', '1'),
+      'https://geoservices.wallonie.be/arcgis/services/AGRICULTURE/SIGEC_PARC_AGRI_ANON__' + yr + '/MapServer/WMSServer', '0'),
     featureInfo: (yr, bbox, i, j) => gfi13(
       'https://geoservices.wallonie.be/arcgis/services/AGRICULTURE/SIGEC_PARC_AGRI_ANON__' + yr + '/MapServer/WMSServer',
-      '1', bbox, i, j),
+      '0', bbox, i, j),
     legendItems: [
-      {color:'#66bb6a',label:'Agricultural Parcels'}
+      {color:'#beff7f',label:'Forage/Grassland'},{color:'#ffdf7f',label:'Cereals'},
+      {color:'#cdaa66',label:'Potatoes'},{color:'#cccc66',label:'Other Uses'},
+      {color:'#ffff00',label:'Oilseeds'},{color:'#ffbf7f',label:'Tree Nuts'},
+      {color:'#ff7fff',label:'Horticulture'},{color:'#7fffff',label:'Fiber Plants'}
     ],
     attribution: '&copy; SPW Wallonie SIGEC'
   },
@@ -748,7 +751,7 @@ const LAYERS = [
   },
   {
     id: 'denmark', label: '🇩🇰 Denmark (FVM Marker)', type: 'raster', lang: 'da',
-    legendType: 'list', filterable: false, minZoom: 12,
+    legendType: 'list', filterable: false, minZoom: 10,
     bounds: [8.0, 54.5, 15.2, 57.8],
     years: Array.from({length:18}, (_,i) => 2008+i), defaultYear: 2025,
     tileUrl: (yr) => wms11('https://geodata.fvm.dk/geoserver/Marker/wms', 'Marker_' + yr),
@@ -1490,7 +1493,12 @@ function reloadFilteredSource(layerId) {
     const filename = L.pmtilesFile ? L.pmtilesFile(yr) : pmtilesFilename(layerId, yr);
     tileUrl = 'filtered://' + layerId + '/' + pmtilesBase + '/' + filename + '/{z}/{x}/{y}?cb=' + cb;
   } else if (L.tileUrl) {
-    tileUrl = 'filtered-wms://' + layerId + '/' + L.tileUrl(yr) + '&cb=' + cb;
+    const wmsBase = L.tileUrl(yr);
+    if ((L.legendType === 'list' || L.legendType === 'slider') && L.legendItems && L.filterable !== false) {
+      tileUrl = 'filtered-wms://' + layerId + '/' + wmsBase + '&cb=' + cb;
+    } else {
+      tileUrl = wmsBase;
+    }
   } else {
     const filename = L.pmtilesFile ? L.pmtilesFile(yr) : pmtilesFilename(layerId, yr);
     tileUrl = 'filtered://' + layerId + '/' + pmtilesBase + '/' + filename + '/{z}/{x}/{y}?cb=' + cb;
