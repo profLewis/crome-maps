@@ -895,7 +895,7 @@ const LAYERS = [
     featureInfo: (yr, bbox, x, y) => gfi11('https://karte.lad.gov.lv/arcgis/services/lauku_bloki/MapServer/WMSServer',
       '0', bbox, x, y),
     legendItems: [
-      {color:'#66bb6a',label:'Field Blocks'}
+      {color:'#ffff00',label:'Field Blocks (outlines)'}
     ],
     attribution: '&copy; LAD Latvia'
   },
@@ -2029,10 +2029,53 @@ LAYERS.forEach(L => {
   // Info box (expandable)
   const infoBox = document.createElement('div');
   infoBox.className = 'layer-info-box';
+  // Original data source URLs (authoritative government/agency pages)
+  const originalSources = {
+    'crome': 'https://environment.data.gov.uk/dataset/7fdb6312-801c-41f6-996d-4585d2bb4684',
+    'eurocrops': 'https://github.com/maja601/EuroCrops',
+    'corine': 'https://land.copernicus.eu/en/products/corine-land-cover',
+    'jrc-eucropmap': 'https://data.jrc.ec.europa.eu/collection/EUCROPMAP',
+    'germany': 'https://geoservice.dlr.de/web/maps/eoc:lulc:de',
+    'france': 'https://geoservices.ign.fr/rpg',
+    'netherlands': 'https://www.pdok.nl/datasets',
+    'belgium-fl': 'https://landbouwcijfers.vlaanderen.be/open-geodata',
+    'belgium-wa': 'https://geoportail.wallonie.be/catalogue/6fe407f3-40a3-4558-a684-bc43e1890dc1.html',
+    'austria': 'https://www.data.gv.at/katalog/dataset/invekos-schlaege',
+    'denmark': 'https://geodata.fvm.dk/',
+    'luxembourg': 'https://data.public.lu/en/datasets/flik-2025/',
+    'portugal': 'https://www.ifap.pt/isip/ows/isip.data/wms',
+    'switzerland': 'https://map.geo.admin.ch/',
+    'norway': 'https://nibio.no/tjenester/nedlasting-av-kartdata/ar5',
+    'spain': 'https://sigpac.mapama.gob.es/fega/visor/',
+    'slovenia': 'https://rkg.gov.si/GERK/',
+    'croatia': 'https://www.apprrr.hr/arkod/',
+    'estonia': 'https://kls.pria.ee/kaart/',
+    'latvia': 'https://karte.lad.gov.lv/karte/',
+    'sweden': 'https://jordbruksverket.se/',
+    'finland': 'https://www.ruokavirasto.fi/en/',
+    'usda-cdl': 'https://nassgeodata.gmu.edu/CropScape/',
+    'canada': 'https://open.canada.ca/data/en/dataset/ba2645d5-4458-414d-b196-6303ac06c1c9',
+    'argentina': 'https://geointa.inta.gob.ar/',
+    'brazil-mapbiomas': 'https://mapbiomas.org/en/collection-9',
+    'australia': 'https://www.agriculture.gov.au/abares/aclump/catchment-scale-land-use',
+    'dea-landcover': 'https://knowledge.dea.ga.gov.au/data/product/dea-land-cover/',
+    'newzealand': 'https://lris.scinfo.org.nz/layer/104400-lcdb-v56-land-cover-database-version-56-mainland-new-zealand/',
+    'deafrica-crop': 'https://www.digitalearthafrica.org/products/cropland-extent',
+    'china-clcd': 'https://zenodo.org/records/12779975',
+    'modis-landcover': 'https://lpdaac.usgs.gov/products/mcd12q1v061/',
+    'gfsad-croplands': 'https://lpdaac.usgs.gov/products/gfsad1kcmv001/',
+    'esa-worldcover': 'https://esa-worldcover.org/',
+    'worldcereal': 'https://esa-worldcereal.org/',
+    'worldcereal-maize': 'https://esa-worldcereal.org/',
+    'worldcereal-winter': 'https://esa-worldcereal.org/',
+    'worldcereal-spring': 'https://esa-worldcereal.org/',
+  };
   const attrText = (L.attribution || '').replace(/<[^>]+>/g, '');
   const hasPmt = L.type === 'vector' || L.type === 'vector-remote' || L.pmtilesFile;
   const sourceType = L.type === 'vector' ? 'Vector PMTiles' : L.type === 'vector-remote' ? 'Vector PMTiles' : (L.tileUrl ? (hasPmt ? 'WMS + PMTiles' : 'WMS') : 'PMTiles');
   let infoHtml = '<b>Source:</b> ' + (attrText || 'N/A');
+  if (originalSources[L.id])
+    infoHtml += ' — <a href="' + originalSources[L.id] + '" target="_blank">original data</a>';
   if (L.years && L.years.length > 1)
     infoHtml += '<br><b>Years:</b> ' + L.years[0] + '–' + L.years[L.years.length - 1];
   infoHtml += '<br><b>Type:</b> ' + sourceType;
