@@ -809,18 +809,19 @@ const LAYERS = [
   },
   {
     id: 'norway', label: '🇳🇴 Norway (NIBIO AR5)', type: 'raster', lang: 'no',
-    legendType: 'list', minZoom: 15, countryNum: 578, indicatorColor: '#2196F3',
+    legendType: 'list', minZoom: 14, countryNum: 578, indicatorColor: '#2196F3',
     bounds: [4.5, 57.9, 31.2, 71.2],
     years: null, defaultYear: null, dataYear: 'current',
     tileUrl: () => wms11('https://wms.nibio.no/cgi-bin/ar5', 'Arealtype'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://wms.nibio.no/cgi-bin/ar5',
       'Arealtype', bbox, x, y).replace('info_format=application/json', 'info_format=application/vnd.ogc.gml'),
     legendItems: [
-      {color:'#ffff00',label:'Fully Cultivated'},{color:'#d2b48c',label:'Surface Cultivated'},
-      {color:'#90ee90',label:'Infield Pasture'},{color:'#006400',label:'Forest'},
-      {color:'#deb887',label:'Bog/Mire'},{color:'#a9dfbf',label:'Open Firm Land'},
-      {color:'#ff0000',label:'Built-up'},{color:'#808080',label:'Transport'},
-      {color:'#0000ff',label:'Water'},{color:'#ffffff',label:'Glacier'}
+      {color:'#ffd16e',label:'Fully Cultivated'},{color:'#ffff4c',label:'Surface Cultivated'},
+      {color:'#ffffad',label:'Infield Pasture'},{color:'#9ecc73',label:'Forest'},
+      {color:'#b5ecfc',label:'Bog/Mire'},{color:'#d9d9d9',label:'Open Firm Land'},
+      {color:'#fcdbd6',label:'Built-up'},{color:'#b3784c',label:'Transport'},
+      {color:'#91e7ff',label:'Freshwater'},{color:'#ccfefe',label:'Sea'},
+      {color:'#e6ffff',label:'Glacier'}
     ],
     attribution: '&copy; <a href="https://nibio.no">NIBIO</a> Norway'
   },
