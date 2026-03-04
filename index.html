@@ -100,6 +100,12 @@
   .legend-card-body img { max-width: 230px; display: block; }
   .zoom-hint { font-size: 10px; color: #e67e00; display: none; padding: 4px 0 0; }
   .zoom-hint.visible { display: block; }
+  .layer-info-btn { background: none; border: none; cursor: pointer; font-size: 11px; color: #999; padding: 0 2px; line-height: 1; flex-shrink: 0; }
+  .layer-info-btn:hover { color: #333; }
+  .layer-info-box { font-size: 10px; color: #555; padding: 2px 0 4px 20px; line-height: 1.5; display: none; }
+  .layer-info-box.open { display: block; }
+  .layer-info-box a { color: #1976D2; text-decoration: none; word-break: break-all; }
+  .layer-info-box a:hover { text-decoration: underline; }
 
   .continent-section { margin: 0; }
   .continent-header {
@@ -138,6 +144,7 @@
   <div class="settings-title">Settings</div>
   <label><input type="checkbox" id="setting-close-layer"> Dismiss legend also hides layer</label>
   <label><input type="checkbox" id="setting-viewport-legend" checked> Smart legend (in-view classes first)</label>
+  <div style="font-size:10px;color:#888;margin:4px 0 0 22px;line-height:1.4;">Reorders legend to show land cover classes visible in the current viewport first, with a separator before remaining classes.</div>
 </div>
 
 <div id="legend-stack"></div>
@@ -1982,6 +1989,13 @@ LAYERS.forEach(L => {
     row.appendChild(sp);
   }
 
+  // Info button
+  const infoBtn = document.createElement('button');
+  infoBtn.className = 'layer-info-btn';
+  infoBtn.title = 'Dataset info';
+  infoBtn.innerHTML = '&#9432;'; // ℹ circle
+  row.appendChild(infoBtn);
+
   cb.addEventListener('change', () => {
     layerState[L.id].on = cb.checked;
     if (cb.checked) delete legendClosed[L.id]; // re-show legend when toggled on
@@ -1991,6 +2005,33 @@ LAYERS.forEach(L => {
   });
 
   container.appendChild(row);
+
+  // Info box (expandable)
+  const infoBox = document.createElement('div');
+  infoBox.className = 'layer-info-box';
+  const attrText = (L.attribution || '').replace(/<[^>]+>/g, '');
+  const sourceType = L.type === 'vector' ? 'Vector PMTiles' : L.type === 'vector-remote' ? 'Vector PMTiles' : (L.tileUrl ? 'WMS' : 'PMTiles');
+  let infoHtml = '<b>Source:</b> ' + (attrText || 'N/A');
+  if (L.years && L.years.length > 1)
+    infoHtml += '<br><b>Years:</b> ' + L.years[0] + '–' + L.years[L.years.length - 1];
+  infoHtml += '<br><b>Type:</b> ' + sourceType;
+  if (L.minZoom) infoHtml += ' (visible z' + L.minZoom + '+)';
+  if (L.bounds) {
+    const [w, s, e, n] = L.bounds;
+    infoHtml += '<br><b>Bounds:</b> ' + s.toFixed(1) + '°–' + n.toFixed(1) + '°N, ' + w.toFixed(1) + '°–' + e.toFixed(1) + '°E';
+  }
+  if (L.tileUrl) {
+    const sampleUrl = L.tileUrl(L.defaultYear || 'current');
+    const wmsHost = sampleUrl.match(/https?:\/\/([^/?]+)/);
+    if (wmsHost) infoHtml += '<br><b>WMS:</b> <a href="' + sampleUrl.split('?')[0] + '?service=WMS&request=GetCapabilities" target="_blank">' + wmsHost[1] + '</a>';
+  }
+  infoBox.innerHTML = infoHtml;
+  container.appendChild(infoBox);
+
+  infoBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    infoBox.classList.toggle('open');
+  });
 
   // Zoom hint for parcel-level layers
   if (L.minZoom) {
@@ -2085,14 +2126,18 @@ function toggleLayer(L, on) {
     if (map.getLayer(L.id + '-indicator-line'))
       map.setLayoutProperty(L.id + '-indicator-line', 'visibility', vis);
   }
-  // Auto-zoom to layer bounds when toggling on (if bounds defined and minZoom set)
+  // Auto-zoom to layer bounds when toggling on
   if (on && L.bounds) {
     const [w, s, e, n] = L.bounds;
-    const targetZoom = L.minZoom || 10;
-    const curZoom = map.getZoom();
-    // Only fly if we're too zoomed out to see the data
-    if (curZoom < targetZoom - 1) {
-      map.fitBounds([[w, s], [e, n]], { padding: 20, maxZoom: targetZoom });
+    const center = map.getCenter();
+    const inBounds = center.lng >= w && center.lng <= e && center.lat >= s && center.lat <= n;
+    if (!inBounds) {
+      // Viewport not over the dataset area — fly there
+      const maxZ = L.minZoom ? Math.min(L.minZoom, 10) : Math.min(Math.max(map.getZoom(), 5), 10);
+      map.fitBounds([[w, s], [e, n]], { padding: 20, maxZoom: maxZ });
+    } else if (L.minZoom && map.getZoom() < L.minZoom - 1) {
+      // Over the area but too zoomed out to see parcel data
+      map.fitBounds([[w, s], [e, n]], { padding: 20, maxZoom: L.minZoom });
     }
   }
 }
@@ -2146,15 +2191,30 @@ async function activateRasterWithFallback(L) {
       };
       if (L.minZoom) layerDef.minzoom = L.minZoom;
       map.addLayer(layerDef);
-    } else if (map.getLayer(lid)) {
-      map.setLayoutProperty(lid, 'visibility', 'visible');
-      map.setPaintProperty(lid, 'raster-opacity', currentOpacity);
+    } else {
+      // Non-filterable or basic WMS — (re-)create source with raw URL
+      if (map.getLayer(lid)) map.removeLayer(lid);
+      if (map.getSource(L.id)) map.removeSource(L.id);
+      map.addSource(L.id, {
+        type: 'raster', tileSize: 256,
+        tiles: [L.tileUrl(yr)],
+        attribution: L.attribution || ''
+      });
+      const layerDef = {
+        id: lid, type: 'raster', source: L.id,
+        paint: { 'raster-opacity': currentOpacity },
+        layout: { visibility: 'visible' }
+      };
+      if (L.minZoom) layerDef.minzoom = L.minZoom;
+      map.addLayer(layerDef);
     }
     updateSourceBadge(L.id, 'wms');
   } else {
     console.log('[Fallback] No PMTiles or WMS available for', L.id, yr);
     updateSourceBadge(L.id, null);
   }
+  // Rebuild legend — canFilter may depend on actual source (PMTiles vs WMS)
+  updateLegend();
 }
 
 // Also check for vector PMTiles for WFS-derived datasets
@@ -2542,7 +2602,8 @@ function buildLegendRow(item, layerId, canFilter) {
 function buildListBody(items, layerId) {
   const frag = document.createDocumentFragment();
   const L = LAYERS.find(l => l.id === layerId);
-  const canFilter = !L || L.filterable !== false;
+  // Allow filtering if layer is filterable OR currently served via PMTiles (which support pixel filtering)
+  const canFilter = !L || L.filterable !== false || layerDataSource[layerId] === 'pmtiles';
 
   if (!hiddenClasses[layerId]) hiddenClasses[layerId] = new Set();
 
