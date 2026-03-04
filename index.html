@@ -567,20 +567,7 @@ const LAYERS = [
   {
     id: 'crome', label: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 England (CROME)', type: 'vector',
     legendType: 'crome', defaultOn: true, bounds: [-5.7, 49.9, 1.8, 55.8],
-    years: [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], defaultYear: 2024
-  },
-  {
-    id: 'crome-raster', label: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 England (CROME Raster)', type: 'raster', lang: 'en',
-    legendType: 'crome', bounds: [-5.7, 49.9, 1.8, 55.8],
-    years: [2020, 2021, 2022, 2023, 2024], defaultYear: 2020,
-    pmtilesFile: (yr) => 'crome-raster' + yr + '.pmtiles',
-    tileUrl: (yr) => wms11('https://environment.data.gov.uk/spatialdata/crop-map-of-england-' + yr + '/wms',
-      'Crop_Map_of_England_' + yr),
-    featureInfo: (yr, bbox, x, y) => gfi11(
-      'https://environment.data.gov.uk/spatialdata/crop-map-of-england-' + yr + '/wms',
-      'Crop_Map_of_England_' + yr, bbox, x, y),
-    legendImg: (yr) => 'https://environment.data.gov.uk/spatialdata/crop-map-of-england-' + yr + '/wms?service=WMS&version=1.1.1&request=GetLegendGraphic&layer=Crop_Map_of_England_' + yr + '&format=image/png',
-    attribution: 'CROME &copy; RPA. OGL v3.0.'
+    years: [2017, 2018, 2019, 2020], defaultYear: 2020
   },
   {
     id: 'eurocrops', label: '🇪🇺 EU Field Boundaries (EuroCrops)', type: 'vector-remote',
@@ -1236,7 +1223,7 @@ function cromePmtilesUrl(yr) {
   if (yr >= 2017 && yr <= 2019) return cromeWorkBase + '/pmtiles_per_year/crome_' + yr + '.pmtiles';
   return pmtilesBase + '/crome' + yr + '.pmtiles';
 }
-const PMTILES_URL = cromePmtilesUrl(2024);
+const PMTILES_URL = cromePmtilesUrl(2020);
 const protocol = new pmtiles.Protocol();
 maplibregl.addProtocol('pmtiles', protocol.tile);
 
@@ -1653,7 +1640,7 @@ const initSources = {
 const initLayers = [
   { id: 'osm-basemap', type: 'raster', source: 'osm', paint: { 'raster-opacity': 1 } },
   {
-    id: 'crome-fill', type: 'fill', source: 'crome', 'source-layer': 'crome2024',
+    id: 'crome-fill', type: 'fill', source: 'crome', 'source-layer': 'crome2020',
     filter: ['==', ['geometry-type'], 'Polygon'],
     paint: {
       'fill-color': ['match', ['get', 'lucode'], ...Object.entries(LUCODE_COLORS).flat(), '#cccccc'],
@@ -1661,7 +1648,7 @@ const initLayers = [
     }
   },
   {
-    id: 'crome-outline', type: 'line', source: 'crome', 'source-layer': 'crome2024',
+    id: 'crome-outline', type: 'line', source: 'crome', 'source-layer': 'crome2020',
     filter: ['==', ['geometry-type'], 'Polygon'],
     paint: {
       'line-color': '#333',
