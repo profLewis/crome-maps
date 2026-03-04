@@ -1890,6 +1890,7 @@ closeLyrCb.addEventListener('change', () => {
   SETTINGS.closeLegendClosesLayer = closeLyrCb.checked;
   saveSettings();
 });
+let viewportLegendEnabled = true; // toggle for viewport-aware legend ordering
 const vpLegendCb = document.getElementById('setting-viewport-legend');
 vpLegendCb.checked = viewportLegendEnabled;
 vpLegendCb.addEventListener('change', () => {
@@ -2292,7 +2293,6 @@ const legendStack = document.getElementById('legend-stack');
 const legendCards = {}; // { layerId: cardElement }
 const legendClosed = {}; // { layerId: true } — user-dismissed cards stay hidden until layer toggled
 const viewportClasses = {}; // { layerId: Set of class labels visible in current viewport }
-let viewportLegendEnabled = true; // toggle for viewport-aware legend ordering
 
 function makeLegendCard(id, title, bodyContent) {
   const card = document.createElement('div');
