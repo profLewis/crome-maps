@@ -567,7 +567,7 @@ const LAYERS = [
   {
     id: 'crome', label: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 England (CROME)', type: 'vector',
     legendType: 'crome', defaultOn: true, bounds: [-5.7, 49.9, 1.8, 55.8],
-    years: [2020, 2021, 2022, 2023, 2024], defaultYear: 2024
+    years: [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], defaultYear: 2024
   },
   {
     id: 'crome-raster', label: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 England (CROME Raster)', type: 'raster', lang: 'en',
@@ -1230,7 +1230,12 @@ const base = window.location.href.replace(/\/[^/]*$/, '');
 // GitHub Pages can't serve Git LFS files — use media.githubusercontent.com which
 // serves actual LFS content with CORS and byte-range request support
 const pmtilesBase = 'https://media.githubusercontent.com/media/profLewis/crome-maps/main';
-function cromePmtilesUrl(yr) { return pmtilesBase + '/crome' + yr + '.pmtiles'; }
+const cromeWorkBase = 'https://media.githubusercontent.com/media/profLewis/crome-work/main';
+function cromePmtilesUrl(yr) {
+  // 2017-2019 are in crome-work/pmtiles_per_year, 2020+ in crome-maps
+  if (yr >= 2017 && yr <= 2019) return cromeWorkBase + '/pmtiles_per_year/crome_' + yr + '.pmtiles';
+  return pmtilesBase + '/crome' + yr + '.pmtiles';
+}
 const PMTILES_URL = cromePmtilesUrl(2024);
 const protocol = new pmtiles.Protocol();
 maplibregl.addProtocol('pmtiles', protocol.tile);
@@ -2202,7 +2207,8 @@ async function activateVectorPmtilesOrWms(L) {
 }
 
 function updateCromeSource(yr) {
-  const srcLayer = 'crome' + yr;
+  // crome-work PMTiles (2017-2019) use source-layer 'crome'; crome-maps uses 'crome{yr}'
+  const srcLayer = (yr >= 2017 && yr <= 2019) ? 'crome' : 'crome' + yr;
   const url = 'pmtiles://' + cromePmtilesUrl(yr);
 
   // Remove existing layers and source
