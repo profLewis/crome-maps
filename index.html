@@ -733,7 +733,7 @@ const LAYERS = [
   },
   {
     id: 'austria', label: '🇦🇹 Austria (INVEKOS)', type: 'raster', lang: 'de',
-    legendType: 'list', filterable: false, minZoom: 12, countryNum: 40, indicatorColor: '#9C27B0',
+    legendType: 'list', filterable: false, minZoom: 13, countryNum: 40, indicatorColor: '#9C27B0',
     bounds: [9.5, 46.4, 17.2, 49.0],
     years: Array.from({length:11}, (_,i) => 2015+i), defaultYear: 2024,
     tileUrl: (yr) => {
@@ -747,7 +747,7 @@ const LAYERS = [
       return gfi13('https://inspire.lfrz.gv.at/009501/wms', lyr, bbox, i, j);
     },
     legendItems: [
-      {color:'#555555',label:'Agricultural Parcels'}
+      {color:'#555555',label:'Crop Parcels (click for detail)'}
     ],
     attribution: '&copy; AMA/BML Austria INVEKOS'
   },
@@ -780,21 +780,25 @@ const LAYERS = [
   },
   {
     id: 'portugal', label: '🇵🇹 Portugal (IFAP iSIP)', type: 'raster', lang: 'pt',
-    legendType: 'list', filterable: false, minZoom: 12, countryNum: 620, indicatorColor: '#FF5722',
+    legendType: 'list', filterable: false, minZoom: 10, countryNum: 620, indicatorColor: '#FF5722',
     bounds: [-9.5, 36.9, -6.2, 42.2],
-    years: [2017,2018,2019], defaultYear: 2019,
+    years: Array.from({length:9}, (_,i) => 2017+i), defaultYear: 2024,
     tileUrl: (yr) => {
+      if (yr >= 2020) {
+        return wms11('https://www.ifap.pt/isip/ows/isip.data/wms', 'ocupacoes.solo.' + yr + 'jun10');
+      }
       const regions = ['AML','Algarve','Centro','Norte',
         yr <= 2017 ? 'alentejo' : 'Alentejo','RAA','RAM'];
-      const layers = regions.map(r => 'isip.data:parcelas.' + r + '.' + yr + 'jun10').join(',');
+      const layers = regions.map(r => 'isip.data:ocupacoes.solo.' + r + '.' + yr + 'jun10').join(',');
       return wms11('https://www.ifap.pt/isip/ows/isip.data/wms', layers);
     },
     featureInfo: (yr, bbox, x, y) => {
-      const layers = 'isip.data:parcelas.AML.' + yr + 'jun10';
-      return gfi11('https://www.ifap.pt/isip/ows/isip.data/wms', layers, bbox, x, y);
+      const lyr = yr >= 2020 ? 'ocupacoes.solo.' + yr + 'jun10'
+        : 'isip.data:ocupacoes.solo.AML.' + yr + 'jun10';
+      return gfi11('https://www.ifap.pt/isip/ows/isip.data/wms', lyr, bbox, x, y);
     },
     legendItems: [
-      {color:'#000000',label:'Agricultural Parcels'}
+      {color:'#aaaaaa',label:'Land Use Parcels'}
     ],
     attribution: '&copy; IFAP Portugal iSIP'
   },
