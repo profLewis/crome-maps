@@ -656,7 +656,7 @@ const LAYERS = [
   },
   {
     id: 'france', label: '🇫🇷 France (RPG)', type: 'raster', lang: 'fr',
-    legendType: 'list', filterable: false, bounds: [-5.1, 41.3, 9.6, 51.1],
+    legendType: 'list', bounds: [-5.1, 41.3, 9.6, 51.1],
     years: Array.from({length:18}, (_,i) => 2007+i), defaultYear: 2024,
     pmtilesFile: (yr) => 'france' + yr + '.pmtiles',
     tileUrl: (yr) => wms13('https://data.geopf.fr/wms-r/wms', 'LANDUSE.AGRICULTURE' + yr),
@@ -1711,21 +1711,26 @@ LAYERS.forEach(L => {
     // Use crop-type colors and Europe bbox filter for EuroCrops; plain filter for others
     const isEurocrops = L.id === 'eurocrops';
     const vFilter = ['==', ['geometry-type'], 'Polygon'];
-    // EuroCrops: circle dots at low zoom for visibility, polygons at higher zoom
+    // EuroCrops: small square dots at low zoom for visibility, polygons at higher zoom
     if (isEurocrops) {
       initLayers.push({
-        id: L.id + '-circle', type: 'circle', source: L.id,
+        id: L.id + '-dot', type: 'symbol', source: L.id,
         'source-layer': L.sourceLayer,
         maxzoom: 9,
-        paint: {
-          'circle-color': EC_COLOR_EXPR,
-          'circle-radius': ['interpolate', ['exponential', 2], ['zoom'],
-            0, 0.3, 3, 0.5, 5, 1, 7, 2.5, 9, 5],
-          'circle-opacity': ['interpolate', ['linear'], ['zoom'], 0, 0.6, 5, 0.7, 9, 0.85],
-          'circle-stroke-width': 0,
-          'circle-pitch-alignment': 'map',
+        layout: {
+          'icon-image': 'square-dot',
+          'icon-size': ['interpolate', ['exponential', 2], ['zoom'],
+            0, 0.02, 3, 0.04, 5, 0.08, 7, 0.2, 9, 0.4],
+          'icon-allow-overlap': true,
+          'icon-ignore-placement': true,
+          'icon-pitch-alignment': 'map',
+          'icon-rotation-alignment': 'map',
+          'visibility': 'none'
         },
-        layout: { visibility: 'none' }
+        paint: {
+          'icon-color': EC_COLOR_EXPR,
+          'icon-opacity': ['interpolate', ['linear'], ['zoom'], 0, 0.6, 5, 0.7, 9, 0.85],
+        }
       });
     }
     initLayers.push({
@@ -1752,9 +1757,16 @@ LAYERS.forEach(L => {
   }
 });
 
+// Hosts whose WMS lacks CORS — skip crossOrigin attribute so tiles still render
+const noCorsHosts = ['jeodpp.jrc.ec.europa.eu'];
 const map = new maplibregl.Map({
   container: 'map',
   preserveDrawingBuffer: true,
+  transformRequest: (url, resourceType) => {
+    if (resourceType === 'Tile' && noCorsHosts.some(h => url.includes(h))) {
+      return { url, credentials: 'omit' };
+    }
+  },
   style: {
     version: 8,
     glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
@@ -1774,6 +1786,14 @@ map.addControl(new maplibregl.ScaleControl({ maxWidth: 200, unit: 'metric' }), '
 // a colored country outline so the user can see which countries have data enabled.
 let indicatorsReady = false;
 map.on('load', () => {
+  // Create square SDF icon for EuroCrops low-zoom display
+  const sqSz = 16;
+  const sqData = new Uint8Array(sqSz * sqSz * 4);
+  for (let i = 0; i < sqSz * sqSz; i++) {
+    sqData[i * 4] = sqData[i * 4 + 1] = sqData[i * 4 + 2] = sqData[i * 4 + 3] = 255;
+  }
+  map.addImage('square-dot', { width: sqSz, height: sqSz, data: sqData }, { sdf: true });
+
   fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json')
     .then(r => r.json())
     .then(world => {
@@ -2010,7 +2030,8 @@ LAYERS.forEach(L => {
   const infoBox = document.createElement('div');
   infoBox.className = 'layer-info-box';
   const attrText = (L.attribution || '').replace(/<[^>]+>/g, '');
-  const sourceType = L.type === 'vector' ? 'Vector PMTiles' : L.type === 'vector-remote' ? 'Vector PMTiles' : (L.tileUrl ? 'WMS' : 'PMTiles');
+  const hasPmt = L.type === 'vector' || L.type === 'vector-remote' || L.pmtilesFile;
+  const sourceType = L.type === 'vector' ? 'Vector PMTiles' : L.type === 'vector-remote' ? 'Vector PMTiles' : (L.tileUrl ? (hasPmt ? 'WMS + PMTiles' : 'WMS') : 'PMTiles');
   let infoHtml = '<b>Source:</b> ' + (attrText || 'N/A');
   if (L.years && L.years.length > 1)
     infoHtml += '<br><b>Years:</b> ' + L.years[0] + '–' + L.years[L.years.length - 1];
@@ -2024,6 +2045,15 @@ LAYERS.forEach(L => {
     const sampleUrl = L.tileUrl(L.defaultYear || 'current');
     const wmsHost = sampleUrl.match(/https?:\/\/([^/?]+)/);
     if (wmsHost) infoHtml += '<br><b>WMS:</b> <a href="' + sampleUrl.split('?')[0] + '?service=WMS&request=GetCapabilities" target="_blank">' + wmsHost[1] + '</a>';
+  }
+  // Show PMTiles serving location
+  if (L.type === 'vector' && L.id === 'crome') {
+    infoHtml += '<br><b>Tiles:</b> <a href="' + cromeWorkBase + '" target="_blank">crome-work</a> + <a href="' + pmtilesBase + '" target="_blank">crome-maps</a>';
+  } else if (L.type === 'vector-remote') {
+    infoHtml += '<br><b>Tiles:</b> <a href="' + pmtilesBase + '/' + (L.pmtilesUrl || '').split('/').pop() + '" target="_blank">' + pmtilesBase.replace(/.*\/\/[^/]+\//, '') + '</a>';
+  } else if (hasPmt) {
+    const sampleFile = typeof L.pmtilesFile === 'function' ? L.pmtilesFile(L.defaultYear || L.years?.[0]) : (L.id + '.pmtiles');
+    infoHtml += '<br><b>Tiles:</b> <a href="' + pmtilesBase + '/' + sampleFile + '" target="_blank">' + sampleFile + '</a>';
   }
   infoBox.innerHTML = infoHtml;
   container.appendChild(infoBox);
@@ -2095,14 +2125,14 @@ function toggleLayer(L, on) {
     if (on) updateSourceBadge(L.id, 'vector');
     else updateSourceBadge(L.id, null);
   } else if (L.type === 'vector-remote') {
-    [L.id + '-circle', L.id + '-fill', L.id + '-outline'].forEach(lid => {
+    [L.id + '-dot', L.id + '-fill', L.id + '-outline'].forEach(lid => {
       if (map.getLayer(lid)) map.setLayoutProperty(lid, 'visibility', on ? 'visible' : 'none');
     });
     if (on) {
       map.setPaintProperty(L.id + '-fill', 'fill-opacity', currentOpacity * 0.67);
       map.setPaintProperty(L.id + '-outline', 'line-opacity', currentOpacity * 0.8);
-      if (map.getLayer(L.id + '-circle'))
-        map.setPaintProperty(L.id + '-circle', 'circle-opacity', currentOpacity * 0.85);
+      if (map.getLayer(L.id + '-dot'))
+        map.setPaintProperty(L.id + '-dot', 'icon-opacity', currentOpacity * 0.85);
       updateSourceBadge(L.id, 'vector');
     } else {
       updateSourceBadge(L.id, null);
@@ -2314,6 +2344,8 @@ function applyOpacity() {
       try {
         map.setPaintProperty(L.id + '-fill', 'fill-opacity', currentOpacity * 0.67);
         map.setPaintProperty(L.id + '-outline', 'line-opacity', currentOpacity * 0.8);
+        if (map.getLayer(L.id + '-dot'))
+          map.setPaintProperty(L.id + '-dot', 'icon-opacity', currentOpacity * 0.85);
       } catch {}
     } else {
       try {
@@ -2429,18 +2461,18 @@ function applyEuroCropsFilter() {
   if (!hidden || hidden.size === 0) {
     map.setFilter('eurocrops-fill', ['==', ['geometry-type'], 'Polygon']);
     map.setFilter('eurocrops-outline', ['==', ['geometry-type'], 'Polygon']);
-    if (map.getLayer('eurocrops-circle'))
-      map.setFilter('eurocrops-circle', null);
+    if (map.getLayer('eurocrops-dot'))
+      map.setFilter('eurocrops-dot', null);
   } else {
     const polyFilter = ['all',
       ['==', ['geometry-type'], 'Polygon'],
       ['!', ['in', ['get', 'EC_hcat_n'], ['literal', [...hidden]]]]
     ];
-    const circleFilter = ['!', ['in', ['get', 'EC_hcat_n'], ['literal', [...hidden]]]];
+    const dotFilter = ['!', ['in', ['get', 'EC_hcat_n'], ['literal', [...hidden]]]];
     map.setFilter('eurocrops-fill', polyFilter);
     map.setFilter('eurocrops-outline', polyFilter);
-    if (map.getLayer('eurocrops-circle'))
-      map.setFilter('eurocrops-circle', circleFilter);
+    if (map.getLayer('eurocrops-dot'))
+      map.setFilter('eurocrops-dot', dotFilter);
   }
 }
 
@@ -2607,8 +2639,8 @@ function buildListBody(items, layerId) {
 
   if (!hiddenClasses[layerId]) hiddenClasses[layerId] = new Set();
 
-  if (canFilter) {
-    // All / None buttons
+  if (canFilter && items.length > 1) {
+    // All / None buttons (skip for single-class legends)
     const btnRow = document.createElement('div');
     btnRow.style.cssText = 'display:flex;gap:4px;margin-bottom:4px;';
     const selAll = document.createElement('button');
@@ -2874,7 +2906,7 @@ map.on('mousemove', e => {
   // Vector layers: EuroCrops
   if (layerState.eurocrops && layerState.eurocrops.on && map.getLayer('eurocrops-fill')) {
     const queryLayers = ['eurocrops-fill'];
-    if (map.getLayer('eurocrops-circle')) queryLayers.push('eurocrops-circle');
+    if (map.getLayer('eurocrops-dot')) queryLayers.push('eurocrops-dot');
     const fs = map.queryRenderedFeatures(e.point, { layers: queryLayers });
     fs.forEach(f => {
       const p = f.properties;
