@@ -681,20 +681,22 @@ const LAYERS = [
   },
   {
     id: 'netherlands', label: '🇳🇱 Netherlands (BRP)', type: 'raster', lang: 'nl',
-    legendType: 'list', filterable: false, minZoom: 12, countryNum: 528, indicatorColor: '#FF9800',
+    legendType: 'list', filterable: false, minZoom: 14, countryNum: 528, indicatorColor: '#FF9800',
     bounds: [3.3, 50.7, 7.2, 53.6],
     years: null, defaultYear: null, dataYear: '2024',
     tileUrl: () => wms11('https://service.pdok.nl/rvo/brpgewaspercelen/wms/v1_0', 'BrpGewas'),
     featureInfo: (yr, bbox, x, y) => gfi11('https://service.pdok.nl/rvo/brpgewaspercelen/wms/v1_0',
       'BrpGewas', bbox, x, y),
     legendItems: [
-      {color:'#66bb6a',label:'Crop Parcels'}
+      {color:'#a3ff73',label:'Grassland'},{color:'#38a800',label:'Arable Land'},
+      {color:'#ffffbe',label:'Ag. Infrastructure'},{color:'#d7c29e',label:'Nature/Fallow'},
+      {color:'#b2b2b2',label:'Other'}
     ],
     attribution: '&copy; <a href="https://www.pdok.nl/">PDOK</a>/RVO CC0'
   },
   {
     id: 'belgium-fl', label: '🇧🇪 Belgium - Flanders', type: 'raster', lang: 'nl',
-    legendType: 'list', minZoom: 13, countryNum: 56, indicatorColor: '#E91E63',
+    legendType: 'list', minZoom: 14, countryNum: 56, indicatorColor: '#E91E63',
     bounds: [2.5, 50.7, 5.9, 51.5],
     years: Array.from({length:17}, (_,i) => 2008+i), defaultYear: 2024,
     tileUrl: (yr) => wms13('https://geo.api.vlaanderen.be/ALV/wms', 'LbGebrPerc' + yr),
