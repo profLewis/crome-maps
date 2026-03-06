@@ -1243,6 +1243,100 @@ const LAYERS = [
     ],
     attribution: '&copy; ESA/VITO WorldCereal'
   },
+  // --- Overlays: Probabilistic Crop Type (Baumert et al. 2025) ---
+  {
+    id: 'prob-crop-dominant', label: '🇪🇺 Dominant Crop Type (1km)', type: 'raster', lang: 'en',
+    legendType: 'list', bounds: [-12, 35, 45, 72],
+    years: null, defaultYear: null, dataYear: '2018',
+    pmtilesFile: () => 'prob-crop-dominant.pmtiles',
+    legendItems: [
+      {color:'#a57000',label:'Common Wheat'},{color:'#c8a028',label:'Durum Wheat'},
+      {color:'#dae31b',label:'Barley'},{color:'#a05989',label:'Oats'},
+      {color:'#aa007c',label:'Rye'},{color:'#d2b482',label:'Other Cereals'},
+      {color:'#ffd300',label:'Maize'},{color:'#00a8e2',label:'Rice'},
+      {color:'#ffa500',label:'Rapeseed'},{color:'#ffff00',label:'Sunflower'},
+      {color:'#267000',label:'Soybean'},{color:'#ff7f7f',label:'Sugar Beet'},
+      {color:'#a87000',label:'Potatoes'},{color:'#00af49',label:'Pulses'},
+      {color:'#70cc40',label:'Grassland'},{color:'#90c0ff',label:'Forage'},
+      {color:'#cda866',label:'Root/Forage'},{color:'#c040c0',label:'Fruits/Nuts'},
+      {color:'#808000',label:'Olives'},{color:'#8000ff',label:'Vineyards'},
+      {color:'#ff6666',label:'Vegetables'},{color:'#7fffff',label:'Industrial'},
+      {color:'#008080',label:'Textile/Fibre'}
+    ],
+    attribution: '&copy; <a href="https://zenodo.org/records/14409498">Baumert et al. 2025</a> CC-BY 4.0'
+  },
+  {
+    id: 'prob-crop-swhe', label: '🌾 Wheat Share (%)', type: 'raster', lang: 'en',
+    legendType: 'list', bounds: [-12, 35, 45, 72],
+    years: null, defaultYear: null, dataYear: '2018',
+    pmtilesFile: () => 'prob-crop-swhe-share.pmtiles',
+    legendItems: [
+      {color:'#ffffc8',label:'< 10%'},{color:'#c8c832',label:'10–20%'},
+      {color:'#64b41e',label:'20–30%'},{color:'#228b22',label:'30–50%'},
+      {color:'#006400',label:'50–70%'},{color:'#003c00',label:'> 70%'}
+    ],
+    attribution: '&copy; <a href="https://zenodo.org/records/14409498">Baumert et al. 2025</a> CC-BY 4.0'
+  },
+  {
+    id: 'prob-crop-maiz', label: '🌽 Maize Share (%)', type: 'raster', lang: 'en',
+    legendType: 'list', bounds: [-12, 35, 45, 72],
+    years: null, defaultYear: null, dataYear: '2018',
+    pmtilesFile: () => 'prob-crop-maiz-share.pmtiles',
+    legendItems: [
+      {color:'#ffffc8',label:'< 10%'},{color:'#c8c832',label:'10–20%'},
+      {color:'#64b41e',label:'20–30%'},{color:'#228b22',label:'30–50%'},
+      {color:'#006400',label:'50–70%'},{color:'#003c00',label:'> 70%'}
+    ],
+    attribution: '&copy; <a href="https://zenodo.org/records/14409498">Baumert et al. 2025</a> CC-BY 4.0'
+  },
+  {
+    id: 'prob-crop-barl', label: '🌾 Barley Share (%)', type: 'raster', lang: 'en',
+    legendType: 'list', bounds: [-12, 35, 45, 72],
+    years: null, defaultYear: null, dataYear: '2018',
+    pmtilesFile: () => 'prob-crop-barl-share.pmtiles',
+    legendItems: [
+      {color:'#ffffc8',label:'< 10%'},{color:'#c8c832',label:'10–20%'},
+      {color:'#64b41e',label:'20–30%'},{color:'#228b22',label:'30–50%'},
+      {color:'#006400',label:'50–70%'},{color:'#003c00',label:'> 70%'}
+    ],
+    attribution: '&copy; <a href="https://zenodo.org/records/14409498">Baumert et al. 2025</a> CC-BY 4.0'
+  },
+  {
+    id: 'prob-crop-rape', label: '🌻 Rapeseed Share (%)', type: 'raster', lang: 'en',
+    legendType: 'list', bounds: [-12, 35, 45, 72],
+    years: null, defaultYear: null, dataYear: '2018',
+    pmtilesFile: () => 'prob-crop-rape-share.pmtiles',
+    legendItems: [
+      {color:'#ffffc8',label:'< 10%'},{color:'#c8c832',label:'10–20%'},
+      {color:'#64b41e',label:'20–30%'},{color:'#228b22',label:'30–50%'},
+      {color:'#006400',label:'50–70%'},{color:'#003c00',label:'> 70%'}
+    ],
+    attribution: '&copy; <a href="https://zenodo.org/records/14409498">Baumert et al. 2025</a> CC-BY 4.0'
+  },
+  {
+    id: 'prob-crop-sunf', label: '🌻 Sunflower Share (%)', type: 'raster', lang: 'en',
+    legendType: 'list', bounds: [-12, 35, 45, 72],
+    years: null, defaultYear: null, dataYear: '2018',
+    pmtilesFile: () => 'prob-crop-sunf-share.pmtiles',
+    legendItems: [
+      {color:'#ffffc8',label:'< 10%'},{color:'#c8c832',label:'10–20%'},
+      {color:'#64b41e',label:'20–30%'},{color:'#228b22',label:'30–50%'},
+      {color:'#006400',label:'50–70%'},{color:'#003c00',label:'> 70%'}
+    ],
+    attribution: '&copy; <a href="https://zenodo.org/records/14409498">Baumert et al. 2025</a> CC-BY 4.0'
+  },
+  {
+    id: 'prob-crop-gras', label: '🌿 Grassland Share (%)', type: 'raster', lang: 'en',
+    legendType: 'list', bounds: [-12, 35, 45, 72],
+    years: null, defaultYear: null, dataYear: '2018',
+    pmtilesFile: () => 'prob-crop-gras-share.pmtiles',
+    legendItems: [
+      {color:'#ffffc8',label:'< 10%'},{color:'#c8c832',label:'10–20%'},
+      {color:'#64b41e',label:'20–30%'},{color:'#228b22',label:'30–50%'},
+      {color:'#006400',label:'50–70%'},{color:'#003c00',label:'> 70%'}
+    ],
+    attribution: '&copy; <a href="https://zenodo.org/records/14409498">Baumert et al. 2025</a> CC-BY 4.0'
+  },
   // --- Overlays: Crop Calendar (Sacks et al. 2010) ---
   {
     id: 'crop-cal-wheat-plant', label: '🌾 Wheat — Planting Date', type: 'raster', lang: 'en',
@@ -2271,6 +2365,7 @@ const sections = [
   { start: 'deafrica-crop',  label: 'Africa',                  open: false },
   { start: 'china-clcd',     label: 'Asia',                    open: false },
   { start: 'modis-landcover', label: 'Global / Satellite',      open: false },
+  { start: 'prob-crop-dominant', label: 'Overlays — Probabilistic Crop Type', open: false },
   { start: 'crop-cal-wheat-plant', label: 'Overlays — Crop Calendar', open: false },
   { start: 'hrvpp-sosd',     label: 'Overlays — Phenology',     open: false },
   { start: 'overlay-lpd',    label: 'Overlays — Environmental', open: false },
@@ -2417,6 +2512,13 @@ LAYERS.forEach(L => {
     'worldcereal-maize': 'https://esa-worldcereal.org/',
     'worldcereal-winter': 'https://esa-worldcereal.org/',
     'worldcereal-spring': 'https://esa-worldcereal.org/',
+    'prob-crop-dominant': 'https://zenodo.org/records/14409498',
+    'prob-crop-swhe': 'https://zenodo.org/records/14409498',
+    'prob-crop-maiz': 'https://zenodo.org/records/14409498',
+    'prob-crop-barl': 'https://zenodo.org/records/14409498',
+    'prob-crop-rape': 'https://zenodo.org/records/14409498',
+    'prob-crop-sunf': 'https://zenodo.org/records/14409498',
+    'prob-crop-gras': 'https://zenodo.org/records/14409498',
     'crop-cal-wheat-plant': 'https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/',
     'crop-cal-wheat-harvest': 'https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/',
     'crop-cal-wheat-winter-plant': 'https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/',
