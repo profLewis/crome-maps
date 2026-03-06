@@ -10,7 +10,7 @@ See [DATASETS.md](DATASETS.md) for visual previews of each dataset.
 
 ## Features
 
-- **35+ datasets** covering Europe, Americas, Oceania, Africa, Asia, and global satellite products
+- **50+ datasets** covering Europe, Americas, Oceania, Africa, Asia, and global satellite products
 - **Class filtering** — click legend items to toggle individual crop/land cover classes on or off
 - **Smart legend** — automatically reorders legend to show classes visible in your current viewport first
 - **Multi-year support** — switch between available years for most datasets
@@ -39,9 +39,13 @@ This is an actively maintained research tool for exploring global crop and land 
 | Dataset | Country | Years | Type | Source |
 |---------|---------|-------|------|--------|
 | [CROME](https://environment.data.gov.uk/dataset/7fdb6312-801c-41f6-996d-4585d2bb4684) | England | 2017–2020 | Vector PMTiles | [RPA / Defra](https://www.gov.uk/government/organisations/rural-payments-agency) |
-| [EuroCrops](https://github.com/maja601/EuroCrops) | EU (16 countries) | 2018–2021 | Vector PMTiles | [EuroCrops / TU Munich](https://github.com/maja601/EuroCrops) |
+| [EuroCrops V2](https://data.jrc.ec.europa.eu/dataset/b9fb9e67-78a9-4327-9d59-39a928d812d3) | EU (18 countries) | 2008–2023 | GeoParquet → PMTiles | [JRC / European Commission](https://data.jrc.ec.europa.eu/) |
+| [EuroCrops V1](https://github.com/maja601/EuroCrops) | EU (16 countries) | 2018–2021 | Vector PMTiles | [EuroCrops / TU Munich](https://github.com/maja601/EuroCrops) |
 | [CORINE Land Cover](https://land.copernicus.eu/en/products/corine-land-cover) | Europe | 2000, 2006, 2012, 2018 | WMS | [Copernicus / EEA](https://www.eea.europa.eu/) |
 | [JRC EU Crop Map](https://data.jrc.ec.europa.eu/collection/EUCROPMAP) | EU + Ukraine | 2018, 2022 | WMS | [JRC / European Commission](https://joint-research-centre.ec.europa.eu/) |
+| [HRL Crop Types](https://land.copernicus.eu/en/products/high-resolution-layer-croplands) | Europe (EEA-39) | 2017–2023 | WMS | [Copernicus CLMS / GeoVille](https://land.copernicus.eu/) |
+| [HRL Grassland](https://land.copernicus.eu/en/products/high-resolution-layer-croplands) | Europe (EEA-39) | 2017–2023 | WMS | [Copernicus CLMS / GeoVille](https://land.copernicus.eu/) |
+| [HRL Cropping Seasons](https://land.copernicus.eu/en/products/high-resolution-layer-croplands) | Europe (EEA-39) | 2017–2023 | WMS | [Copernicus CLMS / GeoVille](https://land.copernicus.eu/) |
 | [DLR Crop Types](https://geoservice.dlr.de/web/maps/eoc:lulc:de) | Germany | 2017–2024 | WMS | [DLR EOC](https://www.dlr.de/eoc/) |
 | [RPG](https://geoservices.ign.fr/rpg) | France | 2007–2024 | WMS (filterable) | [IGN / Geoplateforme](https://www.ign.fr/) |
 | [BLW LPIS](https://map.geo.admin.ch/) | Switzerland | current | WMS | [swisstopo / BLW](https://www.blw.admin.ch/) |
@@ -104,6 +108,14 @@ This is an actively maintained research tool for exploring global crop and land 
 | [ESA WorldCover](https://esa-worldcover.org/) | Global | 2020, 2021 | WMS | [ESA / Copernicus](https://esa-worldcover.org/) |
 | [WorldCereal](https://esa-worldcereal.org/) | Global | 2021 | WMS | [ESA / VITO](https://esa-worldcereal.org/) |
 
+### Phenology & Vegetation
+
+| Dataset | Coverage | Years | Type | Source |
+|---------|----------|-------|------|--------|
+| [HR-VPP Phenology](https://land.copernicus.eu/en/products/vegetation/high-resolution-vegetation-phenology-and-productivity) | Europe | 2017–2024 | WMS | [Copernicus CLMS / VITO](https://phenology.vgt.vito.be/) |
+| [MODIS NDVI](https://lpdaac.usgs.gov/products/mod13a2v061/) | Global | 2000–2025 | WMS (GIBS) | [NASA EOSDIS](https://earthdata.nasa.gov/) |
+| [MODIS EVI](https://lpdaac.usgs.gov/products/mod13a2v061/) | Global | 2000–2025 | WMS (GIBS) | [NASA EOSDIS](https://earthdata.nasa.gov/) |
+
 ## Architecture
 
 The viewer is a single `index.html` file (~3,000 lines) using:
@@ -124,12 +136,18 @@ The viewer is a single `index.html` file (~3,000 lines) using:
 
 ### Processing pipelines
 
-Two shell scripts convert source data to PMTiles:
+Scripts for converting source data to PMTiles:
 
 - `download_geotiff.sh` — Downloads GeoTIFF, applies color table, reprojects to EPSG:3857, converts via MBTiles to PMTiles
 - `download_wms_tiles.sh` — Downloads WMS tiles in parallel, stores as MBTiles, converts to PMTiles
+- `download_eurocrops_v2.py` — Downloads EuroCrops V2 GeoParquet, converts to PMTiles via tippecanoe
+- `download_lucas.py` — Downloads LUCAS 2022 GeoPackage, converts to PMTiles
+- `download_overlays.py` — Downloads JRC overlay GeoTIFFs (LPD, Floods, INCA), converts to raster PMTiles
+- `download_phenology.py` — Downloads USGS eVIIRS phenology GeoTIFFs (SOST, EOST, MAXN, etc.), converts to PMTiles
+- `eurocropsml/download.py` — Downloads EuroCropsML benchmark data from Zenodo
+- `docs/generate_docs.py` — Generates per-dataset documentation pages from `docs/datasets.yaml`
 
-Configuration: `raster_datasets.json`
+Configuration: `raster_datasets.json`, `requirements.txt`
 
 ## CROME (England)
 
@@ -164,6 +182,12 @@ Each dataset retains its original licence from the publishing agency. **This vie
 | MODIS / GFSAD | Public domain (US Government work) | Unrestricted |
 | CLCD (China) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | Open — with attribution |
 | DE Africa Cropland | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | Open — with attribution |
+| HRL Croplands | [Copernicus Data Policy](https://land.copernicus.eu/en/data-policy) | Open — full, free, and open access |
+| HR-VPP Phenology | [Copernicus Data Policy](https://land.copernicus.eu/en/data-policy) | Open — full, free, and open access |
+| MODIS NDVI/EVI | Public domain (US Government work) | Unrestricted |
+| EuroCrops V2 | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | Open — with attribution |
+| LUCAS 2022 | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | Open — with attribution |
+| JRC Overlays (LPD, MAES) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | Open — with attribution |
 | EU Parcel Layers | Varies by country (mostly open government data) | Check individual agency terms |
 
 ### Viewer code

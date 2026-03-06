@@ -579,7 +579,7 @@ const LAYERS = [
   {
     id: 'eurocrops', label: '🇪🇺 EU Field Boundaries (EuroCrops)', type: 'vector-remote',
     legendType: 'eurocrops',
-    years: null, defaultYear: null, dataYear: '2018-2021',
+    years: null, defaultYear: null, dataYear: '2008-2021',
     pmtilesUrl: 'https://data.source.coop/cholmes/eurocrops/eurocrops-all.pmtiles',
     sourceLayer: 'eurocrops',
     attribution: '&copy; <a href="https://github.com/maja601/EuroCrops">EuroCrops</a> CC-BY 4.0'
@@ -618,20 +618,55 @@ const LAYERS = [
     // JRC EU Crop Map — WMS lacks CORS, so no pixel filtering
     id: 'jrc-eucropmap', label: '🇪🇺 JRC EU Crop Map', type: 'raster', lang: 'en',
     legendType: 'list', filterable: false, bounds: [-12, 35, 45, 72],
-    years: [2018, 2022], defaultYear: 2018,
+    years: [2018, 2019, 2020, 2021, 2022], defaultYear: 2022,
     tileUrl: (yr) => wms11('https://jeodpp.jrc.ec.europa.eu/jeodpp/services/ows/wms/landcover/eucropmap',
       'LC.EUCROPMAP.' + yr),
     featureInfo: (yr, bbox, x, y) => gfi11('https://jeodpp.jrc.ec.europa.eu/jeodpp/services/ows/wms/landcover/eucropmap',
       'LC.EUCROPMAP.' + yr, bbox, x, y),
     legendItems: [
-      {color:'#dca028',label:'Wheat'},{color:'#fe0100',label:'Maize'},
-      {color:'#a57000',label:'Barley'},{color:'#ffff01',label:'Rapeseed'},
-      {color:'#d5a6bd',label:'Sunflower'},{color:'#a64c79',label:'Sugar Beet'},
-      {color:'#267000',label:'Potatoes'},{color:'#00a884',label:'Rye'},
-      {color:'#70a500',label:'Oats'},{color:'#00af4c',label:'Peas'},
-      {color:'#dda50a',label:'Soy'},{color:'#a0c8a0',label:'Other Crops'}
+      {color:'#a57000',label:'Common Wheat'},{color:'#896054',label:'Durum Wheat'},
+      {color:'#e2007c',label:'Barley'},{color:'#aa007c',label:'Rye'},
+      {color:'#a05989',label:'Oats'},{color:'#ffd300',label:'Maize'},
+      {color:'#00a8e2',label:'Rice'},{color:'#d69ebc',label:'Triticale'},
+      {color:'#dda50a',label:'Potatoes'},{color:'#a800e2',label:'Sugar Beet'},
+      {color:'#00af49',label:'Other Crops'},{color:'#ffff00',label:'Sunflower'},
+      {color:'#d1ff00',label:'Rapeseed'},{color:'#267000',label:'Soya'},
+      {color:'#f2a377',label:'Dry Pulses'},{color:'#e8bfff',label:'Fodder Crops'},
+      {color:'#696969',label:'Bare Arable'},{color:'#93cc93',label:'Woodland'},
+      {color:'#e8ffbf',label:'Grasslands'},{color:'#a89e7f',label:'Bare Land'},
+      {color:'#0793de',label:'Water'},{color:'#7cafaf',label:'Wetlands'}
     ],
     attribution: '&copy; JRC/EC EU Crop Map'
+  },
+  {
+    id: 'hrl-crop-types', label: '🇪🇺 HRL Crop Types (Copernicus)', type: 'raster', lang: 'en',
+    legendType: 'list', bounds: [-12, 35, 45, 72],
+    years: [2017, 2018, 2019, 2020, 2021, 2022, 2023], defaultYear: 2023,
+    tileUrl: (yr) => wms11('https://geoserver.vlcc.geoville.com/geoserver/ows',
+      'HRL_CPL:CTY_S' + yr),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://geoserver.vlcc.geoville.com/geoserver/ows',
+      'HRL_CPL:CTY_S' + yr, bbox, x, y),
+    legendItems: [
+      {color:'#e6e600',label:'Cereals'},{color:'#ff9900',label:'Root Crops'},
+      {color:'#cc6600',label:'Non-permanent Industrial'},{color:'#ff0000',label:'Dry Pulses/Protein'},
+      {color:'#00cc66',label:'Fodder Crops'},{color:'#66cc00',label:'Vegetables & Flowers'},
+      {color:'#996633',label:'Permanent Crops'},{color:'#00ff00',label:'Grassland'}
+    ],
+    attribution: '&copy; <a href="https://land.copernicus.eu/en/products/high-resolution-layer-croplands">Copernicus</a> HRL Croplands 10m'
+  },
+  {
+    id: 'hrl-cropping', label: '🇪🇺 HRL Cropping Seasons (Copernicus)', type: 'raster', lang: 'en',
+    legendType: 'list', bounds: [-12, 35, 45, 72],
+    years: [2017, 2018, 2019, 2020, 2021, 2022, 2023], defaultYear: 2023,
+    tileUrl: (yr) => wms11('https://geoserver.vlcc.geoville.com/geoserver/ows',
+      'HRL_CPL:CPCSY_S' + yr),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://geoserver.vlcc.geoville.com/geoserver/ows',
+      'HRL_CPL:CPCSY_S' + yr, bbox, x, y),
+    legendItems: [
+      {color:'#66cc00',label:'Single Crop'},{color:'#ff9900',label:'Double Crop'},
+      {color:'#cc0000',label:'Triple Crop'}
+    ],
+    attribution: '&copy; <a href="https://land.copernicus.eu/en/products/high-resolution-layer-croplands">Copernicus</a> HRL Cropping Seasons 10m'
   },
   {
     id: 'germany', label: '🇩🇪 Germany (DLR)', type: 'raster', lang: 'en',
@@ -648,9 +683,7 @@ const LAYERS = [
       {color:'#a87000',label:'Potatoes'},{color:'#ffaa00',label:'Root Crops'},
       {color:'#70a800',label:'Grassland/Pasture'},{color:'#89cd66',label:'Vegetables/Other'},
       {color:'#8400a8',label:'Legumes'},{color:'#e69800',label:'Spring Cereals'},
-      {color:'#d7c29e',label:'Fallow/Bare'},{color:'#cccccc',label:'Urban/Infrastructure'},
-      {color:'#0070ff',label:'Water'},{color:'#73dfff',label:'Other'},
-      {color:'#73b2ff',label:'Mixed/Unknown'}
+      {color:'#d7c29e',label:'Fallow/Bare'},{color:'#cccccc',label:'Other'}
     ],
     attribution: '&copy; <a href="https://geoservice.dlr.de">DLR EOC</a> CC-BY 4.0'
   },
@@ -1209,6 +1242,186 @@ const LAYERS = [
       {color:'#99cc33',label:'Spring Cereals'}
     ],
     attribution: '&copy; ESA/VITO WorldCereal'
+  },
+  // --- Overlays: Phenology & Vegetation ---
+  {
+    id: 'hrvpp-sosd', label: '🌱 Start of Season (HR-VPP)', type: 'raster', lang: 'en',
+    legendType: 'list', bounds: [-12, 35, 45, 72],
+    years: [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], defaultYear: 2023,
+    tileUrl: (yr) => wms11('https://phenology.vgt.vito.be/wms',
+      'CLMS_HRVPP_VPP_SOSD_SEASON1_10M', '&time=' + yr + '-01-01'),
+    legendItems: [
+      {color:'#1a9641',label:'Early (Jan–Mar)'},{color:'#a6d96a',label:'Spring (Apr–May)'},
+      {color:'#ffffbf',label:'Late Spring (Jun)'},{color:'#fdae61',label:'Summer (Jul–Aug)'},
+      {color:'#d7191c',label:'Late (Sep–Dec)'}
+    ],
+    attribution: '&copy; <a href="https://land.copernicus.eu/en/products/vegetation/high-resolution-vegetation-phenology-and-productivity">Copernicus</a> HR-VPP 10m'
+  },
+  {
+    id: 'hrvpp-eosd', label: '🍂 End of Season (HR-VPP)', type: 'raster', lang: 'en',
+    legendType: 'list', bounds: [-12, 35, 45, 72],
+    years: [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], defaultYear: 2023,
+    tileUrl: (yr) => wms11('https://phenology.vgt.vito.be/wms',
+      'CLMS_HRVPP_VPP_EOSD_SEASON1_10M', '&time=' + yr + '-01-01'),
+    legendItems: [
+      {color:'#1a9641',label:'Early (Jun–Jul)'},{color:'#a6d96a',label:'Late Summer (Aug)'},
+      {color:'#ffffbf',label:'Autumn (Sep–Oct)'},{color:'#fdae61',label:'Late Autumn (Nov)'},
+      {color:'#d7191c',label:'Winter (Dec+)'}
+    ],
+    attribution: '&copy; <a href="https://land.copernicus.eu/en/products/vegetation/high-resolution-vegetation-phenology-and-productivity">Copernicus</a> HR-VPP 10m'
+  },
+  {
+    id: 'hrvpp-maxd', label: '☀️ Peak Season Date (HR-VPP)', type: 'raster', lang: 'en',
+    legendType: 'list', bounds: [-12, 35, 45, 72],
+    years: [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], defaultYear: 2023,
+    tileUrl: (yr) => wms11('https://phenology.vgt.vito.be/wms',
+      'CLMS_HRVPP_VPP_MAXD_SEASON1_10M', '&time=' + yr + '-01-01'),
+    legendItems: [
+      {color:'#1a9641',label:'Early Peak (Apr–May)'},{color:'#a6d96a',label:'Jun'},
+      {color:'#ffffbf',label:'Jul'},{color:'#fdae61',label:'Aug'},
+      {color:'#d7191c',label:'Late Peak (Sep+)'}
+    ],
+    attribution: '&copy; <a href="https://land.copernicus.eu/en/products/vegetation/high-resolution-vegetation-phenology-and-productivity">Copernicus</a> HR-VPP 10m'
+  },
+  {
+    id: 'hrvpp-maxv', label: '🌿 Peak Greenness (HR-VPP)', type: 'raster', lang: 'en',
+    legendType: 'list', bounds: [-12, 35, 45, 72],
+    years: [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], defaultYear: 2023,
+    tileUrl: (yr) => wms11('https://phenology.vgt.vito.be/wms',
+      'CLMS_HRVPP_VPP_MAXV_SEASON1_10M', '&time=' + yr + '-01-01'),
+    legendItems: [
+      {color:'#f7fcb1',label:'Low PPI'},{color:'#addd8e',label:'Moderate'},
+      {color:'#41ab5d',label:'High'},{color:'#006837',label:'Very High PPI'}
+    ],
+    attribution: '&copy; <a href="https://land.copernicus.eu/en/products/vegetation/high-resolution-vegetation-phenology-and-productivity">Copernicus</a> HR-VPP 10m'
+  },
+  {
+    id: 'hrvpp-length', label: '📏 Season Length (HR-VPP)', type: 'raster', lang: 'en',
+    legendType: 'list', bounds: [-12, 35, 45, 72],
+    years: [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], defaultYear: 2023,
+    tileUrl: (yr) => wms11('https://phenology.vgt.vito.be/wms',
+      'CLMS_HRVPP_VPP_LENGTH_SEASON1_10M', '&time=' + yr + '-01-01'),
+    legendItems: [
+      {color:'#d7191c',label:'Short (<90 days)'},{color:'#fdae61',label:'Medium (90–150)'},
+      {color:'#ffffbf',label:'Long (150–210)'},{color:'#a6d96a',label:'Very Long (210–270)'},
+      {color:'#1a9641',label:'Extended (>270 days)'}
+    ],
+    attribution: '&copy; <a href="https://land.copernicus.eu/en/products/vegetation/high-resolution-vegetation-phenology-and-productivity">Copernicus</a> HR-VPP 10m'
+  },
+  {
+    id: 'hrvpp-sprod', label: '📊 Seasonal Productivity (HR-VPP)', type: 'raster', lang: 'en',
+    legendType: 'list', bounds: [-12, 35, 45, 72],
+    years: [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], defaultYear: 2023,
+    tileUrl: (yr) => wms11('https://phenology.vgt.vito.be/wms',
+      'CLMS_HRVPP_VPP_SPROD_SEASON1_10M', '&time=' + yr + '-01-01'),
+    legendItems: [
+      {color:'#ffffcc',label:'Low Productivity'},{color:'#c2e699',label:'Moderate'},
+      {color:'#78c679',label:'High'},{color:'#238443',label:'Very High Productivity'}
+    ],
+    attribution: '&copy; <a href="https://land.copernicus.eu/en/products/vegetation/high-resolution-vegetation-phenology-and-productivity">Copernicus</a> HR-VPP 10m'
+  },
+  {
+    id: 'hrvpp-ppi', label: '🌍 Plant Phenology Index (HR-VPP)', type: 'raster', lang: 'en',
+    legendType: 'list', bounds: [-12, 35, 45, 72],
+    years: [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], defaultYear: 2023,
+    tileUrl: (yr) => wms11('https://phenology.vgt.vito.be/wms',
+      'CLMS_HRVPP_ST_PPI_10M', '&time=' + yr + '-07-01'),
+    legendItems: [
+      {color:'#ffffcc',label:'Low PPI (bare/dormant)'},{color:'#c2e699',label:'Moderate'},
+      {color:'#78c679',label:'High'},{color:'#238443',label:'Very High (dense canopy)'}
+    ],
+    attribution: '&copy; <a href="https://land.copernicus.eu/en/products/vegetation/high-resolution-vegetation-phenology-and-productivity">Copernicus</a> HR-VPP 10m'
+  },
+  {
+    id: 'gibs-ndvi', label: '🛰️ MODIS NDVI 16-day (Global)', type: 'raster', lang: 'en',
+    legendType: 'list',
+    years: Array.from({length:26}, (_,i) => 2000+i), defaultYear: 2025,
+    tileUrl: (yr) => wms11('https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi',
+      'MODIS_Terra_L3_NDVI_16Day', '&time=' + yr + '-07-12'),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi',
+      'MODIS_Terra_L3_NDVI_16Day', bbox, x, y, '&time=' + yr + '-07-12'),
+    legendItems: [
+      {color:'#8B4513',label:'Bare/Water (<0.1)'},{color:'#D2B48C',label:'Sparse (0.1–0.2)'},
+      {color:'#FFFF00',label:'Shrub/Grass (0.2–0.4)'},{color:'#90EE90',label:'Moderate (0.4–0.6)'},
+      {color:'#228B22',label:'Dense Vegetation (0.6–0.8)'},{color:'#006400',label:'Very Dense (>0.8)'}
+    ],
+    attribution: '&copy; NASA EOSDIS GIBS / MODIS Terra NDVI'
+  },
+  {
+    id: 'gibs-evi', label: '🛰️ MODIS EVI 16-day (Global)', type: 'raster', lang: 'en',
+    legendType: 'list',
+    years: Array.from({length:26}, (_,i) => 2000+i), defaultYear: 2025,
+    tileUrl: (yr) => wms11('https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi',
+      'MODIS_Terra_L3_EVI_16Day', '&time=' + yr + '-07-12'),
+    featureInfo: (yr, bbox, x, y) => gfi11('https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi',
+      'MODIS_Terra_L3_EVI_16Day', bbox, x, y, '&time=' + yr + '-07-12'),
+    legendItems: [
+      {color:'#8B4513',label:'Bare/Water (<0.1)'},{color:'#D2B48C',label:'Sparse (0.1–0.2)'},
+      {color:'#FFFF00',label:'Shrub/Grass (0.2–0.3)'},{color:'#90EE90',label:'Moderate (0.3–0.5)'},
+      {color:'#228B22',label:'Dense Vegetation (0.5–0.7)'},{color:'#006400',label:'Very Dense (>0.7)'}
+    ],
+    attribution: '&copy; NASA EOSDIS GIBS / MODIS Terra EVI'
+  },
+  // --- Overlays: Environmental context ---
+  {
+    id: 'overlay-lpd', label: '🌍 Land Productivity Dynamics', type: 'raster', lang: 'en',
+    legendType: 'list',
+    years: [2015, 2019, 2023], defaultYear: 2023,
+    pmtilesFile: (yr) => 'lpd-' + yr + '.pmtiles',
+    legendItems: [
+      {color:'#006400',label:'Increasing Productivity'},{color:'#a0d600',label:'Stable, High'},
+      {color:'#ffff00',label:'Stable, Moderate'},{color:'#ff9900',label:'Decreasing'},
+      {color:'#ff0000',label:'Declining'},{color:'#cccccc',label:'No Data'}
+    ],
+    attribution: '&copy; <a href="https://data.jrc.ec.europa.eu/dataset/c6e827f1-501e-4808-bb04-8ee9f0d3ac97">JRC</a> LPD CC-BY 4.0'
+  },
+  {
+    id: 'overlay-flood', label: '🌊 River Flood Hazard (100yr)', type: 'raster', lang: 'en',
+    legendType: 'list', bounds: [-25, 27, 45, 72],
+    years: null, defaultYear: null, dataYear: 'v3.1',
+    pmtilesFile: () => 'flood-hazard-rp100.pmtiles',
+    legendItems: [
+      {color:'#cce5ff',label:'0-0.5m'},{color:'#66b3ff',label:'0.5-1m'},
+      {color:'#0066cc',label:'1-2m'},{color:'#003380',label:'2-5m'},
+      {color:'#001a4d',label:'>5m'}
+    ],
+    attribution: '&copy; <a href="https://data.jrc.ec.europa.eu/dataset/1d128b6c-a4ee-4858-9e34-6210707f3c81">JRC/CEMS</a> CC-BY 4.0'
+  },
+  {
+    id: 'overlay-inca-crop', label: '🌾 INCA Crop Provision', type: 'raster', lang: 'en',
+    legendType: 'list', bounds: [-12, 32, 43, 72],
+    years: null, defaultYear: null, dataYear: '2012-2020',
+    pmtilesFile: () => 'inca-crop-provision.pmtiles',
+    legendItems: [
+      {color:'#fff7bc',label:'Low'},{color:'#fec44f',label:'Medium'},
+      {color:'#d95f0e',label:'High'},{color:'#993404',label:'Very High'}
+    ],
+    attribution: '&copy; <a href="https://data.jrc.ec.europa.eu/collection/maes">JRC MAES/INCA</a> CC-BY 4.0'
+  },
+  {
+    id: 'overlay-inca-pollination', label: '🐝 INCA Crop Pollination', type: 'raster', lang: 'en',
+    legendType: 'list', bounds: [-12, 32, 43, 72],
+    years: null, defaultYear: null, dataYear: '2000-2012',
+    pmtilesFile: () => 'inca-crop-pollination.pmtiles',
+    legendItems: [
+      {color:'#ffffcc',label:'Low Potential'},{color:'#a1dab4',label:'Moderate'},
+      {color:'#41b6c4',label:'High'},{color:'#225ea8',label:'Very High'}
+    ],
+    attribution: '&copy; <a href="https://data.jrc.ec.europa.eu/collection/maes">JRC MAES/INCA</a> CC-BY 4.0'
+  },
+  // --- Validation / Ground Truth ---
+  {
+    id: 'validation-lucas', label: '📍 LUCAS 2022 Ground Truth', type: 'raster', lang: 'en',
+    legendType: 'list', bounds: [-12, 35, 45, 72],
+    years: null, defaultYear: null, dataYear: '2022',
+    pmtilesFile: () => 'lucas-2022.pmtiles',
+    legendItems: [
+      {color:'#ff0000',label:'Cropland'},{color:'#00cc00',label:'Grassland'},
+      {color:'#006600',label:'Woodland'},{color:'#996633',label:'Shrubland'},
+      {color:'#cccccc',label:'Bare/Artificial'},{color:'#0066ff',label:'Water'},
+      {color:'#99ccff',label:'Wetland'}
+    ],
+    attribution: '&copy; <a href="https://data.jrc.ec.europa.eu/dataset/e3fe3cd0-44db-470e-8769-172a8b9e8874">JRC/Eurostat</a> LUCAS CC-BY 4.0'
   }
 ];
 
@@ -1338,24 +1551,25 @@ maplibregl.addProtocol('filtered', async (params) => {
     return { data: new Uint8Array(result.data) };
   }
 
-  // Build set of hidden RGB values from legendItems
+  // Build set of VISIBLE RGB values (whitelist approach — keep only these)
   const L = LAYERS.find(l => l.id === layerId);
   if (!L || !L.legendItems) return { data: new Uint8Array(result.data) };
 
-  const hiddenRGBs = [];
+  const visibleRGBs = [];
   L.legendItems.forEach(item => {
-    if (hiddenClasses[layerId].has(item.label)) {
+    if (!hiddenClasses[layerId].has(item.label)) {
       const hex = item.color;
-      hiddenRGBs.push([
+      visibleRGBs.push([
         parseInt(hex.slice(1,3), 16),
         parseInt(hex.slice(3,5), 16),
         parseInt(hex.slice(5,7), 16)
       ]);
     }
   });
-  if (hiddenRGBs.length === 0) return { data: new Uint8Array(result.data) };
+  // All classes hidden → return transparent tile
+  if (visibleRGBs.length === 0) return { data: new Uint8Array(0) };
 
-  // Decode PNG, filter pixels, re-encode
+  // Decode PNG, keep only pixels matching visible classes, re-encode
   const blob = new Blob([result.data], { type: 'image/png' });
   const imageBitmap = await createImageBitmap(blob);
   const canvas = new OffscreenCanvas(imageBitmap.width, imageBitmap.height);
@@ -1363,15 +1577,15 @@ maplibregl.addProtocol('filtered', async (params) => {
   ctx.drawImage(imageBitmap, 0, 0);
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
   const d = imageData.data;
-  const tol = 12; // color tolerance for nearest-neighbor artifacts
   for (let i = 0; i < d.length; i += 4) {
-    if (d[i+3] === 0) continue; // already transparent
-    for (const [hr, hg, hb] of hiddenRGBs) {
-      if (Math.abs(d[i] - hr) < tol && Math.abs(d[i+1] - hg) < tol && Math.abs(d[i+2] - hb) < tol) {
-        d[i+3] = 0;
-        break;
+    if (d[i+3] === 0) continue;
+    let keep = false;
+    for (const [vr, vg, vb] of visibleRGBs) {
+      if (Math.abs(d[i] - vr) + Math.abs(d[i+1] - vg) + Math.abs(d[i+2] - vb) < 80) {
+        keep = true; break;
       }
     }
+    if (!keep) d[i+3] = 0;
   }
   ctx.putImageData(imageData, 0, 0);
   const filteredBlob = await canvas.convertToBlob({ type: 'image/png' });
@@ -1430,29 +1644,32 @@ maplibregl.addProtocol('filtered-wms', async (params) => {
     }
   }
 
-  // Class-based filtering for list layers
+  // Class-based filtering for list layers (whitelist: keep only visible classes)
   if (hasHidden && L && L.legendItems) {
-    const hiddenRGBs = [];
+    const visibleRGBs = [];
     L.legendItems.forEach(item => {
-      if (hiddenClasses[layerId].has(item.label)) {
+      if (!hiddenClasses[layerId].has(item.label)) {
         const hex = item.color;
-        hiddenRGBs.push([
+        visibleRGBs.push([
           parseInt(hex.slice(1,3), 16),
           parseInt(hex.slice(3,5), 16),
           parseInt(hex.slice(5,7), 16)
         ]);
       }
     });
-    if (hiddenRGBs.length > 0) {
-      const tol = 12;
+    if (visibleRGBs.length === 0) {
+      // All classes hidden — make entire tile transparent
+      for (let i = 0; i < d.length; i += 4) d[i+3] = 0;
+    } else {
       for (let i = 0; i < d.length; i += 4) {
         if (d[i+3] === 0) continue;
-        for (const [hr, hg, hb] of hiddenRGBs) {
-          if (Math.abs(d[i] - hr) < tol && Math.abs(d[i+1] - hg) < tol && Math.abs(d[i+2] - hb) < tol) {
-            d[i+3] = 0;
-            break;
+        let keep = false;
+        for (const [vr, vg, vb] of visibleRGBs) {
+          if (Math.abs(d[i] - vr) + Math.abs(d[i+1] - vg) + Math.abs(d[i+2] - vb) < 80) {
+            keep = true; break;
           }
         }
+        if (!keep) d[i+3] = 0;
       }
     }
   }
@@ -1702,14 +1919,18 @@ LAYERS.forEach(L => {
     if (L.minZoom) layerDef.minzoom = L.minZoom;
     initLayers.push(layerDef);
   } else if (L.type === 'vector-remote') {
+    const remoteUrl = L.pmtilesUrl
+      ? L.pmtilesUrl
+      : (L.pmtilesFile ? base + '/' + L.pmtilesFile() : null);
+    if (!remoteUrl) { console.warn('No PMTiles URL for', L.id); return; }
     initSources[L.id] = {
       type: 'vector',
-      url: 'pmtiles://' + L.pmtilesUrl,
-      bounds: L.id === 'eurocrops' ? [-30, 34, 50, 72] : undefined,
+      url: 'pmtiles://' + remoteUrl,
+      bounds: L.id.startsWith('eurocrops') ? [-30, 34, 50, 72] : undefined,
       attribution: L.attribution || ''
     };
     // Use crop-type colors and Europe bbox filter for EuroCrops; plain filter for others
-    const isEurocrops = L.id === 'eurocrops';
+    const isEurocrops = L.id.startsWith('eurocrops');
     const vFilter = ['==', ['geometry-type'], 'Polygon'];
     // EuroCrops: small square dots at low zoom for visibility, polygons at higher zoom
     if (isEurocrops) {
@@ -1929,6 +2150,9 @@ const sections = [
   { start: 'deafrica-crop',  label: 'Africa',                  open: false },
   { start: 'china-clcd',     label: 'Asia',                    open: false },
   { start: 'modis-landcover', label: 'Global / Satellite',      open: false },
+  { start: 'hrvpp-sosd',     label: 'Overlays — Phenology',     open: false },
+  { start: 'overlay-lpd',    label: 'Overlays — Environmental', open: false },
+  { start: 'validation-lucas', label: 'Validation / Ground Truth', open: false },
 ];
 const sectionMap = {}; sections.forEach(s => { sectionMap[s.start] = s; });
 
@@ -2032,9 +2256,11 @@ LAYERS.forEach(L => {
   // Original data source URLs (authoritative government/agency pages)
   const originalSources = {
     'crome': 'https://environment.data.gov.uk/dataset/7fdb6312-801c-41f6-996d-4585d2bb4684',
-    'eurocrops': 'https://github.com/maja601/EuroCrops',
+    'eurocrops': 'https://data.jrc.ec.europa.eu/dataset/b9fb9e67-78a9-4327-9d59-39a928d812d3',
     'corine': 'https://land.copernicus.eu/en/products/corine-land-cover',
     'jrc-eucropmap': 'https://data.jrc.ec.europa.eu/collection/EUCROPMAP',
+    'hrl-crop-types': 'https://land.copernicus.eu/en/products/high-resolution-layer-croplands',
+    'hrl-cropping': 'https://land.copernicus.eu/en/products/high-resolution-layer-croplands',
     'germany': 'https://geoservice.dlr.de/web/maps/eoc:lulc:de',
     'france': 'https://geoservices.ign.fr/rpg',
     'netherlands': 'https://www.pdok.nl/datasets',
@@ -2069,6 +2295,20 @@ LAYERS.forEach(L => {
     'worldcereal-maize': 'https://esa-worldcereal.org/',
     'worldcereal-winter': 'https://esa-worldcereal.org/',
     'worldcereal-spring': 'https://esa-worldcereal.org/',
+    'hrvpp-sosd': 'https://land.copernicus.eu/en/products/vegetation/high-resolution-vegetation-phenology-and-productivity',
+    'hrvpp-eosd': 'https://land.copernicus.eu/en/products/vegetation/high-resolution-vegetation-phenology-and-productivity',
+    'hrvpp-maxd': 'https://land.copernicus.eu/en/products/vegetation/high-resolution-vegetation-phenology-and-productivity',
+    'hrvpp-maxv': 'https://land.copernicus.eu/en/products/vegetation/high-resolution-vegetation-phenology-and-productivity',
+    'hrvpp-length': 'https://land.copernicus.eu/en/products/vegetation/high-resolution-vegetation-phenology-and-productivity',
+    'hrvpp-sprod': 'https://land.copernicus.eu/en/products/vegetation/high-resolution-vegetation-phenology-and-productivity',
+    'hrvpp-ppi': 'https://land.copernicus.eu/en/products/vegetation/high-resolution-vegetation-phenology-and-productivity',
+    'gibs-ndvi': 'https://lpdaac.usgs.gov/products/mod13a2v061/',
+    'gibs-evi': 'https://lpdaac.usgs.gov/products/mod13a2v061/',
+    'overlay-lpd': 'https://data.jrc.ec.europa.eu/dataset/c6e827f1-501e-4808-bb04-8ee9f0d3ac97',
+    'overlay-flood': 'https://data.jrc.ec.europa.eu/dataset/1d128b6c-a4ee-4858-9e34-6210707f3c81',
+    'overlay-inca-crop': 'https://data.jrc.ec.europa.eu/dataset/ecd792d1-61c3-478c-aa4a-587bad385805',
+    'overlay-inca-pollination': 'https://data.jrc.ec.europa.eu/dataset/650331f3-e7ce-427b-8011-bd2c8f40599c',
+    'validation-lucas': 'https://data.jrc.ec.europa.eu/dataset/e3fe3cd0-44db-470e-8769-172a8b9e8874',
   };
   const attrText = (L.attribution || '').replace(/<[^>]+>/g, '');
   const hasPmt = L.type === 'vector' || L.type === 'vector-remote' || L.pmtilesFile;
@@ -2076,6 +2316,18 @@ LAYERS.forEach(L => {
   let infoHtml = '<b>Source:</b> ' + (attrText || 'N/A');
   if (originalSources[L.id])
     infoHtml += ' — <a href="' + originalSources[L.id] + '" target="_blank">original data</a>';
+  // Link to documentation page if it exists
+  const docPages = {
+    'hrl-crop-types': 'hrl-crop-types', 'hrl-cropping': 'hrl-crop-types',
+    'eurocrops': 'eurocrops',
+    'validation-lucas': 'lucas-2022',
+    'hrvpp-sosd': 'hrvpp-phenology', 'hrvpp-eosd': 'hrvpp-phenology', 'hrvpp-maxd': 'hrvpp-phenology',
+    'hrvpp-maxv': 'hrvpp-phenology', 'hrvpp-length': 'hrvpp-phenology', 'hrvpp-sprod': 'hrvpp-phenology',
+    'hrvpp-ppi': 'hrvpp-phenology',
+    'gibs-ndvi': 'gibs-vegetation', 'gibs-evi': 'gibs-vegetation'
+  };
+  if (docPages[L.id])
+    infoHtml += ' | <a href="docs/' + docPages[L.id] + '.html" target="_blank">full documentation</a>';
   if (L.years && L.years.length > 1)
     infoHtml += '<br><b>Years:</b> ' + L.years[0] + '–' + L.years[L.years.length - 1];
   infoHtml += '<br><b>Type:</b> ' + sourceType;
@@ -2242,7 +2494,7 @@ async function activateRasterWithFallback(L) {
       paint: { 'raster-opacity': currentOpacity },
       layout: { visibility: 'visible' }
     };
-    if (L.minZoom) layerDef.minzoom = L.minZoom;
+    // Don't apply minZoom for PMTiles — overview tiles may cover lower zooms
     map.addLayer(layerDef);
     updateSourceBadge(L.id, 'pmtiles');
   } else if (L.tileUrl) {
@@ -2499,24 +2751,18 @@ function toggleEuroCropsClass(key) {
 }
 
 function applyEuroCropsFilter() {
-  if (!map.getLayer('eurocrops-fill')) return;
   const hidden = hiddenClasses.eurocrops;
-  if (!hidden || hidden.size === 0) {
-    map.setFilter('eurocrops-fill', ['==', ['geometry-type'], 'Polygon']);
-    map.setFilter('eurocrops-outline', ['==', ['geometry-type'], 'Polygon']);
-    if (map.getLayer('eurocrops-dot'))
-      map.setFilter('eurocrops-dot', null);
-  } else {
-    const polyFilter = ['all',
-      ['==', ['geometry-type'], 'Polygon'],
-      ['!', ['in', ['get', 'EC_hcat_n'], ['literal', [...hidden]]]]
-    ];
-    const dotFilter = ['!', ['in', ['get', 'EC_hcat_n'], ['literal', [...hidden]]]];
-    map.setFilter('eurocrops-fill', polyFilter);
-    map.setFilter('eurocrops-outline', polyFilter);
-    if (map.getLayer('eurocrops-dot'))
-      map.setFilter('eurocrops-dot', dotFilter);
-  }
+  const polyBase = ['==', ['geometry-type'], 'Polygon'];
+  const polyFilter = (!hidden || hidden.size === 0) ? polyBase
+    : ['all', polyBase, ['!', ['in', ['get', 'EC_hcat_n'], ['literal', [...hidden]]]]];
+  const dotFilter = (!hidden || hidden.size === 0) ? null
+    : ['!', ['in', ['get', 'EC_hcat_n'], ['literal', [...hidden]]]];
+  // Apply to both V2 and V1 layers
+  ['eurocrops'].forEach(ecId => {
+    if (map.getLayer(ecId + '-fill')) map.setFilter(ecId + '-fill', polyFilter);
+    if (map.getLayer(ecId + '-outline')) map.setFilter(ecId + '-outline', polyFilter);
+    if (map.getLayer(ecId + '-dot')) map.setFilter(ecId + '-dot', dotFilter);
+  });
 }
 
 function buildCromeBody() {
@@ -2946,17 +3192,19 @@ map.on('mousemove', e => {
     });
   }
 
-  // Vector layers: EuroCrops
-  if (layerState.eurocrops && layerState.eurocrops.on && map.getLayer('eurocrops-fill')) {
-    const queryLayers = ['eurocrops-fill'];
-    if (map.getLayer('eurocrops-dot')) queryLayers.push('eurocrops-dot');
-    const fs = map.queryRenderedFeatures(e.point, { layers: queryLayers });
-    fs.forEach(f => {
-      const p = f.properties;
-      const name = cleanCropName(p.EC_hcat_n) || p.EC_trans_n || '(unknown)';
-      parts.push('EuroCrops: ' + name);
-    });
-  }
+  // Vector layers: EuroCrops (V1 and V2)
+  ['eurocrops'].forEach(ecId => {
+    if (layerState[ecId] && layerState[ecId].on && map.getLayer(ecId + '-fill')) {
+      const queryLayers = [ecId + '-fill'];
+      if (map.getLayer(ecId + '-dot')) queryLayers.push(ecId + '-dot');
+      const fs = map.queryRenderedFeatures(e.point, { layers: queryLayers });
+      fs.forEach(f => {
+        const p = f.properties;
+        const name = cleanCropName(p.EC_hcat_n) || p.EC_trans_n || '(unknown)';
+        parts.push('EuroCrops: ' + name);
+      });
+    }
+  });
 
   // Show vector results immediately
   if (parts.length > 0) {
@@ -3019,7 +3267,9 @@ map.on('mousemove', e => {
           }
           if (results.length === 0) {
             const clean = data.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-            if (clean.length > 0 && clean.length < 200) results.push(L.label + ': ' + clean);
+            if (clean.length > 0 && clean.length < 200
+                && !/error|exception|not supported/i.test(clean))
+              results.push(L.label + ': ' + clean);
           }
         }
         return results;

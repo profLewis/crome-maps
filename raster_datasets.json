@@ -472,5 +472,47 @@
     "min_zoom": 0,
     "max_zoom": 10,
     "notes": "FAO WaPOR v2. 100m. Annual land cover classification. Irrigated/rainfed distinction."
+  },
+  "hrl-crop-types": {
+    "label": "Europe HRL Crop Types (Copernicus)",
+    "wms_version": "1.1.1",
+    "wms_url": "https://geoserver.vlcc.geoville.com/geoserver/ows",
+    "layer": "HRL_CPL:CTY_S{YEAR}",
+    "srs": "EPSG:3857",
+    "format": "image/png",
+    "tile_size": 256,
+    "years": [2017, 2018, 2019, 2020, 2021, 2022, 2023],
+    "bounds": [-12.0, 35.0, 45.0, 72.0],
+    "min_zoom": 0,
+    "max_zoom": 12,
+    "notes": "Copernicus CLMS HRL Croplands. 10m Sentinel-2. Crop type classification across EEA-39."
+  },
+  "hrl-grassland": {
+    "label": "Europe HRL Grassland (Copernicus)",
+    "wms_version": "1.1.1",
+    "wms_url": "https://geoserver.vlcc.geoville.com/geoserver/ows",
+    "layer": "HRL_GRA:GRA_S{YEAR}",
+    "srs": "EPSG:3857",
+    "format": "image/png",
+    "tile_size": 256,
+    "years": [2017, 2018, 2019, 2020, 2021, 2022, 2023],
+    "bounds": [-12.0, 35.0, 45.0, 72.0],
+    "min_zoom": 0,
+    "max_zoom": 12,
+    "notes": "Copernicus CLMS HRL Grassland. 10m. Grassland extent across EEA-39."
+  },
+  "hrl-cropping": {
+    "label": "Europe HRL Cropping Seasons (Copernicus)",
+    "wms_version": "1.1.1",
+    "wms_url": "https://geoserver.vlcc.geoville.com/geoserver/ows",
+    "layer": "HRL_CPL:CPCSY_S{YEAR}",
+    "srs": "EPSG:3857",
+    "format": "image/png",
+    "tile_size": 256,
+    "years": [2017, 2018, 2019, 2020, 2021, 2022, 2023],
+    "bounds": [-12.0, 35.0, 45.0, 72.0],
+    "min_zoom": 0,
+    "max_zoom": 12,
+    "notes": "Copernicus CLMS HRL Cropping Seasons. 10m. Number of cropping seasons per year."
   }
 }

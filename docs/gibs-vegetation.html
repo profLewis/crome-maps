@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MODIS NDVI & EVI (NASA GIBS) — Global Crop Maps</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6; color: #333; max-width: 900px; margin: 0 auto; padding: 20px; }
+  h1 { font-size: 1.8em; margin-bottom: 0.3em; }
+  h2 { font-size: 1.3em; margin-top: 1.5em; margin-bottom: 0.5em;
+    border-bottom: 2px solid #e0e0e0; padding-bottom: 0.3em; }
+  .executive-summary { background: #f0f7ff; border-left: 4px solid #2196f3;
+    padding: 15px 20px; margin: 15px 0; border-radius: 0 8px 8px 0; }
+  .executive-summary p { margin: 0.3em 0; }
+  .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+  .meta-item { background: #fafafa; padding: 10px 15px; border-radius: 6px; border: 1px solid #eee; }
+  .meta-item strong { display: block; font-size: 0.85em; color: #666; text-transform: uppercase; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+  th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #eee; }
+  th { background: #f5f5f5; font-weight: 600; }
+  a { color: #1565c0; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 0.8em; font-weight: 600; }
+  .badge-wms { background: #e3f2fd; color: #1565c0; }
+  .badge-pmtiles { background: #e8f5e9; color: #2e7d32; }
+  .badge-download { background: #fff3e0; color: #e65100; }
+  .back { margin-bottom: 15px; }
+  .back a { text-decoration: none; font-size: 0.9em; }
+  .papers { list-style: none; }
+  .papers li { padding: 5px 0; }
+  .papers li::before { content: "📄 "; }
+  .accuracy-table td:nth-child(2),
+  .accuracy-table td:nth-child(3) { text-align: center; }
+</style>
+</head>
+<body>
+<div class="back"><a href="../index.html">&larr; Back to Map Viewer</a></div>
+<h1>MODIS NDVI & EVI (NASA GIBS)</h1>
+
+<div class="executive-summary">
+  <p><strong>Executive Summary</strong></p>
+  <p>Global vegetation indices from the MODIS instrument aboard NASA's Terra satellite, served as 16-day composites via the Global Imagery Browse Services (GIBS). NDVI and EVI provide complementary measures of vegetation greenness and photosynthetic activity from 2000 to present at 250m-1km resolution.</p>
+</div>
+
+<div class="meta">
+  <div class="meta-item"><strong>Coverage</strong>Global</div>
+  <div class="meta-item"><strong>Resolution</strong>250m-1km</div>
+  <div class="meta-item"><strong>Temporal</strong>2000-2025 (16-day composites)</div>
+  <div class="meta-item"><strong>License</strong>Public domain (US Government work)</div>
+</div>
+
+<h2>Description</h2>
+<p>The MODIS MOD13A2 product provides two vegetation indices: NDVI (Normalized Difference Vegetation Index) and EVI (Enhanced Vegetation Index). NDVI is the classical greenness index computed from red and near-infrared reflectance. EVI adds blue-band correction for atmospheric effects and has improved sensitivity in high-biomass regions (tropical forests) and reduced saturation compared to NDVI.
+In the viewer, mid-July composites are shown by default for each year, representing peak Northern Hemisphere growing season. GIBS serves pre-rendered map tiles at global coverage.</p>
+
+<h2>Provenance</h2>
+<p>MODIS Terra satellite (launched 1999), operated by NASA. Level 3 vegetation index products processed by the Land Processes Distributed Active Archive Center (LP DAAC) at USGS EROS. 16-day Maximum Value Composites from daily observations. GIBS tile service operated by NASA's Earth Observing System Data and Information System (EOSDIS).</p>
+
+<h2>Classification System</h2>
+<p>Continuous indices: NDVI range -0.2 to 1.0 (typical vegetation 0.2-0.9); EVI range -0.2 to 1.0 (typical vegetation 0.2-0.7)</p>
+
+<h2>Access Methods</h2>
+<table>
+  <tr><th>Method</th><th>URL / Details</th></tr>
+  <tr><td><span class="badge badge-wms">WMS</span></td><td><a href="https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi" target="_blank">https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi</a><br><code>Layer: MODIS_Terra_L3_NDVI_16Day / MODIS_Terra_L3_EVI_16Day</code></td></tr>
+  <tr><td><span class="badge badge-download">Data Download</span></td><td><a href="https://lpdaac.usgs.gov/products/mod13a2v061/" target="_blank">https://lpdaac.usgs.gov/products/mod13a2v061/</a></td></tr>
+</table>
+
+<h2>Accuracy Assessment</h2>
+<p>MODIS NDVI/EVI are mature, well-validated products with 20+ years of heritage. Radiometric accuracy: ±0.02 for NDVI over stable targets. Known limitations: cloud contamination (mitigated by compositing), atmospheric effects (EVI more robust than NDVI), BRDF effects at high sun/view angles. See MODIS product validation status at LP DAAC.</p>
+
+<h2>Citing Papers</h2>
+<ul class="papers">
+  <li>Huete et al. (2002). Overview of the radiometric and biophysical performance of the MODIS vegetation indices. Remote Sensing of Environment.</li>
+  <li><a href="https://doi.org/10.1016/S0034-4257(02)00096-2" target="_blank">https://doi.org/10.1016/S0034-4257(02)00096-2</a></li>
+</ul>
+
+<h2>Source & Attribution</h2>
+<p>NASA EOSDIS / LP DAAC / MODIS Science Team</p>
+
+<hr style="margin-top: 2em;">
+<p style="font-size: 0.8em; color: #999; margin-top: 1em;">
+  Generated for <a href="../index.html">Global Crop Maps</a> viewer.
+  Data provided by NASA EOSDIS.
+</p>
+</body>
+</html>

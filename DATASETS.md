@@ -146,3 +146,88 @@ These layers show individual agricultural parcels and require high zoom levels (
 | [Jordbruk](https://jordbruksverket.se/) | Sweden | z12 | [SJV](https://jordbruksverket.se/) |
 | [LPIS](https://www.ruokavirasto.fi/en/) | Finland | z12 | [Ruokavirasto](https://www.ruokavirasto.fi/) |
 | [NIBIO AR5](https://nibio.no/tjenester/nedlasting-av-kartdata/ar5) | Norway | — | [NIBIO](https://www.nibio.no/) |
+
+---
+
+## Europe — Copernicus HRL Croplands
+
+High Resolution Layer products from the Copernicus Land Monitoring Service at 10m resolution.
+
+| Dataset | Coverage | Years | Source |
+|---------|----------|-------|--------|
+| [HRL Crop Types](https://land.copernicus.eu/en/products/high-resolution-layer-croplands) | EEA-39 | 2017-2023 | [Copernicus CLMS / GeoVille](https://land.copernicus.eu/) |
+| [HRL Grassland](https://land.copernicus.eu/en/products/high-resolution-layer-croplands) | EEA-39 | 2017-2023 | [Copernicus CLMS / GeoVille](https://land.copernicus.eu/) |
+| [HRL Cropping Seasons](https://land.copernicus.eu/en/products/high-resolution-layer-croplands) | EEA-39 | 2017-2023 | [Copernicus CLMS / GeoVille](https://land.copernicus.eu/) |
+
+### EuroCrops V2
+**Coverage:** 18 EU countries | **Source:** [JRC / European Commission](https://data.jrc.ec.europa.eu/dataset/b9fb9e67-78a9-4327-9d59-39a928d812d3) | **Type:** GeoParquet → Vector PMTiles
+
+> Harmonized crop parcel dataset using HCAT v4 taxonomy. V2 expands V1 (16→18 countries, 2008-2023). Available as GeoParquet from JRC FTP. [Download script](download_eurocrops_v2.py)
+
+---
+
+## Overlays — Phenology & Vegetation
+
+Vegetation phenology metrics and indices for monitoring crop growth cycles and seasonal dynamics.
+
+### Copernicus HR-VPP (Europe, 10m)
+**Coverage:** Europe (EEA-39) | **Source:** [Copernicus CLMS / VITO](https://land.copernicus.eu/en/products/vegetation/high-resolution-vegetation-phenology-and-productivity) | **Type:** WMS
+
+High Resolution Vegetation Phenology and Productivity from Sentinel-2 at 10m resolution. Seven layers available:
+
+| Layer | Metric | Description |
+|-------|--------|-------------|
+| Start of Season | SOSD | Date when vegetation starts growing |
+| End of Season | EOSD | Date when vegetation becomes dormant |
+| Peak Season Date | MAXD | Date of maximum Plant Phenology Index |
+| Peak Greenness | MAXV | Maximum PPI value (peak canopy density) |
+| Season Length | LENGTH | Duration of growing season (days) |
+| Seasonal Productivity | SPROD | Integrated PPI over the growing season |
+| Plant Phenology Index | PPI | Dekadal PPI trajectory (mid-July snapshot) |
+
+Years: 2017–2024. WMS endpoint: `https://phenology.vgt.vito.be/wms`
+
+### MODIS NDVI & EVI (Global)
+**Coverage:** Global | **Source:** [NASA EOSDIS / GIBS](https://earthdata.nasa.gov/) | **Type:** WMS (GIBS)
+
+MODIS Terra 16-day composite vegetation indices at 250m–1km resolution:
+- **NDVI** (Normalized Difference Vegetation Index) — standard greenness measure
+- **EVI** (Enhanced Vegetation Index) — improved sensitivity in high-biomass regions
+
+Years: 2000–2025. Mid-July composites shown by default.
+
+---
+
+## Overlays — Environmental
+
+Contextual environmental datasets that complement crop/land-cover analysis.
+
+| Dataset | Coverage | Resolution | Source |
+|---------|----------|------------|--------|
+| [Land Productivity Dynamics](https://data.jrc.ec.europa.eu/dataset/c6e827f1-501e-4808-bb04-8ee9f0d3ac97) | Global | 1km | [JRC](https://data.jrc.ec.europa.eu/) |
+| [River Flood Hazard](https://data.jrc.ec.europa.eu/dataset/1d128b6c-a4ee-4858-9e34-6210707f3c81) | Europe | 90m | [JRC / CEMS](https://data.jrc.ec.europa.eu/) |
+| [INCA Crop Provision](https://data.jrc.ec.europa.eu/dataset/ecd792d1-61c3-478c-aa4a-587bad385805) | EU | 1km | [JRC MAES/INCA](https://data.jrc.ec.europa.eu/collection/maes) |
+| [INCA Crop Pollination](https://data.jrc.ec.europa.eu/dataset/650331f3-e7ce-427b-8011-bd2c8f40599c) | EU | 1km | [JRC MAES/INCA](https://data.jrc.ec.europa.eu/collection/maes) |
+
+> Overlays require downloading GeoTIFF data and converting to PMTiles. See [download_overlays.py](download_overlays.py).
+
+---
+
+## Validation / Ground Truth
+
+| Dataset | Coverage | Size | Source |
+|---------|----------|------|--------|
+| [LUCAS 2022](https://data.jrc.ec.europa.eu/dataset/e3fe3cd0-44db-470e-8769-172a8b9e8874) | EU-27 | ~150K polygons | [Eurostat / JRC](https://data.jrc.ec.europa.eu/) |
+| [EMBAL](https://data.jrc.ec.europa.eu/dataset/723355a8-e549-4691-9c0d-83ab7fc7a0c4) | EU-27 | 500x500m plots | [JRC](https://data.jrc.ec.europa.eu/) |
+
+> LUCAS download: see [download_lucas.py](download_lucas.py). EMBAL requires data request to JRC.
+
+---
+
+## ML Benchmarks
+
+| Dataset | Coverage | Parcels | Source |
+|---------|----------|---------|--------|
+| [EuroCropsML](https://zenodo.org/records/15095445) | LV, EE, PT | 706,683 | [Zenodo](https://zenodo.org/) |
+
+> Download and explore: see [eurocropsml/](eurocropsml/README.md).
