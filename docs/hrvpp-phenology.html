@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Copernicus HR-VPP Vegetation Phenology — Global Crop Maps</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6; color: #333; max-width: 900px; margin: 0 auto; padding: 20px; }
+  h1 { font-size: 1.8em; margin-bottom: 0.3em; }
+  h2 { font-size: 1.3em; margin-top: 1.5em; margin-bottom: 0.5em;
+    border-bottom: 2px solid #e0e0e0; padding-bottom: 0.3em; }
+  .executive-summary { background: #f0f7ff; border-left: 4px solid #2196f3;
+    padding: 15px 20px; margin: 15px 0; border-radius: 0 8px 8px 0; }
+  .executive-summary p { margin: 0.3em 0; }
+  .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+  .meta-item { background: #fafafa; padding: 10px 15px; border-radius: 6px; border: 1px solid #eee; }
+  .meta-item strong { display: block; font-size: 0.85em; color: #666; text-transform: uppercase; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+  th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #eee; }
+  th { background: #f5f5f5; font-weight: 600; }
+  a { color: #1565c0; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 0.8em; font-weight: 600; }
+  .badge-wms { background: #e3f2fd; color: #1565c0; }
+  .badge-pmtiles { background: #e8f5e9; color: #2e7d32; }
+  .badge-download { background: #fff3e0; color: #e65100; }
+  .back { margin-bottom: 15px; }
+  .back a { text-decoration: none; font-size: 0.9em; }
+  .papers { list-style: none; }
+  .papers li { padding: 5px 0; }
+  .papers li::before { content: "📄 "; }
+  .accuracy-table td:nth-child(2),
+  .accuracy-table td:nth-child(3) { text-align: center; }
+</style>
+</head>
+<body>
+<div class="back"><a href="../index.html">&larr; Back to Map Viewer</a></div>
+<h1>Copernicus HR-VPP Vegetation Phenology</h1>
+
+<div class="executive-summary">
+  <p><strong>Executive Summary</strong></p>
+  <p>High Resolution Vegetation Phenology and Productivity (HR-VPP) from the Copernicus Land Monitoring Service. Provides 13 phenological metrics per pixel at 10m resolution across Europe (EEA-39), derived from Sentinel-2 imagery. Covers two growing seasons per year from 2017 to 2024. Key metrics include start/end of season dates, peak greenness, season length, and seasonal productivity.</p>
+</div>
+
+<div class="meta">
+  <div class="meta-item"><strong>Coverage</strong>Europe (EEA-39)</div>
+  <div class="meta-item"><strong>Resolution</strong>10m (Sentinel-2)</div>
+  <div class="meta-item"><strong>Temporal</strong>2017-2024 (annual)</div>
+  <div class="meta-item"><strong>License</strong>Copernicus Data Policy (free, open)</div>
+</div>
+
+<h2>Description</h2>
+<p>HR-VPP derives vegetation phenology parameters from Sentinel-2 Plant Phenology Index (PPI) time series at 10m resolution. PPI is computed from Sentinel-2 L2A surface reflectance using the relationship between near-infrared and red bands, corrected for soil and atmospheric effects. A smoothed seasonal trajectory is fitted to the dekadal (10-day) PPI composites, from which phenological metrics are extracted for up to two growing seasons per year.
+Available metrics per season: Start of Season Date (SOSD), End of Season Date (EOSD), Date of Maximum PPI (MAXD), PPI values at start/end/peak (SOSV, EOSV, MAXV, MINV), Amplitude (AMPL), Season Length (LENGTH), Green-up and Senescence rates (LSLOPE, RSLOPE), Seasonal Productivity (SPROD), and Total Productivity (TPROD).</p>
+
+<h2>Provenance</h2>
+<p>Produced by VITO (Flemish Institute for Technological Research) under contract to the European Environment Agency (EEA) as part of the Copernicus Land Monitoring Service. Input: Sentinel-2 L2A atmospherically corrected surface reflectance. Processing chain: PPI computation → cloud/shadow filtering → dekadal compositing → Whittaker smoothing → phenological parameter extraction.</p>
+
+<h2>Classification System</h2>
+<p>Continuous phenological metrics (dates as day-of-year, PPI values 0-6, productivity as integrated PPI)</p>
+
+<h2>Access Methods</h2>
+<table>
+  <tr><th>Method</th><th>URL / Details</th></tr>
+  <tr><td><span class="badge badge-wms">WMS</span></td><td><a href="https://phenology.vgt.vito.be/wms" target="_blank">https://phenology.vgt.vito.be/wms</a><br><code>Layer: CLMS_HRVPP_VPP_SOSD_SEASON1_10M (and other VPP/ST layers)</code></td></tr>
+  <tr><td><span class="badge badge-download">Web Viewer</span></td><td><a href="https://land.copernicus.eu/en/products/vegetation/high-resolution-vegetation-phenology-and-productivity" target="_blank">https://land.copernicus.eu/en/products/vegetation/high-resolution-vegetation-phenology-and-productivity</a></td></tr>
+</table>
+
+<h2>Accuracy Assessment</h2>
+<p>Validation based on comparison with BBCH phenological observations from PEP725 network across Europe. Start-of-season date RMSE typically 10-20 days depending on crop type and region. Peak greenness timing accuracy ~5-10 days. Higher accuracy for cropland and grassland than for forest understory. See CLMS quality assessment reports for detailed validation.</p>
+
+<h2>Citing Papers</h2>
+<ul class="papers">
+  <li>Tian et al. (2021). Calibrating vegetation phenology from Sentinel-2 using eddy covariance, PhenoCam, and PEP725 networks across Europe. Remote Sensing of Environment.</li>
+  <li><a href="https://doi.org/10.1016/j.rse.2020.112275" target="_blank">https://doi.org/10.1016/j.rse.2020.112275</a></li>
+  <li>Copernicus Land Monitoring Service HR-VPP Product User Manual</li>
+</ul>
+
+<h2>Source & Attribution</h2>
+<p>Copernicus Land Monitoring Service / European Environment Agency / VITO</p>
+
+<hr style="margin-top: 2em;">
+<p style="font-size: 0.8em; color: #999; margin-top: 1em;">
+  Generated for <a href="../index.html">Global Crop Maps</a> viewer.
+  Data provided by EEA / VITO.
+</p>
+</body>
+</html>

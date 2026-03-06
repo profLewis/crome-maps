@@ -1,0 +1,216 @@
+# Dataset metadata for documentation page generation.
+# Run: python3 docs/generate_docs.py
+
+hrl-crop-types:
+  title: "Copernicus HRL Crop Types"
+  executive_summary: >
+    Pan-European crop type classification at 10m resolution from Sentinel-2, covering
+    EEA-39 countries from 2017-2023. Part of the Copernicus Land Monitoring Service
+    High Resolution Layer (HRL) Croplands product. Provides annual maps distinguishing
+    major crop groups: cereals, root crops, industrial crops, pulses, fodder, vegetables,
+    permanent crops, and grassland.
+  coverage: "Europe (EEA-39)"
+  resolution: "10m (Sentinel-2)"
+  temporal: "2017-2023 (annual)"
+  license: "Copernicus Data Policy (free, open)"
+  description: >
+    The HRL Crop Types layer classifies agricultural land across Europe into major
+    crop type groups using Sentinel-2 satellite imagery at 10m spatial resolution.
+    It is produced by GeoVille for the Copernicus Land Monitoring Service (CLMS).
+    The classification uses machine learning trained on LPIS (Land Parcel
+    Identification System) reference data from EU member states.
+  provenance: >
+    Produced by GeoVille GmbH under contract to the European Environment Agency (EEA)
+    as part of the Copernicus Land Monitoring Service. Input data: Sentinel-2 L2A
+    surface reflectance, supplemented by LPIS training data. Processing: annual
+    classification using ensemble machine learning.
+  classification: "Major crop groups: Cereals, Root Crops, Non-permanent Industrial, Dry Pulses/Protein, Fodder, Vegetables & Flowers, Permanent Crops, Grassland"
+  access:
+    - method: "WMS"
+      url: "https://geoserver.vlcc.geoville.com/geoserver/ows"
+      layer: "HRL_CPL:CTY_S{YEAR}"
+    - method: "Web Viewer"
+      url: "https://land.copernicus.eu/en/products/high-resolution-layer-croplands"
+  accuracy: >
+    Overall accuracy varies by year and region. Typical overall accuracy ~80-85%
+    for major crop groups. Accuracy is higher for dominant crops (cereals, grassland)
+    and lower for minor crops. See technical documentation for detailed per-class
+    accuracy metrics.
+  papers:
+    - "Copernicus Land Monitoring Service HRL Croplands Product User Manual"
+  attribution: "Copernicus Land Monitoring Service / European Environment Agency"
+  provider: "EEA / GeoVille"
+
+eurocrops:
+  title: "EuroCrops V2"
+  executive_summary: >
+    Harmonized EU-wide crop parcel dataset covering 18 countries from 2008-2023,
+    with crop types mapped to a unified HCAT v4 taxonomy. Contains millions of
+    individual field parcels derived from national LPIS/IACS declarations.
+    V2 significantly expands V1 coverage (16 → 18 countries, 2008-2023 vs 2018-2021).
+  coverage: "18 EU countries"
+  resolution: "Field parcel level (vector polygons)"
+  temporal: "2008-2023 (varies by country)"
+  license: "CC-BY 4.0"
+  description: >
+    EuroCrops V2 combines self-declared crop reporting datasets from EU member states
+    into a harmonized pan-European dataset. Each parcel includes the original national
+    crop code, translated to the Hierarchical Crop and Agriculture Taxonomy (HCAT v4).
+    Countries included: AT, BE (Flanders/Wallonia), BG, CZ, DE (Brandenburg/NRW),
+    DK, EE, ES, FI, FR, IE, IT (Tuscany), NL, PT, SI, SK.
+  provenance: >
+    Created by the Joint Research Centre (JRC) of the European Commission,
+    building on the original EuroCrops project by TU Munich. Source data from
+    national LPIS/IACS databases. HCAT v4 taxonomy provides cross-country
+    harmonization of crop types.
+  classification: "HCAT v4 (Hierarchical Crop and Agriculture Taxonomy) — 4 levels with ~200 crop types"
+  access:
+    - method: "GeoParquet"
+      url: "https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/DRLL/EuroCropsV2/gpqt/"
+    - method: "JRC Dataset"
+      url: "https://data.jrc.ec.europa.eu/dataset/b9fb9e67-78a9-4327-9d59-39a928d812d3"
+  accuracy: >
+    Based on official LPIS/IACS declarations — these are self-reported by farmers
+    and verified by national agencies. Accuracy of crop type attribution is generally
+    high (>95%) for major crops, as declarations are tied to EU subsidy payments.
+    Geometric accuracy depends on the national LPIS system.
+  papers:
+    - "Schneider et al. (2023). EuroCrops: The largest harmonized open crop dataset across the European Union. Scientific Data."
+    - "https://doi.org/10.1038/s41597-023-02517-0"
+  attribution: "JRC / European Commission; original EuroCrops by TU Munich"
+  provider: "JRC / European Commission"
+
+hrvpp-phenology:
+  title: "Copernicus HR-VPP Vegetation Phenology"
+  executive_summary: >
+    High Resolution Vegetation Phenology and Productivity (HR-VPP) from the Copernicus
+    Land Monitoring Service. Provides 13 phenological metrics per pixel at 10m resolution
+    across Europe (EEA-39), derived from Sentinel-2 imagery. Covers two growing seasons
+    per year from 2017 to 2024. Key metrics include start/end of season dates, peak
+    greenness, season length, and seasonal productivity.
+  coverage: "Europe (EEA-39)"
+  resolution: "10m (Sentinel-2)"
+  temporal: "2017-2024 (annual)"
+  license: "Copernicus Data Policy (free, open)"
+  description: >
+    HR-VPP derives vegetation phenology parameters from Sentinel-2 Plant Phenology
+    Index (PPI) time series at 10m resolution. PPI is computed from Sentinel-2 L2A
+    surface reflectance using the relationship between near-infrared and red bands,
+    corrected for soil and atmospheric effects. A smoothed seasonal trajectory is
+    fitted to the dekadal (10-day) PPI composites, from which phenological metrics
+    are extracted for up to two growing seasons per year.
+
+    Available metrics per season: Start of Season Date (SOSD), End of Season Date
+    (EOSD), Date of Maximum PPI (MAXD), PPI values at start/end/peak (SOSV, EOSV,
+    MAXV, MINV), Amplitude (AMPL), Season Length (LENGTH), Green-up and Senescence
+    rates (LSLOPE, RSLOPE), Seasonal Productivity (SPROD), and Total Productivity (TPROD).
+  provenance: >
+    Produced by VITO (Flemish Institute for Technological Research) under contract
+    to the European Environment Agency (EEA) as part of the Copernicus Land Monitoring
+    Service. Input: Sentinel-2 L2A atmospherically corrected surface reflectance.
+    Processing chain: PPI computation → cloud/shadow filtering → dekadal compositing →
+    Whittaker smoothing → phenological parameter extraction.
+  classification: "Continuous phenological metrics (dates as day-of-year, PPI values 0-6, productivity as integrated PPI)"
+  access:
+    - method: "WMS"
+      url: "https://phenology.vgt.vito.be/wms"
+      layer: "CLMS_HRVPP_VPP_SOSD_SEASON1_10M (and other VPP/ST layers)"
+    - method: "Web Viewer"
+      url: "https://land.copernicus.eu/en/products/vegetation/high-resolution-vegetation-phenology-and-productivity"
+  accuracy: >
+    Validation based on comparison with BBCH phenological observations from PEP725
+    network across Europe. Start-of-season date RMSE typically 10-20 days depending
+    on crop type and region. Peak greenness timing accuracy ~5-10 days. Higher
+    accuracy for cropland and grassland than for forest understory. See CLMS
+    quality assessment reports for detailed validation.
+  papers:
+    - "Tian et al. (2021). Calibrating vegetation phenology from Sentinel-2 using eddy covariance, PhenoCam, and PEP725 networks across Europe. Remote Sensing of Environment."
+    - "https://doi.org/10.1016/j.rse.2020.112275"
+    - "Copernicus Land Monitoring Service HR-VPP Product User Manual"
+  attribution: "Copernicus Land Monitoring Service / European Environment Agency / VITO"
+  provider: "EEA / VITO"
+
+gibs-vegetation:
+  title: "MODIS NDVI & EVI (NASA GIBS)"
+  executive_summary: >
+    Global vegetation indices from the MODIS instrument aboard NASA's Terra satellite,
+    served as 16-day composites via the Global Imagery Browse Services (GIBS). NDVI
+    and EVI provide complementary measures of vegetation greenness and photosynthetic
+    activity from 2000 to present at 250m-1km resolution.
+  coverage: "Global"
+  resolution: "250m-1km"
+  temporal: "2000-2025 (16-day composites)"
+  license: "Public domain (US Government work)"
+  description: >
+    The MODIS MOD13A2 product provides two vegetation indices: NDVI (Normalized
+    Difference Vegetation Index) and EVI (Enhanced Vegetation Index). NDVI is the
+    classical greenness index computed from red and near-infrared reflectance. EVI
+    adds blue-band correction for atmospheric effects and has improved sensitivity
+    in high-biomass regions (tropical forests) and reduced saturation compared to NDVI.
+
+    In the viewer, mid-July composites are shown by default for each year, representing
+    peak Northern Hemisphere growing season. GIBS serves pre-rendered map tiles at
+    global coverage.
+  provenance: >
+    MODIS Terra satellite (launched 1999), operated by NASA. Level 3 vegetation
+    index products processed by the Land Processes Distributed Active Archive Center
+    (LP DAAC) at USGS EROS. 16-day Maximum Value Composites from daily observations.
+    GIBS tile service operated by NASA's Earth Observing System Data and Information
+    System (EOSDIS).
+  classification: "Continuous indices: NDVI range -0.2 to 1.0 (typical vegetation 0.2-0.9); EVI range -0.2 to 1.0 (typical vegetation 0.2-0.7)"
+  access:
+    - method: "WMS"
+      url: "https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi"
+      layer: "MODIS_Terra_L3_NDVI_16Day / MODIS_Terra_L3_EVI_16Day"
+    - method: "Data Download"
+      url: "https://lpdaac.usgs.gov/products/mod13a2v061/"
+  accuracy: >
+    MODIS NDVI/EVI are mature, well-validated products with 20+ years of heritage.
+    Radiometric accuracy: ±0.02 for NDVI over stable targets. Known limitations:
+    cloud contamination (mitigated by compositing), atmospheric effects (EVI more
+    robust than NDVI), BRDF effects at high sun/view angles. See MODIS product
+    validation status at LP DAAC.
+  papers:
+    - "Huete et al. (2002). Overview of the radiometric and biophysical performance of the MODIS vegetation indices. Remote Sensing of Environment."
+    - "https://doi.org/10.1016/S0034-4257(02)00096-2"
+  attribution: "NASA EOSDIS / LP DAAC / MODIS Science Team"
+  provider: "NASA EOSDIS"
+
+lucas-2022:
+  title: "LUCAS 2022 Copernicus"
+  executive_summary: >
+    EU-wide ground truth land cover survey with ~150,000 in-situ observation
+    polygons across all 27 member states. Provides 82 detailed land cover classes
+    verified by field surveyors, making it the primary validation dataset for
+    European land cover mapping. Key reference for accuracy assessment of satellite-
+    derived crop maps.
+  coverage: "EU-27"
+  resolution: "Point/polygon observations (survey plots)"
+  temporal: "2022"
+  license: "CC-BY 4.0"
+  description: >
+    LUCAS (Land Use and Coverage Area frame Survey) is a harmonized in-situ
+    land cover/use survey conducted by Eurostat across the EU. The 2022 Copernicus
+    module provides extended coverage with detailed polygon delineations and
+    additional attributes for Copernicus product validation.
+  provenance: >
+    Conducted by Eurostat with JRC technical support. Field surveyors visit
+    stratified random sample points across the EU, recording land cover,
+    land use, and environmental variables. The 2022 campaign added a Copernicus
+    module with radial polygon delineation around survey points.
+  classification: "LUCAS 82-class land cover classification (hierarchical: 8 L1 classes → 35 L2 → 82 L3)"
+  access:
+    - method: "GeoPackage"
+      url: "https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/LUCAS/LUCAS_2022_Copernicus/l2022_survey_cop_radpoly_attr.gpkg"
+    - method: "JRC Dataset"
+      url: "https://data.jrc.ec.europa.eu/dataset/e3fe3cd0-44db-470e-8769-172a8b9e8874"
+  accuracy: >
+    LUCAS is itself a ground truth dataset used to validate other products.
+    Positional accuracy of survey points is ±2m (GNSS). Classification accuracy
+    depends on surveyor training and accessibility of sites. Quality control
+    includes re-surveys at 5-10% of points.
+  papers:
+    - "d'Andrimont et al. (2020). Harmonised LUCAS in-situ land cover and use database for field surveys from 2006 to 2018 in the European Union. Scientific Data."
+    - "https://doi.org/10.1038/s41597-020-00675-z"
+  attribution: "Eurostat / JRC / European Commission"
+  provider: "Eurostat / JRC"

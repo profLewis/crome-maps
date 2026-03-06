@@ -1,0 +1,23 @@
+# Core PMTiles processing
+pmtiles>=3.2.0
+
+# Geospatial data processing (EuroCrops V2, LUCAS, overlays)
+geopandas>=0.14.0
+pyarrow>=14.0.0
+
+# Tile server
+fastapi>=0.104.0
+uvicorn>=0.24.0
+
+# Image processing
+Pillow>=10.0.0
+
+# HTTP downloads
+requests>=2.31.0
+
+# Documentation generation
+pyyaml>=6.0
+
+# EuroCropsML exploration
+numpy>=1.24.0
+matplotlib>=3.7.0
