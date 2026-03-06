@@ -1243,6 +1243,127 @@ const LAYERS = [
     ],
     attribution: '&copy; ESA/VITO WorldCereal'
   },
+  // --- Overlays: Crop Calendar (Sacks et al. 2010) ---
+  {
+    id: 'crop-cal-wheat-plant', label: '🌾 Wheat — Planting Date', type: 'raster', lang: 'en',
+    legendType: 'list',
+    years: null, defaultYear: null, dataYear: '2010',
+    pmtilesFile: () => 'crop-cal-wheat-plant.pmtiles',
+    legendItems: [
+      {color:'#3060cc',label:'Jan–Feb'},{color:'#20b090',label:'Mar–Apr'},
+      {color:'#90e030',label:'May–Jun'},{color:'#ffc820',label:'Jul–Aug'},
+      {color:'#e85020',label:'Sep–Oct'},{color:'#a02080',label:'Nov–Dec'}
+    ],
+    attribution: '&copy; <a href="https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/">SAGE/UW-Madison</a> Sacks et al. 2010'
+  },
+  {
+    id: 'crop-cal-wheat-harvest', label: '🌾 Wheat — Harvest Date', type: 'raster', lang: 'en',
+    legendType: 'list',
+    years: null, defaultYear: null, dataYear: '2010',
+    pmtilesFile: () => 'crop-cal-wheat-harvest.pmtiles',
+    legendItems: [
+      {color:'#3060cc',label:'Jan–Feb'},{color:'#20b090',label:'Mar–Apr'},
+      {color:'#90e030',label:'May–Jun'},{color:'#ffc820',label:'Jul–Aug'},
+      {color:'#e85020',label:'Sep–Oct'},{color:'#a02080',label:'Nov–Dec'}
+    ],
+    attribution: '&copy; <a href="https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/">SAGE/UW-Madison</a> Sacks et al. 2010'
+  },
+  {
+    id: 'crop-cal-wheat-winter-plant', label: '🌾 Winter Wheat — Planting Date', type: 'raster', lang: 'en',
+    legendType: 'list',
+    years: null, defaultYear: null, dataYear: '2010',
+    pmtilesFile: () => 'crop-cal-wheat-winter-plant.pmtiles',
+    legendItems: [
+      {color:'#3060cc',label:'Jan–Feb'},{color:'#20b090',label:'Mar–Apr'},
+      {color:'#90e030',label:'May–Jun'},{color:'#ffc820',label:'Jul–Aug'},
+      {color:'#e85020',label:'Sep–Oct'},{color:'#a02080',label:'Nov–Dec'}
+    ],
+    attribution: '&copy; <a href="https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/">SAGE/UW-Madison</a> Sacks et al. 2010'
+  },
+  {
+    id: 'crop-cal-wheat-winter-harvest', label: '🌾 Winter Wheat — Harvest Date', type: 'raster', lang: 'en',
+    legendType: 'list',
+    years: null, defaultYear: null, dataYear: '2010',
+    pmtilesFile: () => 'crop-cal-wheat-winter-harvest.pmtiles',
+    legendItems: [
+      {color:'#3060cc',label:'Jan–Feb'},{color:'#20b090',label:'Mar–Apr'},
+      {color:'#90e030',label:'May–Jun'},{color:'#ffc820',label:'Jul–Aug'},
+      {color:'#e85020',label:'Sep–Oct'},{color:'#a02080',label:'Nov–Dec'}
+    ],
+    attribution: '&copy; <a href="https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/">SAGE/UW-Madison</a> Sacks et al. 2010'
+  },
+  {
+    id: 'crop-cal-maize-plant', label: '🌽 Maize — Planting Date', type: 'raster', lang: 'en',
+    legendType: 'list',
+    years: null, defaultYear: null, dataYear: '2010',
+    pmtilesFile: () => 'crop-cal-maize-plant.pmtiles',
+    legendItems: [
+      {color:'#3060cc',label:'Jan–Feb'},{color:'#20b090',label:'Mar–Apr'},
+      {color:'#90e030',label:'May–Jun'},{color:'#ffc820',label:'Jul–Aug'},
+      {color:'#e85020',label:'Sep–Oct'},{color:'#a02080',label:'Nov–Dec'}
+    ],
+    attribution: '&copy; <a href="https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/">SAGE/UW-Madison</a> Sacks et al. 2010'
+  },
+  {
+    id: 'crop-cal-maize-harvest', label: '🌽 Maize — Harvest Date', type: 'raster', lang: 'en',
+    legendType: 'list',
+    years: null, defaultYear: null, dataYear: '2010',
+    pmtilesFile: () => 'crop-cal-maize-harvest.pmtiles',
+    legendItems: [
+      {color:'#3060cc',label:'Jan–Feb'},{color:'#20b090',label:'Mar–Apr'},
+      {color:'#90e030',label:'May–Jun'},{color:'#ffc820',label:'Jul–Aug'},
+      {color:'#e85020',label:'Sep–Oct'},{color:'#a02080',label:'Nov–Dec'}
+    ],
+    attribution: '&copy; <a href="https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/">SAGE/UW-Madison</a> Sacks et al. 2010'
+  },
+  {
+    id: 'crop-cal-rice-plant', label: '🍚 Rice — Planting Date', type: 'raster', lang: 'en',
+    legendType: 'list',
+    years: null, defaultYear: null, dataYear: '2010',
+    pmtilesFile: () => 'crop-cal-rice-plant.pmtiles',
+    legendItems: [
+      {color:'#3060cc',label:'Jan–Feb'},{color:'#20b090',label:'Mar–Apr'},
+      {color:'#90e030',label:'May–Jun'},{color:'#ffc820',label:'Jul–Aug'},
+      {color:'#e85020',label:'Sep–Oct'},{color:'#a02080',label:'Nov–Dec'}
+    ],
+    attribution: '&copy; <a href="https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/">SAGE/UW-Madison</a> Sacks et al. 2010'
+  },
+  {
+    id: 'crop-cal-rice-harvest', label: '🍚 Rice — Harvest Date', type: 'raster', lang: 'en',
+    legendType: 'list',
+    years: null, defaultYear: null, dataYear: '2010',
+    pmtilesFile: () => 'crop-cal-rice-harvest.pmtiles',
+    legendItems: [
+      {color:'#3060cc',label:'Jan–Feb'},{color:'#20b090',label:'Mar–Apr'},
+      {color:'#90e030',label:'May–Jun'},{color:'#ffc820',label:'Jul–Aug'},
+      {color:'#e85020',label:'Sep–Oct'},{color:'#a02080',label:'Nov–Dec'}
+    ],
+    attribution: '&copy; <a href="https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/">SAGE/UW-Madison</a> Sacks et al. 2010'
+  },
+  {
+    id: 'crop-cal-soybeans-plant', label: '🫘 Soybeans — Planting Date', type: 'raster', lang: 'en',
+    legendType: 'list',
+    years: null, defaultYear: null, dataYear: '2010',
+    pmtilesFile: () => 'crop-cal-soybeans-plant.pmtiles',
+    legendItems: [
+      {color:'#3060cc',label:'Jan–Feb'},{color:'#20b090',label:'Mar–Apr'},
+      {color:'#90e030',label:'May–Jun'},{color:'#ffc820',label:'Jul–Aug'},
+      {color:'#e85020',label:'Sep–Oct'},{color:'#a02080',label:'Nov–Dec'}
+    ],
+    attribution: '&copy; <a href="https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/">SAGE/UW-Madison</a> Sacks et al. 2010'
+  },
+  {
+    id: 'crop-cal-soybeans-harvest', label: '🫘 Soybeans — Harvest Date', type: 'raster', lang: 'en',
+    legendType: 'list',
+    years: null, defaultYear: null, dataYear: '2010',
+    pmtilesFile: () => 'crop-cal-soybeans-harvest.pmtiles',
+    legendItems: [
+      {color:'#3060cc',label:'Jan–Feb'},{color:'#20b090',label:'Mar–Apr'},
+      {color:'#90e030',label:'May–Jun'},{color:'#ffc820',label:'Jul–Aug'},
+      {color:'#e85020',label:'Sep–Oct'},{color:'#a02080',label:'Nov–Dec'}
+    ],
+    attribution: '&copy; <a href="https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/">SAGE/UW-Madison</a> Sacks et al. 2010'
+  },
   // --- Overlays: Phenology & Vegetation ---
   {
     id: 'hrvpp-sosd', label: '🌱 Start of Season (HR-VPP)', type: 'raster', lang: 'en',
@@ -2150,6 +2271,7 @@ const sections = [
   { start: 'deafrica-crop',  label: 'Africa',                  open: false },
   { start: 'china-clcd',     label: 'Asia',                    open: false },
   { start: 'modis-landcover', label: 'Global / Satellite',      open: false },
+  { start: 'crop-cal-wheat-plant', label: 'Overlays — Crop Calendar', open: false },
   { start: 'hrvpp-sosd',     label: 'Overlays — Phenology',     open: false },
   { start: 'overlay-lpd',    label: 'Overlays — Environmental', open: false },
   { start: 'validation-lucas', label: 'Validation / Ground Truth', open: false },
@@ -2295,6 +2417,16 @@ LAYERS.forEach(L => {
     'worldcereal-maize': 'https://esa-worldcereal.org/',
     'worldcereal-winter': 'https://esa-worldcereal.org/',
     'worldcereal-spring': 'https://esa-worldcereal.org/',
+    'crop-cal-wheat-plant': 'https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/',
+    'crop-cal-wheat-harvest': 'https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/',
+    'crop-cal-wheat-winter-plant': 'https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/',
+    'crop-cal-wheat-winter-harvest': 'https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/',
+    'crop-cal-maize-plant': 'https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/',
+    'crop-cal-maize-harvest': 'https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/',
+    'crop-cal-rice-plant': 'https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/',
+    'crop-cal-rice-harvest': 'https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/',
+    'crop-cal-soybeans-plant': 'https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/',
+    'crop-cal-soybeans-harvest': 'https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/',
     'hrvpp-sosd': 'https://land.copernicus.eu/en/products/vegetation/high-resolution-vegetation-phenology-and-productivity',
     'hrvpp-eosd': 'https://land.copernicus.eu/en/products/vegetation/high-resolution-vegetation-phenology-and-productivity',
     'hrvpp-maxd': 'https://land.copernicus.eu/en/products/vegetation/high-resolution-vegetation-phenology-and-productivity',
