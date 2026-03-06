@@ -1,6 +1,8 @@
-# SQLite journals
+# SQLite journals and WAL files
 *.pmtiles-journal
 *.mbtiles-journal
+*.mbtiles-shm
+*.mbtiles-wal
 
 # MBTiles intermediates (generated from PMTiles or WMS downloads)
 *.mbtiles
