@@ -1117,6 +1117,16 @@ const LAYERS = [
     ],
     attribution: '&copy; Digital Earth Africa'
   },
+  {
+    id: 'africa-afcd', label: '🌍 Africa Cropland 30m (AFCD)', type: 'raster', lang: 'en',
+    legendType: 'list', bounds: [-18, -35, 52, 38],
+    years: null, defaultYear: null, dataYear: '2022',
+    pmtilesFile: () => 'africa-afcd-2022.pmtiles',
+    legendItems: [
+      {color:'#32cd32',label:'Cropland'}
+    ],
+    attribution: '&copy; <a href="https://zenodo.org/records/14920706">AFCD</a> CC-BY 4.0'
+  },
   // --- Asia ---
   {
     id: 'china-clcd', label: '🇨🇳 China Land Cover (CLCD)', type: 'raster', lang: 'zh',
@@ -1132,6 +1142,18 @@ const LAYERS = [
     ],
     attribution: '&copy; <a href="https://zenodo.org/records/12779975">CLCD</a> Wuhan Univ. CC-BY-4.0',
     bounds: [73, 18, 135, 54]
+  },
+  {
+    id: 'ne-china-crops', label: '🇨🇳 NE China Crop Types 30m', type: 'raster', lang: 'zh',
+    legendType: 'list',
+    years: null, defaultYear: null, dataYear: '2022',
+    pmtilesFile: () => 'ne-china-crops-2022.pmtiles',
+    legendItems: [
+      {color:'#00a8e2',label:'Rice'},{color:'#ffd300',label:'Maize'},
+      {color:'#267000',label:'Soybean'},{color:'#b4b4b4',label:'Other Land'}
+    ],
+    attribution: '&copy; <a href="https://zenodo.org/records/14166505">NE China Crops</a> CC-BY 4.0',
+    bounds: [119, 38, 135, 54]
   },
   // --- Global layers ---
   {
@@ -1243,6 +1265,80 @@ const LAYERS = [
     ],
     attribution: '&copy; ESA/VITO WorldCereal'
   },
+  // --- GGCP10: Global Crop Production (Li et al. 2024) ---
+  {
+    id: 'ggcp10-maize', label: '🌽 Maize Production (GGCP10)', type: 'raster', lang: 'en',
+    legendType: 'slider',
+    years: null, defaultYear: null, dataYear: '2020',
+    pmtilesFile: () => 'ggcp10-maize-2020.pmtiles',
+    sliderConfig: {
+      min: 0, max: 100, step: 5, default: 0,
+      label: 'Min. Production',
+      lumMax: 255, lumMin: 60
+    },
+    legendItems: [
+      {color:'#fffff0',label:'Low'},{color:'#ffdc32',label:'Moderate'},
+      {color:'#e65000',label:'High'},{color:'#800000',label:'Very High'}
+    ],
+    attribution: '&copy; <a href="https://doi.org/10.7910/DVN/G1HBNK">GGCP10</a> Li et al. 2024'
+  },
+  {
+    id: 'ggcp10-wheat', label: '🌾 Wheat Production (GGCP10)', type: 'raster', lang: 'en',
+    legendType: 'slider',
+    years: null, defaultYear: null, dataYear: '2020',
+    pmtilesFile: () => 'ggcp10-wheat-2020.pmtiles',
+    sliderConfig: {
+      min: 0, max: 100, step: 5, default: 0,
+      label: 'Min. Production',
+      lumMax: 255, lumMin: 60
+    },
+    legendItems: [
+      {color:'#fffff0',label:'Low'},{color:'#ffdc32',label:'Moderate'},
+      {color:'#e65000',label:'High'},{color:'#800000',label:'Very High'}
+    ],
+    attribution: '&copy; <a href="https://doi.org/10.7910/DVN/G1HBNK">GGCP10</a> Li et al. 2024'
+  },
+  {
+    id: 'ggcp10-rice', label: '🌾 Rice Production (GGCP10)', type: 'raster', lang: 'en',
+    legendType: 'slider',
+    years: null, defaultYear: null, dataYear: '2020',
+    pmtilesFile: () => 'ggcp10-rice-2020.pmtiles',
+    sliderConfig: {
+      min: 0, max: 100, step: 5, default: 0,
+      label: 'Min. Production',
+      lumMax: 255, lumMin: 60
+    },
+    legendItems: [
+      {color:'#fffff0',label:'Low'},{color:'#ffdc32',label:'Moderate'},
+      {color:'#e65000',label:'High'},{color:'#800000',label:'Very High'}
+    ],
+    attribution: '&copy; <a href="https://doi.org/10.7910/DVN/G1HBNK">GGCP10</a> Li et al. 2024'
+  },
+  {
+    id: 'ggcp10-soybean', label: '🫘 Soybean Production (GGCP10)', type: 'raster', lang: 'en',
+    legendType: 'slider',
+    years: null, defaultYear: null, dataYear: '2020',
+    pmtilesFile: () => 'ggcp10-soybean-2020.pmtiles',
+    sliderConfig: {
+      min: 0, max: 100, step: 5, default: 0,
+      label: 'Min. Production',
+      lumMax: 255, lumMin: 60
+    },
+    legendItems: [
+      {color:'#fffff0',label:'Low'},{color:'#ffdc32',label:'Moderate'},
+      {color:'#e65000',label:'High'},{color:'#800000',label:'Very High'}
+    ],
+    attribution: '&copy; <a href="https://doi.org/10.7910/DVN/G1HBNK">GGCP10</a> Li et al. 2024'
+  },
+  // --- Fields of The World (FTW) ---
+  {
+    id: 'ftw', label: '🌍 Fields of The World (24 countries)', type: 'vector-remote',
+    legendType: 'eurocrops',
+    years: null, defaultYear: null, dataYear: '2024',
+    pmtilesUrl: 'https://data.source.coop/kerner-lab/fields-of-the-world/ftw-sources.pmtiles',
+    sourceLayer: 'default',
+    attribution: '&copy; <a href="https://fieldsofthe.world/">Fields of The World</a> CC-BY 4.0'
+  },
   // --- Overlays: Probabilistic Crop Type (Baumert et al. 2025) ---
   {
     id: 'prob-crop-dominant', label: '🇪🇺 Dominant Crop Type (1km)', type: 'raster', lang: 'en',
@@ -1336,6 +1432,187 @@ const LAYERS = [
       {color:'#006400',label:'50–70%'},{color:'#003c00',label:'> 70%'}
     ],
     attribution: '&copy; <a href="https://zenodo.org/records/14409498">Baumert et al. 2025</a> CC-BY 4.0'
+  },
+  // --- Overlays: CROPGRIDS (Tang et al. 2024) — Global harvested area at 5.6km ---
+  {
+    id: 'cropgrids-wheat', label: '🌾 Wheat Harvested Area', type: 'raster', lang: 'en',
+    legendType: 'slider',
+    years: null, defaultYear: null, dataYear: '2020',
+    pmtilesFile: () => 'cropgrids-wheat.pmtiles',
+    sliderConfig: { min: 0, max: 100, step: 5, default: 0, label: 'Min. Area', lumMax: 255, lumMin: 60 },
+    legendItems: [
+      {color:'#fffff0',label:'Low'},{color:'#ffdc32',label:'Moderate'},
+      {color:'#e65000',label:'High'},{color:'#800000',label:'Very High'}
+    ],
+    attribution: '&copy; <a href="https://doi.org/10.6084/m9.figshare.22491997">CROPGRIDS</a> CC-BY 4.0'
+  },
+  {
+    id: 'cropgrids-maize', label: '🌽 Maize Harvested Area', type: 'raster', lang: 'en',
+    legendType: 'slider',
+    years: null, defaultYear: null, dataYear: '2020',
+    pmtilesFile: () => 'cropgrids-maize.pmtiles',
+    sliderConfig: { min: 0, max: 100, step: 5, default: 0, label: 'Min. Area', lumMax: 255, lumMin: 60 },
+    legendItems: [
+      {color:'#fffff0',label:'Low'},{color:'#ffdc32',label:'Moderate'},
+      {color:'#e65000',label:'High'},{color:'#800000',label:'Very High'}
+    ],
+    attribution: '&copy; <a href="https://doi.org/10.6084/m9.figshare.22491997">CROPGRIDS</a> CC-BY 4.0'
+  },
+  {
+    id: 'cropgrids-rice', label: '🌾 Rice Harvested Area', type: 'raster', lang: 'en',
+    legendType: 'slider',
+    years: null, defaultYear: null, dataYear: '2020',
+    pmtilesFile: () => 'cropgrids-rice.pmtiles',
+    sliderConfig: { min: 0, max: 100, step: 5, default: 0, label: 'Min. Area', lumMax: 255, lumMin: 60 },
+    legendItems: [
+      {color:'#fffff0',label:'Low'},{color:'#ffdc32',label:'Moderate'},
+      {color:'#e65000',label:'High'},{color:'#800000',label:'Very High'}
+    ],
+    attribution: '&copy; <a href="https://doi.org/10.6084/m9.figshare.22491997">CROPGRIDS</a> CC-BY 4.0'
+  },
+  {
+    id: 'cropgrids-soybean', label: '🫘 Soybean Harvested Area', type: 'raster', lang: 'en',
+    legendType: 'slider',
+    years: null, defaultYear: null, dataYear: '2020',
+    pmtilesFile: () => 'cropgrids-soybean.pmtiles',
+    sliderConfig: { min: 0, max: 100, step: 5, default: 0, label: 'Min. Area', lumMax: 255, lumMin: 60 },
+    legendItems: [
+      {color:'#fffff0',label:'Low'},{color:'#ffdc32',label:'Moderate'},
+      {color:'#e65000',label:'High'},{color:'#800000',label:'Very High'}
+    ],
+    attribution: '&copy; <a href="https://doi.org/10.6084/m9.figshare.22491997">CROPGRIDS</a> CC-BY 4.0'
+  },
+  {
+    id: 'cropgrids-barley', label: '🌾 Barley Harvested Area', type: 'raster', lang: 'en',
+    legendType: 'slider',
+    years: null, defaultYear: null, dataYear: '2020',
+    pmtilesFile: () => 'cropgrids-barley.pmtiles',
+    sliderConfig: { min: 0, max: 100, step: 5, default: 0, label: 'Min. Area', lumMax: 255, lumMin: 60 },
+    legendItems: [
+      {color:'#fffff0',label:'Low'},{color:'#ffdc32',label:'Moderate'},
+      {color:'#e65000',label:'High'},{color:'#800000',label:'Very High'}
+    ],
+    attribution: '&copy; <a href="https://doi.org/10.6084/m9.figshare.22491997">CROPGRIDS</a> CC-BY 4.0'
+  },
+  {
+    id: 'cropgrids-potato', label: '🥔 Potato Harvested Area', type: 'raster', lang: 'en',
+    legendType: 'slider',
+    years: null, defaultYear: null, dataYear: '2020',
+    pmtilesFile: () => 'cropgrids-potato.pmtiles',
+    sliderConfig: { min: 0, max: 100, step: 5, default: 0, label: 'Min. Area', lumMax: 255, lumMin: 60 },
+    legendItems: [
+      {color:'#fffff0',label:'Low'},{color:'#ffdc32',label:'Moderate'},
+      {color:'#e65000',label:'High'},{color:'#800000',label:'Very High'}
+    ],
+    attribution: '&copy; <a href="https://doi.org/10.6084/m9.figshare.22491997">CROPGRIDS</a> CC-BY 4.0'
+  },
+  {
+    id: 'cropgrids-sugarcane', label: '🌿 Sugarcane Harvested Area', type: 'raster', lang: 'en',
+    legendType: 'slider',
+    years: null, defaultYear: null, dataYear: '2020',
+    pmtilesFile: () => 'cropgrids-sugarcane.pmtiles',
+    sliderConfig: { min: 0, max: 100, step: 5, default: 0, label: 'Min. Area', lumMax: 255, lumMin: 60 },
+    legendItems: [
+      {color:'#fffff0',label:'Low'},{color:'#ffdc32',label:'Moderate'},
+      {color:'#e65000',label:'High'},{color:'#800000',label:'Very High'}
+    ],
+    attribution: '&copy; <a href="https://doi.org/10.6084/m9.figshare.22491997">CROPGRIDS</a> CC-BY 4.0'
+  },
+  {
+    id: 'cropgrids-cotton', label: '🧶 Cotton Harvested Area', type: 'raster', lang: 'en',
+    legendType: 'slider',
+    years: null, defaultYear: null, dataYear: '2020',
+    pmtilesFile: () => 'cropgrids-cotton.pmtiles',
+    sliderConfig: { min: 0, max: 100, step: 5, default: 0, label: 'Min. Area', lumMax: 255, lumMin: 60 },
+    legendItems: [
+      {color:'#fffff0',label:'Low'},{color:'#ffdc32',label:'Moderate'},
+      {color:'#e65000',label:'High'},{color:'#800000',label:'Very High'}
+    ],
+    attribution: '&copy; <a href="https://doi.org/10.6084/m9.figshare.22491997">CROPGRIDS</a> CC-BY 4.0'
+  },
+  {
+    id: 'cropgrids-rapeseed', label: '🌼 Rapeseed Harvested Area', type: 'raster', lang: 'en',
+    legendType: 'slider',
+    years: null, defaultYear: null, dataYear: '2020',
+    pmtilesFile: () => 'cropgrids-rapeseed.pmtiles',
+    sliderConfig: { min: 0, max: 100, step: 5, default: 0, label: 'Min. Area', lumMax: 255, lumMin: 60 },
+    legendItems: [
+      {color:'#fffff0',label:'Low'},{color:'#ffdc32',label:'Moderate'},
+      {color:'#e65000',label:'High'},{color:'#800000',label:'Very High'}
+    ],
+    attribution: '&copy; <a href="https://doi.org/10.6084/m9.figshare.22491997">CROPGRIDS</a> CC-BY 4.0'
+  },
+  {
+    id: 'cropgrids-sunflower', label: '🌻 Sunflower Harvested Area', type: 'raster', lang: 'en',
+    legendType: 'slider',
+    years: null, defaultYear: null, dataYear: '2020',
+    pmtilesFile: () => 'cropgrids-sunflower.pmtiles',
+    sliderConfig: { min: 0, max: 100, step: 5, default: 0, label: 'Min. Area', lumMax: 255, lumMin: 60 },
+    legendItems: [
+      {color:'#fffff0',label:'Low'},{color:'#ffdc32',label:'Moderate'},
+      {color:'#e65000',label:'High'},{color:'#800000',label:'Very High'}
+    ],
+    attribution: '&copy; <a href="https://doi.org/10.6084/m9.figshare.22491997">CROPGRIDS</a> CC-BY 4.0'
+  },
+  {
+    id: 'cropgrids-cassava', label: '🌿 Cassava Harvested Area', type: 'raster', lang: 'en',
+    legendType: 'slider',
+    years: null, defaultYear: null, dataYear: '2020',
+    pmtilesFile: () => 'cropgrids-cassava.pmtiles',
+    sliderConfig: { min: 0, max: 100, step: 5, default: 0, label: 'Min. Area', lumMax: 255, lumMin: 60 },
+    legendItems: [
+      {color:'#fffff0',label:'Low'},{color:'#ffdc32',label:'Moderate'},
+      {color:'#e65000',label:'High'},{color:'#800000',label:'Very High'}
+    ],
+    attribution: '&copy; <a href="https://doi.org/10.6084/m9.figshare.22491997">CROPGRIDS</a> CC-BY 4.0'
+  },
+  {
+    id: 'cropgrids-sorghum', label: '🌾 Sorghum Harvested Area', type: 'raster', lang: 'en',
+    legendType: 'slider',
+    years: null, defaultYear: null, dataYear: '2020',
+    pmtilesFile: () => 'cropgrids-sorghum.pmtiles',
+    sliderConfig: { min: 0, max: 100, step: 5, default: 0, label: 'Min. Area', lumMax: 255, lumMin: 60 },
+    legendItems: [
+      {color:'#fffff0',label:'Low'},{color:'#ffdc32',label:'Moderate'},
+      {color:'#e65000',label:'High'},{color:'#800000',label:'Very High'}
+    ],
+    attribution: '&copy; <a href="https://doi.org/10.6084/m9.figshare.22491997">CROPGRIDS</a> CC-BY 4.0'
+  },
+  {
+    id: 'cropgrids-millet', label: '🌾 Millet Harvested Area', type: 'raster', lang: 'en',
+    legendType: 'slider',
+    years: null, defaultYear: null, dataYear: '2020',
+    pmtilesFile: () => 'cropgrids-millet.pmtiles',
+    sliderConfig: { min: 0, max: 100, step: 5, default: 0, label: 'Min. Area', lumMax: 255, lumMin: 60 },
+    legendItems: [
+      {color:'#fffff0',label:'Low'},{color:'#ffdc32',label:'Moderate'},
+      {color:'#e65000',label:'High'},{color:'#800000',label:'Very High'}
+    ],
+    attribution: '&copy; <a href="https://doi.org/10.6084/m9.figshare.22491997">CROPGRIDS</a> CC-BY 4.0'
+  },
+  {
+    id: 'cropgrids-groundnut', label: '🥜 Groundnut Harvested Area', type: 'raster', lang: 'en',
+    legendType: 'slider',
+    years: null, defaultYear: null, dataYear: '2020',
+    pmtilesFile: () => 'cropgrids-groundnut.pmtiles',
+    sliderConfig: { min: 0, max: 100, step: 5, default: 0, label: 'Min. Area', lumMax: 255, lumMin: 60 },
+    legendItems: [
+      {color:'#fffff0',label:'Low'},{color:'#ffdc32',label:'Moderate'},
+      {color:'#e65000',label:'High'},{color:'#800000',label:'Very High'}
+    ],
+    attribution: '&copy; <a href="https://doi.org/10.6084/m9.figshare.22491997">CROPGRIDS</a> CC-BY 4.0'
+  },
+  {
+    id: 'cropgrids-coffee', label: '☕ Coffee Harvested Area', type: 'raster', lang: 'en',
+    legendType: 'slider',
+    years: null, defaultYear: null, dataYear: '2020',
+    pmtilesFile: () => 'cropgrids-coffee.pmtiles',
+    sliderConfig: { min: 0, max: 100, step: 5, default: 0, label: 'Min. Area', lumMax: 255, lumMin: 60 },
+    legendItems: [
+      {color:'#fffff0',label:'Low'},{color:'#ffdc32',label:'Moderate'},
+      {color:'#e65000',label:'High'},{color:'#800000',label:'Very High'}
+    ],
+    attribution: '&copy; <a href="https://doi.org/10.6084/m9.figshare.22491997">CROPGRIDS</a> CC-BY 4.0'
   },
   // --- Overlays: Crop Calendar (Sacks et al. 2010) ---
   {
@@ -2365,7 +2642,9 @@ const sections = [
   { start: 'deafrica-crop',  label: 'Africa',                  open: false },
   { start: 'china-clcd',     label: 'Asia',                    open: false },
   { start: 'modis-landcover', label: 'Global / Satellite',      open: false },
+  { start: 'ggcp10-maize', label: 'Overlays — Crop Production (GGCP10)', open: false },
   { start: 'prob-crop-dominant', label: 'Overlays — Probabilistic Crop Type', open: false },
+  { start: 'cropgrids-wheat', label: 'Overlays — Harvested Area (CROPGRIDS)', open: false },
   { start: 'crop-cal-wheat-plant', label: 'Overlays — Crop Calendar', open: false },
   { start: 'hrvpp-sosd',     label: 'Overlays — Phenology',     open: false },
   { start: 'overlay-lpd',    label: 'Overlays — Environmental', open: false },
@@ -2505,6 +2784,9 @@ LAYERS.forEach(L => {
     'newzealand': 'https://lris.scinfo.org.nz/layer/104400-lcdb-v56-land-cover-database-version-56-mainland-new-zealand/',
     'deafrica-crop': 'https://www.digitalearthafrica.org/products/cropland-extent',
     'china-clcd': 'https://zenodo.org/records/12779975',
+    'ne-china-crops': 'https://zenodo.org/records/14166505',
+    'africa-afcd': 'https://zenodo.org/records/14920706',
+    'ftw': 'https://fieldsofthe.world/',
     'modis-landcover': 'https://lpdaac.usgs.gov/products/mcd12q1v061/',
     'gfsad-croplands': 'https://lpdaac.usgs.gov/products/gfsad1kcmv001/',
     'esa-worldcover': 'https://esa-worldcover.org/',
@@ -2512,6 +2794,10 @@ LAYERS.forEach(L => {
     'worldcereal-maize': 'https://esa-worldcereal.org/',
     'worldcereal-winter': 'https://esa-worldcereal.org/',
     'worldcereal-spring': 'https://esa-worldcereal.org/',
+    'ggcp10-maize': 'https://doi.org/10.7910/DVN/G1HBNK',
+    'ggcp10-wheat': 'https://doi.org/10.7910/DVN/G1HBNK',
+    'ggcp10-rice': 'https://doi.org/10.7910/DVN/G1HBNK',
+    'ggcp10-soybean': 'https://doi.org/10.7910/DVN/G1HBNK',
     'prob-crop-dominant': 'https://zenodo.org/records/14409498',
     'prob-crop-swhe': 'https://zenodo.org/records/14409498',
     'prob-crop-maiz': 'https://zenodo.org/records/14409498',
@@ -2519,6 +2805,21 @@ LAYERS.forEach(L => {
     'prob-crop-rape': 'https://zenodo.org/records/14409498',
     'prob-crop-sunf': 'https://zenodo.org/records/14409498',
     'prob-crop-gras': 'https://zenodo.org/records/14409498',
+    'cropgrids-wheat': 'https://doi.org/10.6084/m9.figshare.22491997',
+    'cropgrids-maize': 'https://doi.org/10.6084/m9.figshare.22491997',
+    'cropgrids-rice': 'https://doi.org/10.6084/m9.figshare.22491997',
+    'cropgrids-soybean': 'https://doi.org/10.6084/m9.figshare.22491997',
+    'cropgrids-barley': 'https://doi.org/10.6084/m9.figshare.22491997',
+    'cropgrids-potato': 'https://doi.org/10.6084/m9.figshare.22491997',
+    'cropgrids-sugarcane': 'https://doi.org/10.6084/m9.figshare.22491997',
+    'cropgrids-cotton': 'https://doi.org/10.6084/m9.figshare.22491997',
+    'cropgrids-rapeseed': 'https://doi.org/10.6084/m9.figshare.22491997',
+    'cropgrids-sunflower': 'https://doi.org/10.6084/m9.figshare.22491997',
+    'cropgrids-cassava': 'https://doi.org/10.6084/m9.figshare.22491997',
+    'cropgrids-sorghum': 'https://doi.org/10.6084/m9.figshare.22491997',
+    'cropgrids-millet': 'https://doi.org/10.6084/m9.figshare.22491997',
+    'cropgrids-groundnut': 'https://doi.org/10.6084/m9.figshare.22491997',
+    'cropgrids-coffee': 'https://doi.org/10.6084/m9.figshare.22491997',
     'crop-cal-wheat-plant': 'https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/',
     'crop-cal-wheat-harvest': 'https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/',
     'crop-cal-wheat-winter-plant': 'https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/',

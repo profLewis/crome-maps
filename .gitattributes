@@ -2,3 +2,7 @@
 crop-cal-*.pmtiles filter=lfs diff=lfs merge=lfs -text
 sage-*.pmtiles filter=lfs diff=lfs merge=lfs -text
 prob-crop-*.pmtiles filter=lfs diff=lfs merge=lfs -text
+ggcp10-*.pmtiles filter=lfs diff=lfs merge=lfs -text
+cropgrids-*.pmtiles filter=lfs diff=lfs merge=lfs -text
+ne-china-crops-*.pmtiles filter=lfs diff=lfs merge=lfs -text
+africa-afcd-*.pmtiles filter=lfs diff=lfs merge=lfs -text
