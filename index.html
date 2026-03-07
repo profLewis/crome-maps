@@ -2485,12 +2485,13 @@ LAYERS.forEach(L => {
       ? L.pmtilesUrl
       : (L.pmtilesFile ? base + '/' + L.pmtilesFile() : null);
     if (!remoteUrl) { console.warn('No PMTiles URL for', L.id); return; }
-    initSources[L.id] = {
+    const vecSrc = {
       type: 'vector',
       url: 'pmtiles://' + remoteUrl,
-      bounds: L.id.startsWith('eurocrops') ? [-30, 34, 50, 72] : undefined,
       attribution: L.attribution || ''
     };
+    if (L.id.startsWith('eurocrops')) vecSrc.bounds = [-30, 34, 50, 72];
+    initSources[L.id] = vecSrc;
     // Use crop-type colors and Europe bbox filter for EuroCrops; plain filter for others
     const isEurocrops = L.id.startsWith('eurocrops');
     const vFilter = ['==', ['geometry-type'], 'Polygon'];
