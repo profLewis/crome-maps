@@ -11,3 +11,4 @@ crop-cal-rapeseed-*.pmtiles filter=lfs diff=lfs merge=lfs -text
 crop-cal-barley-*.pmtiles filter=lfs diff=lfs merge=lfs -text
 crop-cal-cotton-*.pmtiles filter=lfs diff=lfs merge=lfs -text
 crop-cal-sorghum-*.pmtiles filter=lfs diff=lfs merge=lfs -text
+eurocrops-v11.pmtiles filter=lfs diff=lfs merge=lfs -text
