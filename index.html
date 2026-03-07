@@ -574,7 +574,7 @@ const LAYERS = [
   {
     id: 'crome', label: '🏴󠁧󠁢󠁥󠁮󠁧󠁿 England (CROME)', type: 'vector',
     legendType: 'crome', defaultOn: true, bounds: [-5.7, 49.9, 1.8, 55.8],
-    years: [2017, 2018, 2019, 2020], defaultYear: 2020
+    years: [2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], defaultYear: 2024
   },
   {
     id: 'eurocrops', label: '🇪🇺 EU Field Boundaries (EuroCrops)', type: 'vector-remote',
@@ -2001,11 +2001,10 @@ const base = window.location.href.replace(/\/[^/]*$/, '');
 const pmtilesBase = 'https://media.githubusercontent.com/media/profLewis/crome-maps/main';
 const cromeWorkBase = 'https://media.githubusercontent.com/media/profLewis/crome-work/main';
 function cromePmtilesUrl(yr) {
-  // 2017-2019 are in crome-work/pmtiles_per_year, 2020+ in crome-maps
-  if (yr >= 2017 && yr <= 2019) return cromeWorkBase + '/pmtiles_per_year/crome_' + yr + '.pmtiles';
-  return pmtilesBase + '/crome' + yr + '.pmtiles';
+  // All CROME years served from crome-work repository
+  return cromeWorkBase + '/pmtiles_per_year/crome_' + yr + '.pmtiles';
 }
-const PMTILES_URL = cromePmtilesUrl(2020);
+const PMTILES_URL = cromePmtilesUrl(2024);
 const protocol = new pmtiles.Protocol();
 maplibregl.addProtocol('pmtiles', protocol.tile);
 
@@ -2426,7 +2425,7 @@ const initSources = {
 const initLayers = [
   { id: 'osm-basemap', type: 'raster', source: 'osm', paint: { 'raster-opacity': 1 } },
   {
-    id: 'crome-fill', type: 'fill', source: 'crome', 'source-layer': 'crome2020',
+    id: 'crome-fill', type: 'fill', source: 'crome', 'source-layer': 'crome',
     filter: ['==', ['geometry-type'], 'Polygon'],
     paint: {
       'fill-color': ['match', ['get', 'lucode'], ...Object.entries(LUCODE_COLORS).flat(), '#cccccc'],
@@ -2434,7 +2433,7 @@ const initLayers = [
     }
   },
   {
-    id: 'crome-outline', type: 'line', source: 'crome', 'source-layer': 'crome2020',
+    id: 'crome-outline', type: 'line', source: 'crome', 'source-layer': 'crome',
     filter: ['==', ['geometry-type'], 'Polygon'],
     paint: {
       'line-color': '#333',
@@ -3205,8 +3204,8 @@ async function activateVectorPmtilesOrWms(L) {
 }
 
 function updateCromeSource(yr) {
-  // crome-work PMTiles (2017-2019) use source-layer 'crome'; crome-maps uses 'crome{yr}'
-  const srcLayer = (yr >= 2017 && yr <= 2019) ? 'crome' : 'crome' + yr;
+  // All CROME years use source-layer 'crome' (from crome-work)
+  const srcLayer = 'crome';
   const url = 'pmtiles://' + cromePmtilesUrl(yr);
 
   // Remove existing layers and source
