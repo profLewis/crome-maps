@@ -3088,11 +3088,20 @@ async function activateRasterWithFallback(L) {
   const lid = L.id + '-wms';
   const filename = L.pmtilesFile ? L.pmtilesFile(yr) : pmtilesFilename(L.id, yr);
 
+  // Fast path: if layer was previously activated, just show it (avoids flash from remove/recreate)
+  // layerDataSource is set on first activation, so this only triggers on re-toggles
+  if (layerDataSource[L.id] && map.getSource(L.id) && map.getLayer(lid)) {
+    map.setLayoutProperty(lid, 'visibility', 'visible');
+    map.setPaintProperty(lid, 'raster-opacity', currentOpacity);
+    updateSourceBadge(L.id, layerDataSource[L.id]);
+    updateLegend();
+    return;
+  }
+
   // Check if we have a PMTiles file for this dataset/year
   const hasPmtiles = await checkPmtilesAvailable(filename);
 
   if (hasPmtiles) {
-    console.log('[Fallback] Using PMTiles for', L.id, yr);
     // Remove existing WMS layer/source and replace with PMTiles
     if (map.getLayer(lid)) map.removeLayer(lid);
     if (map.getSource(L.id)) map.removeSource(L.id);
@@ -3113,7 +3122,6 @@ async function activateRasterWithFallback(L) {
     map.addLayer(layerDef);
     updateSourceBadge(L.id, 'pmtiles');
   } else if (L.tileUrl) {
-    console.log('[Fallback] Using WMS for', L.id, yr);
     // For filterable list/slider WMS layers, re-create source with filtered-wms protocol
     if ((L.legendType === 'list' || L.legendType === 'slider') && L.legendItems && L.filterable !== false) {
       if (map.getLayer(lid)) map.removeLayer(lid);
@@ -3150,7 +3158,6 @@ async function activateRasterWithFallback(L) {
     }
     updateSourceBadge(L.id, 'wms');
   } else {
-    console.log('[Fallback] No PMTiles or WMS available for', L.id, yr);
     updateSourceBadge(L.id, null);
   }
   // Rebuild legend — canFilter may depend on actual source (PMTiles vs WMS)
