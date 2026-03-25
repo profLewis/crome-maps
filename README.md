@@ -7,16 +7,21 @@ Interactive web viewer for **crop and land cover maps** from around the world, c
 Built with [MapLibre GL JS](https://maplibre.org/) — a single `index.html` file, no build step required.
 
 See [DATASETS.md](DATASETS.md) for visual previews of each dataset.
+See [SETUP.md](SETUP.md) for installation, data processing, scheduled updates, and development guide.
 
 ## Features
 
-- **50+ datasets** covering Europe, Americas, Oceania, Africa, Asia, and global satellite products
+- **100+ layers** from 50+ datasets covering Europe, Americas, Oceania, Africa, Asia, and global satellite products
 - **Class filtering** — click legend items to toggle individual crop/land cover classes on or off
 - **Smart legend** — automatically reorders legend to show classes visible in your current viewport first
-- **Multi-year support** — switch between available years for most datasets
+- **Multi-year display** — view multiple years simultaneously with checkbox year selector
+- **Layer order control** — drag-reorderable panel to change display order of active layers
+- **Per-layer opacity** — individual transparency slider for each active layer
+- **Click-to-sample** — click the map to collect data from all active layers at a point, with CSV/JSON export
 - **Feature info** — hover over the map to see crop/land cover names
+- **Status bar** — live zoom level, coordinates, active layer sources, tile download speed
+- **Basemap selector** — choose from OSM, Carto, Esri Satellite, or no background
 - **Auto-zoom** — selecting a dataset flies to its coverage area
-- **Opacity control** — shared slider for all active overlays
 - **PMTiles + WMS fallback** — uses cached PMTiles where available, live WMS otherwise
 
 ## Project Status
@@ -38,11 +43,11 @@ This is an actively maintained research tool for exploring global crop and land 
 
 | Dataset | Country | Years | Type | Source |
 |---------|---------|-------|------|--------|
-| [CROME](https://environment.data.gov.uk/dataset/7fdb6312-801c-41f6-996d-4585d2bb4684) | England | 2017–2020 | Vector PMTiles | [RPA / Defra](https://www.gov.uk/government/organisations/rural-payments-agency) |
+| [CROME](https://environment.data.gov.uk/dataset/7fdb6312-801c-41f6-996d-4585d2bb4684) | England | 2017–2024 | Vector PMTiles | [RPA / Defra](https://www.gov.uk/government/organisations/rural-payments-agency) |
 | [EuroCrops V2](https://data.jrc.ec.europa.eu/dataset/b9fb9e67-78a9-4327-9d59-39a928d812d3) | EU (18 countries) | 2008–2023 | GeoParquet → PMTiles | [JRC / European Commission](https://data.jrc.ec.europa.eu/) |
 | [EuroCrops V1](https://github.com/maja601/EuroCrops) | EU (16 countries) | 2018–2021 | Vector PMTiles | [EuroCrops / TU Munich](https://github.com/maja601/EuroCrops) |
 | [CORINE Land Cover](https://land.copernicus.eu/en/products/corine-land-cover) | Europe | 2000, 2006, 2012, 2018 | WMS | [Copernicus / EEA](https://www.eea.europa.eu/) |
-| [JRC EU Crop Map](https://data.jrc.ec.europa.eu/collection/EUCROPMAP) | EU + Ukraine | 2018, 2022 | WMS | [JRC / European Commission](https://joint-research-centre.ec.europa.eu/) |
+| [JRC EU Crop Map](https://data.jrc.ec.europa.eu/collection/EUCROPMAP) | EU + Ukraine | 2018–2022 | WMS | [JRC / European Commission](https://joint-research-centre.ec.europa.eu/) |
 | [HRL Crop Types](https://land.copernicus.eu/en/products/high-resolution-layer-croplands) | Europe (EEA-39) | 2017–2023 | WMS | [Copernicus CLMS / GeoVille](https://land.copernicus.eu/) |
 | [HRL Grassland](https://land.copernicus.eu/en/products/high-resolution-layer-croplands) | Europe (EEA-39) | 2017–2023 | WMS | [Copernicus CLMS / GeoVille](https://land.copernicus.eu/) |
 | [HRL Cropping Seasons](https://land.copernicus.eu/en/products/high-resolution-layer-croplands) | Europe (EEA-39) | 2017–2023 | WMS | [Copernicus CLMS / GeoVille](https://land.copernicus.eu/) |
@@ -113,12 +118,17 @@ This is an actively maintained research tool for exploring global crop and land 
 | Dataset | Coverage | Years | Type | Source |
 |---------|----------|-------|------|--------|
 | [HR-VPP Phenology](https://land.copernicus.eu/en/products/vegetation/high-resolution-vegetation-phenology-and-productivity) | Europe | 2017–2024 | WMS | [Copernicus CLMS / VITO](https://phenology.vgt.vito.be/) |
-| [MODIS NDVI](https://lpdaac.usgs.gov/products/mod13a2v061/) | Global | 2000–2025 | WMS (GIBS) | [NASA EOSDIS](https://earthdata.nasa.gov/) |
-| [MODIS EVI](https://lpdaac.usgs.gov/products/mod13a2v061/) | Global | 2000–2025 | WMS (GIBS) | [NASA EOSDIS](https://earthdata.nasa.gov/) |
+| [MODIS NDVI 16-day](https://lpdaac.usgs.gov/products/mod13a2v061/) | Global | 2000–2025 | WMS (GIBS) | [NASA EOSDIS](https://earthdata.nasa.gov/) |
+| [MODIS EVI 16-day](https://lpdaac.usgs.gov/products/mod13a2v061/) | Global | 2000–2025 | WMS (GIBS) | [NASA EOSDIS](https://earthdata.nasa.gov/) |
+| [VIIRS NDVI 8-day](https://lpdaac.usgs.gov/products/vnp13a1v002/) | Global | 2025–2026 | WMS (GIBS) | [NASA EOSDIS](https://earthdata.nasa.gov/) |
+| [VIIRS EVI 8-day](https://lpdaac.usgs.gov/products/vnp13a1v002/) | Global | 2025–2026 | WMS (GIBS) | [NASA EOSDIS](https://earthdata.nasa.gov/) |
+| [MODIS LAI 8-day](https://lpdaac.usgs.gov/products/mcd15a2hv061/) | Global | 2000–2025 | WMS (GIBS) | [NASA EOSDIS](https://earthdata.nasa.gov/) |
+| [MODIS FPAR 8-day](https://lpdaac.usgs.gov/products/mcd15a2hv061/) | Global | 2000–2025 | WMS (GIBS) | [NASA EOSDIS](https://earthdata.nasa.gov/) |
+| [MODIS GPP 8-day](https://lpdaac.usgs.gov/products/mod17a2hv061/) | Global | 2000–2025 | WMS (GIBS) | [NASA EOSDIS](https://earthdata.nasa.gov/) |
 
 ## Architecture
 
-The viewer is a single `index.html` file (~3,000 lines) using:
+The viewer is a single `index.html` file (~5,000 lines) using:
 
 - **MapLibre GL JS v4.7** — WebGL-based map rendering
 - **PMTiles.js** — serverless vector/raster tile access via HTTP range requests
@@ -146,12 +156,16 @@ Scripts for converting source data to PMTiles:
 - `download_phenology.py` — Downloads USGS eVIIRS phenology GeoTIFFs (SOST, EOST, MAXN, etc.), converts to PMTiles
 - `eurocropsml/download.py` — Downloads EuroCropsML benchmark data from Zenodo
 - `docs/generate_docs.py` — Generates per-dataset documentation pages from `docs/datasets.yaml`
+- `update_datasets.py` — Automated dataset update checker (monitors WMS endpoints, Zenodo, JRC for new data)
+- `run_update.sh` — Wrapper for scheduled execution via macOS launchd
 
-Configuration: `raster_datasets.json`, `requirements.txt`
+Configuration: `raster_datasets.json`, `requirements.txt`, `docs/datasets.yaml`
+
+See [SETUP.md](SETUP.md) for full installation, scheduled job setup, and how to add new datasets.
 
 ## CROME (England)
 
-The **Crop Map of England (CROME)** is the primary dataset, with vector PMTiles for 2017–2020:
+The **Crop Map of England (CROME)** is the primary dataset, with vector PMTiles for 2017–2024:
 
 - **Source:** [Defra Data Services](https://environment.data.gov.uk/dataset/7fdb6312-801c-41f6-996d-4585d2bb4684)
 - **Publisher:** Rural Payments Agency
@@ -159,7 +173,7 @@ The **Crop Map of England (CROME)** is the primary dataset, with vector PMTiles 
 - **Coverage:** ~31.4 million hexagonal cells, 80+ land-use categories
 - **Method:** Random Forest classification of Sentinel-1/2 imagery
 
-CROME 2017–2019 are served from the [crome-work](https://github.com/profLewis/crome-work) repo; 2020 from this repo.
+All CROME years (2017–2024) are served from the [crome-work](https://github.com/profLewis/crome-work) repo via Git LFS.
 
 ## Licence & Copyright
 
@@ -184,7 +198,8 @@ Each dataset retains its original licence from the publishing agency. **This vie
 | DE Africa Cropland | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | Open — with attribution |
 | HRL Croplands | [Copernicus Data Policy](https://land.copernicus.eu/en/data-policy) | Open — full, free, and open access |
 | HR-VPP Phenology | [Copernicus Data Policy](https://land.copernicus.eu/en/data-policy) | Open — full, free, and open access |
-| MODIS NDVI/EVI | Public domain (US Government work) | Unrestricted |
+| MODIS NDVI/EVI/LAI/FPAR/GPP | Public domain (US Government work) | Unrestricted |
+| VIIRS NDVI/EVI | Public domain (US Government work) | Unrestricted |
 | EuroCrops V2 | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | Open — with attribution |
 | LUCAS 2022 | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | Open — with attribution |
 | JRC Overlays (LPD, MAES) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | Open — with attribution |

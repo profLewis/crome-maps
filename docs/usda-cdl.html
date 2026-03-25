@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>USDA Cropland Data Layer (CDL) — Global Crop Maps Info</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6; color: #333; max-width: 960px; margin: 0 auto; padding: 20px; }
+  h1 { font-size: 1.8em; margin-bottom: 0.3em; }
+  h2 { font-size: 1.3em; margin-top: 1.5em; margin-bottom: 0.5em;
+    border-bottom: 2px solid #e0e0e0; padding-bottom: 0.3em; }
+  h3 { font-size: 1.1em; margin-top: 1em; margin-bottom: 0.3em; color: #555; }
+  .executive-summary { background: #f0f7ff; border-left: 4px solid #2196f3;
+    padding: 15px 20px; margin: 15px 0; border-radius: 0 8px 8px 0; }
+  .executive-summary p { margin: 0.3em 0; }
+  .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+  .meta-item { background: #fafafa; padding: 10px 15px; border-radius: 6px; border: 1px solid #eee; }
+  .meta-item strong { display: block; font-size: 0.85em; color: #666; text-transform: uppercase; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+  th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #eee; }
+  th { background: #f5f5f5; font-weight: 600; }
+  a { color: #1565c0; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 0.8em; font-weight: 600; }
+  .badge-wms { background: #e3f2fd; color: #1565c0; }
+  .badge-pmtiles { background: #e8f5e9; color: #2e7d32; }
+  .badge-download { background: #fff3e0; color: #e65100; }
+  .badge-vector { background: #f3e5f5; color: #7b1fa2; }
+  .back { margin-bottom: 15px; }
+  .back a { text-decoration: none; font-size: 0.9em; }
+  .papers { list-style: none; }
+  .papers li { padding: 5px 0; border-bottom: 1px solid #f5f5f5; }
+  .papers li:last-child { border-bottom: none; }
+  .papers li::before { content: ""; }
+  .paper-ref::before { content: "\1F4C4 "; }
+  .paper-cite::before { content: "\1F4DA "; }
+  .accuracy-table { margin: 10px 0; }
+  .accuracy-table td:nth-child(2),
+  .accuracy-table td:nth-child(3),
+  .accuracy-table td:nth-child(4) { text-align: center; }
+  .accuracy-highlight { background: #e8f5e9; font-weight: 600; }
+  .validation-note { background: #fff8e1; border-left: 4px solid #ffc107;
+    padding: 12px 16px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 0.95em; }
+  .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 10px; margin: 10px 0; }
+  .related-item { background: #fafafa; padding: 10px 14px; border-radius: 6px;
+    border: 1px solid #eee; font-size: 0.9em; }
+  .related-item strong { display: block; }
+  .related-item span { color: #666; font-size: 0.85em; }
+  .doi { font-family: monospace; font-size: 0.85em; color: #888; }
+  .tag { display: inline-block; padding: 1px 6px; border-radius: 3px;
+    font-size: 0.75em; font-weight: 600; margin-left: 4px; }
+  .tag-oa { background: #e8f5e9; color: #2e7d32; }
+  .tag-key { background: #e3f2fd; color: #1565c0; }
+</style>
+</head>
+<body>
+<div class="back"><a href="../index.html">&larr; Back to Map Viewer</a></div>
+<h1>USDA Cropland Data Layer (CDL)</h1>
+
+<div class="executive-summary">
+  <p><strong>Summary</strong></p>
+  <p>Annual 30m crop type classification for the contiguous United States, produced by the USDA National Agricultural Statistics Service (NASS). The CDL is the reference crop map for the US, covering 130+ crop types from 2008 to present. Derived from Landsat and other satellite imagery using decision tree classification trained on Farm Service Agency (FSA) Common Land Unit data.</p>
+</div>
+
+<div class="meta">
+  <div class="meta-item"><strong>Coverage</strong>Contiguous United States</div>
+  <div class="meta-item"><strong>Resolution</strong>30m (Landsat)</div>
+  <div class="meta-item"><strong>Temporal</strong>2008-2024 (annual, some states from 1997)</div>
+  <div class="meta-item"><strong>License</strong>Public domain (US Government work)</div>
+</div>
+
+<h2>Description</h2>
+<p>The Cropland Data Layer is an annual raster land cover classification focused on agricultural land in the US. It uses satellite imagery (primarily Landsat, supplemented by Sentinel-2 and other sensors) classified with a decision tree algorithm trained on ground truth from USDA Farm Service Agency records. The CDL identifies 130+ land cover types with emphasis on specific crop types and double-cropping practices.</p>
+
+<h2>Provenance</h2>
+<p>Produced by USDA NASS Research and Development Division. Training data from FSA Common Land Units (CLUs) — field-level administrative records similar to EU LPIS. Classification: decision tree on multi-temporal Landsat + ancillary data (elevation, soil, climate). Post-processing: crop sequence filtering using prior year CDL.</p>
+
+<h2>Classification System</h2>
+<p>130+ classes including major crops (corn, soybeans, wheat, cotton, rice, sorghum), minor crops (dry beans, lentils, canola), double crops (winter wheat/soybeans), and non-crop (forest, water, developed, wetlands). Uses NASS crop coding scheme.
+</p>
+
+<h2>Access Methods</h2>
+<table>
+  <tr><th>Method</th><th>URL / Details</th></tr>
+  <tr><td><span class="badge badge-wms">WMS</span></td><td><a href="https://nassgeodata.gmu.edu/CropScape/wmsservice" target="_blank">https://nassgeodata.gmu.edu/CropScape/wmsservice</a><br><code>Layer: cdl_{year}</code></td></tr>
+  <tr><td><span class="badge badge-download">Web Viewer</span></td><td><a href="https://nassgeodata.gmu.edu/CropScape/" target="_blank">https://nassgeodata.gmu.edu/CropScape/</a></td></tr>
+  <tr><td><span class="badge badge-download">Download</span></td><td><a href="https://www.nass.usda.gov/Research_and_Science/Cropland/Release/" target="_blank">https://www.nass.usda.gov/Research_and_Science/Cropland/Release/</a></td></tr>
+</table>
+
+<h2>Accuracy &amp; Validation</h2>
+<p>Accuracy varies significantly by crop, state, and year. In major producing states (Corn Belt), corn and soybeans achieve >90% accuracy. Minor crops and crops in non-core regions can fall below 70%. Statewide overall accuracy (FSA crop categories) ranges from ~70% (Texas, diverse crops/small fields) to ~90% (Iowa/Illinois, dominated by corn/soy). Validated annually using independent FSA Common Land Unit data withheld from training.</p>
+<table class="accuracy-table">
+<tr><th>Crop</th><th>Producer Acc. Range</th><th>User Acc. Range</th><th>Best States (2023)</th></tr>
+<tr><td>Corn</td><td>85–94%</td><td>89–98%</td><td>Iowa (94/98%), Illinois (93/97%)</td></tr>
+<tr><td>Soybeans</td><td>49–94%</td><td>74–97%</td><td>Iowa (94/97%), Arkansas (94/91%)</td></tr>
+<tr><td>Winter Wheat</td><td>37–89%</td><td>68–87%</td><td>Kansas (89/87%), Texas (72/69%)</td></tr>
+<tr><td>Cotton</td><td>62–91%</td><td>82–95%</td><td>Arkansas (91/95%), Texas (89/82%)</td></tr>
+<tr><td>Rice</td><td>87–98%</td><td>90–99%</td><td>California (98/99%), Arkansas (92/97%)</td></tr>
+<tr><td>Sorghum</td><td>65–81%</td><td>68–82%</td><td>Kansas (81/82%), Texas (65/68%)</td></tr>
+<tr><td>Spring Wheat</td><td>91%</td><td>84%</td><td>North Dakota (91/84%)</td></tr>
+<tr><td>Canola</td><td>90%</td><td>94%</td><td>North Dakota (90/94%)</td></tr>
+<tr><td>Almonds</td><td>92%</td><td>91%</td><td>California (92/91%)</td></tr>
+<tr><td>Grapes</td><td>91%</td><td>86%</td><td>California (91/86%)</td></tr>
+</table>
+<div class="validation-note"><strong>State-level overall accuracy (2023 CDL):</strong><br> Iowa: 90.5% (κ=0.83) · Illinois: 90.2% (κ=0.83) · Arkansas: 89.3% (κ=0.85) · Kansas: 81.5% (κ=0.78) · California: 80.7% (κ=0.79) · North Dakota: 77.5% (κ=0.74) · Texas: 70.0% (κ=0.64).<br><br> <strong>Key patterns:</strong> Accuracy is highest in the Corn Belt where corn and soy dominate; lowest in diverse-crop states (Texas, California). Winter wheat is consistently the hardest major crop to classify (37–89% producer's accuracy) due to spectral similarity with grassland. Rice achieves near-perfect accuracy in California (98/99%).<br><br> State-level accuracy reports for all 50 states (1997–2023) available at <a href="https://www.nass.usda.gov/Research_and_Science/Cropland/metadata/meta.php">NASS CDL Metadata</a>. Individual state pages: <code>metadata_{state}{yy}.htm</code> (e.g., <a href="https://www.nass.usda.gov/Research_and_Science/Cropland/metadata/metadata_ia23.htm">Iowa 2023</a>, <a href="https://www.nass.usda.gov/Research_and_Science/Cropland/metadata/metadata_ks23.htm">Kansas 2023</a>).</div>
+
+<h2>Key References</h2>
+<ul class="papers">
+  <li class="paper-ref">Boryan et al. (2011). Monitoring US agriculture: the US Department of Agriculture, National Agricultural Statistics Service, Cropland Data Layer Program. Geocarto International. <span class="doi"><a href="https://doi.org/10.1080/10106049.2011.562309" target="_blank">https://doi.org/10.1080/10106049.2011.562309</a></span> <span class="tag tag-key">key paper</span></li>
+  <li class="paper-ref">Johnson & Mueller (2010). Cropland Data Layer accuracy assessment. Agronomy Journal.</li>
+</ul>
+
+<h2>Papers Citing This Dataset</h2>
+<ul class="papers">
+  <li class="paper-cite">Widely cited in >500 publications on US crop monitoring, land use change, water resources.</li>
+  <li class="paper-cite">Lark et al. (2020). Cropland expansion in the US and biofuel policy. PNAS.</li>
+  <li class="paper-cite">Deines et al. (2019). Annual irrigation maps in the US High Plains. Water Resources Research.</li>
+</ul>
+
+<h2>Related Datasets</h2>
+<div class="related-grid">
+  <a href="gfsad-croplands.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>GFSAD Croplands</strong><span>Global cropland extent map</span></a>
+  <a href="modis-landcover.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>MODIS Land Cover</strong><span>Global 500m land cover</span></a>
+</div>
+
+<h2>Source &amp; Attribution</h2>
+<p>USDA National Agricultural Statistics Service (NASS)</p>
+
+<hr style="margin-top: 2em;">
+<p style="font-size: 0.8em; color: #999; margin-top: 1em;">
+  Generated for <a href="../index.html">Global Crop Maps</a> viewer.
+  Data provided by USDA NASS.
+</p>
+</body>
+</html>

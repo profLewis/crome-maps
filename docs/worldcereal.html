@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{title}} — Global Crop Maps Info</title>
+<title>WorldCereal — Global Crop Maps Info</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -58,54 +58,70 @@
 </head>
 <body>
 <div class="back"><a href="../index.html">&larr; Back to Map Viewer</a></div>
-<h1>{{title}}</h1>
+<h1>WorldCereal</h1>
 
 <div class="executive-summary">
   <p><strong>Summary</strong></p>
-  <p>{{executive_summary}}</p>
+  <p>Global 10m crop type maps from ESA, specifically mapping temporary cropland, maize, winter cereals, and spring cereals. Uses Sentinel-1/2 imagery with a deep learning approach. Designed for food security monitoring with seasonal updates. First global 10m crop-specific maps.</p>
 </div>
 
 <div class="meta">
-  <div class="meta-item"><strong>Coverage</strong>{{coverage}}</div>
-  <div class="meta-item"><strong>Resolution</strong>{{resolution}}</div>
-  <div class="meta-item"><strong>Temporal</strong>{{temporal}}</div>
-  <div class="meta-item"><strong>License</strong>{{license}}</div>
+  <div class="meta-item"><strong>Coverage</strong>Global</div>
+  <div class="meta-item"><strong>Resolution</strong>10m (Sentinel-1 + Sentinel-2)</div>
+  <div class="meta-item"><strong>Temporal</strong>2021 (seasonal)</div>
+  <div class="meta-item"><strong>License</strong>CC-BY 4.0</div>
 </div>
 
 <h2>Description</h2>
-<p>{{description}}</p>
+<p>WorldCereal produces global crop type maps at 10m resolution, focusing on temporary crops (as a group), maize, winter cereals, and spring cereals. Uses a combination of Sentinel-1 SAR and Sentinel-2 optical time series processed through a deep learning classifier. Maps are produced per agro-ecological zone per growing season.</p>
 
 <h2>Provenance</h2>
-<p>{{provenance}}</p>
+<p>Produced by a consortium led by VITO for ESA. Classification uses a convolutional neural network trained on global reference data from multiple sources including LPIS, CDL, and crowd-sourced labels.</p>
 
 <h2>Classification System</h2>
-{{classification_html}}
+<p>4 products: Temporary Crops (all annual crops), Maize, Winter Cereals (wheat, barley, rye, triticale), Spring Cereals.
+</p>
 
 <h2>Access Methods</h2>
 <table>
   <tr><th>Method</th><th>URL / Details</th></tr>
-  {{access_rows}}
+  <tr><td><span class="badge badge-wms">WMS</span></td><td><a href="https://ewoc-rdm-api.iiasa.ac.at/geoserver/ows" target="_blank">https://ewoc-rdm-api.iiasa.ac.at/geoserver/ows</a><br><code>Layer: worldcereal_temporarycrops_{year}</code></td></tr>
+  <tr><td><span class="badge badge-download">Download</span></td><td><a href="https://worldcereal.github.io/" target="_blank">https://worldcereal.github.io/</a></td></tr>
 </table>
 
 <h2>Accuracy &amp; Validation</h2>
-{{accuracy_html}}
+<p>Temporary crops: 88% overall accuracy globally. Maize: 82% F1 score. Winter cereals: 80% F1 score. Performance varies by region — highest in Europe and North America, lower in tropical smallholder systems.</p>
+<table class="accuracy-table">
+<tr><th>Product</th><th>Overall Acc.</th><th>F1 Score</th><th>Region</th></tr>
+<tr class="accuracy-highlight"><td>Temporary Crops</td><td>88%</td><td>0.85</td><td>Global</td></tr>
+<tr><td>Maize</td><td>84%</td><td>0.82</td><td>Global</td></tr>
+<tr><td>Winter Cereals</td><td>83%</td><td>0.80</td><td>Global</td></tr>
+<tr><td>Spring Cereals</td><td>81%</td><td>0.78</td><td>Global</td></tr>
+</table>
 
 <h2>Key References</h2>
 <ul class="papers">
-  {{papers_html}}
+  <li class="paper-ref">Van Tricht et al. (2023). WorldCereal: a dynamic open-source system for global-scale, seasonal, and reproducible crop and irrigation mapping. Earth System Science Data. <span class="doi"><a href="https://doi.org/10.5194/essd-15-5491-2023" target="_blank">https://doi.org/10.5194/essd-15-5491-2023</a></span> <span class="tag tag-key">key paper</span> <span class="tag tag-oa">open access</span></li>
 </ul>
 
-{{citing_section}}
+<h2>Papers Citing This Dataset</h2>
+<ul class="papers">
+  <li class="paper-cite">Growing body of work using WorldCereal for food security assessments.</li>
+</ul>
 
-{{related_section}}
+<h2>Related Datasets</h2>
+<div class="related-grid">
+  <a href="esa-worldcover.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>ESA WorldCover</strong><span>Global 10m land cover (broader classes)</span></a>
+  <a href="gfsad-croplands.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>GFSAD Croplands</strong><span>30m global cropland extent</span></a>
+</div>
 
 <h2>Source &amp; Attribution</h2>
-<p>{{attribution}}</p>
+<p>ESA / VITO / IIASA</p>
 
 <hr style="margin-top: 2em;">
 <p style="font-size: 0.8em; color: #999; margin-top: 1em;">
   Generated for <a href="../index.html">Global Crop Maps</a> viewer.
-  Data provided by {{provider}}.
+  Data provided by ESA / VITO.
 </p>
 </body>
 </html>

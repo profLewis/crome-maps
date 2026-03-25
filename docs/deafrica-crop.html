@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{title}} — Global Crop Maps Info</title>
+<title>Digital Earth Africa — Cropland Extent — Global Crop Maps Info</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -58,54 +58,59 @@
 </head>
 <body>
 <div class="back"><a href="../index.html">&larr; Back to Map Viewer</a></div>
-<h1>{{title}}</h1>
+<h1>Digital Earth Africa — Cropland Extent</h1>
 
 <div class="executive-summary">
   <p><strong>Summary</strong></p>
-  <p>{{executive_summary}}</p>
+  <p>Annual cropland extent map for the African continent at 10m resolution from Digital Earth Africa. Uses Sentinel-2 imagery to map where crops are grown, supporting food security monitoring across sub-Saharan Africa.</p>
 </div>
 
 <div class="meta">
-  <div class="meta-item"><strong>Coverage</strong>{{coverage}}</div>
-  <div class="meta-item"><strong>Resolution</strong>{{resolution}}</div>
-  <div class="meta-item"><strong>Temporal</strong>{{temporal}}</div>
-  <div class="meta-item"><strong>License</strong>{{license}}</div>
+  <div class="meta-item"><strong>Coverage</strong>Africa</div>
+  <div class="meta-item"><strong>Resolution</strong>10m (Sentinel-2)</div>
+  <div class="meta-item"><strong>Temporal</strong>2019-present (annual)</div>
+  <div class="meta-item"><strong>License</strong>CC-BY 4.0</div>
 </div>
 
 <h2>Description</h2>
-<p>{{description}}</p>
+<p>Digital Earth Africa's cropland extent map provides annual continental-scale mapping of agricultural areas using Sentinel-2 time series. The product focuses on binary cropland/non-cropland classification with emphasis on capturing smallholder farming systems prevalent in sub-Saharan Africa.</p>
 
 <h2>Provenance</h2>
-<p>{{provenance}}</p>
+<p>Produced by Digital Earth Africa (DEA), an initiative of the Group on Earth Observations (GEO). Uses the Open Data Cube platform for processing Sentinel-2 Analysis Ready Data.</p>
 
 <h2>Classification System</h2>
-{{classification_html}}
+<p>Binary: Cropland / Non-cropland</p>
 
 <h2>Access Methods</h2>
 <table>
   <tr><th>Method</th><th>URL / Details</th></tr>
-  {{access_rows}}
+  <tr><td><span class="badge badge-wms">WMS</span></td><td><a href="https://ows.digitalearth.africa/wms" target="_blank">https://ows.digitalearth.africa/wms</a><br><code>Layer: crop_mask</code></td></tr>
+  <tr><td><span class="badge badge-download">Download</span></td><td><a href="https://www.digitalearthafrica.org/products/cropland-extent" target="_blank">https://www.digitalearthafrica.org/products/cropland-extent</a></td></tr>
 </table>
 
 <h2>Accuracy &amp; Validation</h2>
-{{accuracy_html}}
+<p>Overall accuracy ~83%. Validated using field observations and very high resolution satellite imagery across multiple African countries.</p>
 
 <h2>Key References</h2>
 <ul class="papers">
-  {{papers_html}}
+  <li class="paper-ref">Digital Earth Africa (2022). Cropland Extent Map - Technical Report. <span class="tag tag-key">key paper</span></li>
 </ul>
 
-{{citing_section}}
 
-{{related_section}}
+
+<h2>Related Datasets</h2>
+<div class="related-grid">
+  <a href="africa-afcd.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>Africa AFCD</strong><span>Alternative 30m African cropland map</span></a>
+  <a href="esa-worldcover.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>ESA WorldCover</strong><span>Global 10m land cover</span></a>
+</div>
 
 <h2>Source &amp; Attribution</h2>
-<p>{{attribution}}</p>
+<p>Digital Earth Africa / GEO</p>
 
 <hr style="margin-top: 2em;">
 <p style="font-size: 0.8em; color: #999; margin-top: 1em;">
   Generated for <a href="../index.html">Global Crop Maps</a> viewer.
-  Data provided by {{provider}}.
+  Data provided by Digital Earth Africa.
 </p>
 </body>
 </html>

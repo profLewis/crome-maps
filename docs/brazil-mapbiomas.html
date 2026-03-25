@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{title}} — Global Crop Maps Info</title>
+<title>Brazil MapBiomas — Global Crop Maps Info</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -58,54 +58,72 @@
 </head>
 <body>
 <div class="back"><a href="../index.html">&larr; Back to Map Viewer</a></div>
-<h1>{{title}}</h1>
+<h1>Brazil MapBiomas</h1>
 
 <div class="executive-summary">
   <p><strong>Summary</strong></p>
-  <p>{{executive_summary}}</p>
+  <p>Annual 30m land cover and land use maps of Brazil from 1985 to present, produced by the MapBiomas collaborative network. Covers all Brazilian biomes with detailed agricultural classes including soybeans, sugarcane, coffee, cotton, rice, and pasture. The reference dataset for monitoring deforestation and agricultural expansion in Brazil.</p>
 </div>
 
 <div class="meta">
-  <div class="meta-item"><strong>Coverage</strong>{{coverage}}</div>
-  <div class="meta-item"><strong>Resolution</strong>{{resolution}}</div>
-  <div class="meta-item"><strong>Temporal</strong>{{temporal}}</div>
-  <div class="meta-item"><strong>License</strong>{{license}}</div>
+  <div class="meta-item"><strong>Coverage</strong>Brazil</div>
+  <div class="meta-item"><strong>Resolution</strong>30m (Landsat)</div>
+  <div class="meta-item"><strong>Temporal</strong>1985-2023 (annual)</div>
+  <div class="meta-item"><strong>License</strong>CC-BY-SA 4.0</div>
 </div>
 
 <h2>Description</h2>
-<p>{{description}}</p>
+<p>MapBiomas uses the Google Earth Engine platform to process all available Landsat imagery for Brazil, producing annual land cover maps with 30+ classes. Agricultural classes include temporary crops (soybean, maize, cotton, rice), semi-perennial crops (sugarcane), perennial crops (coffee, citrus, oil palm), and pasture. The project also monitors deforestation alerts and water surface changes.</p>
 
 <h2>Provenance</h2>
-<p>{{provenance}}</p>
+<p>Collaborative network including universities, NGOs, and technology companies (SEEG/OC, IPAM, IMAZON, ISA, others). Uses random forest classification in Google Earth Engine with extensive training data from field campaigns and high-resolution imagery.</p>
 
 <h2>Classification System</h2>
-{{classification_html}}
+<p>30+ classes including: Soy Beans, Sugar Cane, Rice, Cotton, Coffee, Citrus, Other Temporary Crops, Other Perennial Crops, Pasture, Forest, Savanna, Mangrove, Wetland, Urban, Mining, Water, plus biome-specific classes.
+</p>
 
 <h2>Access Methods</h2>
 <table>
   <tr><th>Method</th><th>URL / Details</th></tr>
-  {{access_rows}}
+  <tr><td><span class="badge badge-wms">WMS</span></td><td><a href="https://storage.googleapis.com/mapbiomas-public/initiatives/brasil/collection_8/" target="_blank">https://storage.googleapis.com/mapbiomas-public/initiatives/brasil/collection_8/</a></td></tr>
+  <tr><td><span class="badge badge-download">Web Viewer</span></td><td><a href="https://mapbiomas.org/" target="_blank">https://mapbiomas.org/</a></td></tr>
 </table>
 
 <h2>Accuracy &amp; Validation</h2>
-{{accuracy_html}}
+<p>Overall accuracy 89.8% (Collection 8, 2021). Agricultural classes perform well: Soy 92%, Sugarcane 90%, Pasture 87%. Forest/non-forest distinction >95%.</p>
+<table class="accuracy-table">
+<tr><th>Class</th><th>Area Agreement</th><th>Allocation Disagreement</th></tr>
+<tr><td>Soy Beans</td><td>92%</td><td>5%</td></tr>
+<tr><td>Sugarcane</td><td>90%</td><td>6%</td></tr>
+<tr><td>Pasture</td><td>87%</td><td>8%</td></tr>
+<tr><td>Forest</td><td>95%</td><td>3%</td></tr>
+<tr class="accuracy-highlight"><td>Overall</td><td>89.8%</td><td></td></tr>
+</table>
 
 <h2>Key References</h2>
 <ul class="papers">
-  {{papers_html}}
+  <li class="paper-ref">Souza et al. (2020). Reconstructing Three Decades of Land Use and Land Cover Changes in Brazilian Biomes with Landsat Archive and Earth Engine. Remote Sensing. <span class="doi"><a href="https://doi.org/10.3390/rs12172735" target="_blank">https://doi.org/10.3390/rs12172735</a></span> <span class="tag tag-key">key paper</span> <span class="tag tag-oa">open access</span></li>
 </ul>
 
-{{citing_section}}
+<h2>Papers Citing This Dataset</h2>
+<ul class="papers">
+  <li class="paper-cite">Widely cited in deforestation monitoring and land use change studies for Brazil.</li>
+  <li class="paper-cite">Song et al. (2021). Massive soybean expansion in South America. Nature Sustainability.</li>
+</ul>
 
-{{related_section}}
+<h2>Related Datasets</h2>
+<div class="related-grid">
+  <a href="esa-worldcover.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>ESA WorldCover</strong><span>Global 10m land cover</span></a>
+  <a href="gfsad-croplands.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>GFSAD Croplands</strong><span>Global cropland extent</span></a>
+</div>
 
 <h2>Source &amp; Attribution</h2>
-<p>{{attribution}}</p>
+<p>MapBiomas / SEEG / Brazilian institutions</p>
 
 <hr style="margin-top: 2em;">
 <p style="font-size: 0.8em; color: #999; margin-top: 1em;">
   Generated for <a href="../index.html">Global Crop Maps</a> viewer.
-  Data provided by {{provider}}.
+  Data provided by MapBiomas.
 </p>
 </body>
 </html>

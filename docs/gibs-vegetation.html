@@ -3,14 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MODIS NDVI & EVI (NASA GIBS) — Global Crop Maps</title>
+<title>MODIS NDVI & EVI (NASA GIBS) — Global Crop Maps Info</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    line-height: 1.6; color: #333; max-width: 900px; margin: 0 auto; padding: 20px; }
+    line-height: 1.6; color: #333; max-width: 960px; margin: 0 auto; padding: 20px; }
   h1 { font-size: 1.8em; margin-bottom: 0.3em; }
   h2 { font-size: 1.3em; margin-top: 1.5em; margin-bottom: 0.5em;
     border-bottom: 2px solid #e0e0e0; padding-bottom: 0.3em; }
+  h3 { font-size: 1.1em; margin-top: 1em; margin-bottom: 0.3em; color: #555; }
   .executive-summary { background: #f0f7ff; border-left: 4px solid #2196f3;
     padding: 15px 20px; margin: 15px 0; border-radius: 0 8px 8px 0; }
   .executive-summary p { margin: 0.3em 0; }
@@ -26,13 +27,33 @@
   .badge-wms { background: #e3f2fd; color: #1565c0; }
   .badge-pmtiles { background: #e8f5e9; color: #2e7d32; }
   .badge-download { background: #fff3e0; color: #e65100; }
+  .badge-vector { background: #f3e5f5; color: #7b1fa2; }
   .back { margin-bottom: 15px; }
   .back a { text-decoration: none; font-size: 0.9em; }
   .papers { list-style: none; }
-  .papers li { padding: 5px 0; }
-  .papers li::before { content: "📄 "; }
+  .papers li { padding: 5px 0; border-bottom: 1px solid #f5f5f5; }
+  .papers li:last-child { border-bottom: none; }
+  .papers li::before { content: ""; }
+  .paper-ref::before { content: "\1F4C4 "; }
+  .paper-cite::before { content: "\1F4DA "; }
+  .accuracy-table { margin: 10px 0; }
   .accuracy-table td:nth-child(2),
-  .accuracy-table td:nth-child(3) { text-align: center; }
+  .accuracy-table td:nth-child(3),
+  .accuracy-table td:nth-child(4) { text-align: center; }
+  .accuracy-highlight { background: #e8f5e9; font-weight: 600; }
+  .validation-note { background: #fff8e1; border-left: 4px solid #ffc107;
+    padding: 12px 16px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 0.95em; }
+  .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 10px; margin: 10px 0; }
+  .related-item { background: #fafafa; padding: 10px 14px; border-radius: 6px;
+    border: 1px solid #eee; font-size: 0.9em; }
+  .related-item strong { display: block; }
+  .related-item span { color: #666; font-size: 0.85em; }
+  .doi { font-family: monospace; font-size: 0.85em; color: #888; }
+  .tag { display: inline-block; padding: 1px 6px; border-radius: 3px;
+    font-size: 0.75em; font-weight: 600; margin-left: 4px; }
+  .tag-oa { background: #e8f5e9; color: #2e7d32; }
+  .tag-key { background: #e3f2fd; color: #1565c0; }
 </style>
 </head>
 <body>
@@ -40,7 +61,7 @@
 <h1>MODIS NDVI & EVI (NASA GIBS)</h1>
 
 <div class="executive-summary">
-  <p><strong>Executive Summary</strong></p>
+  <p><strong>Summary</strong></p>
   <p>Global vegetation indices from the MODIS instrument aboard NASA's Terra satellite, served as 16-day composites via the Global Imagery Browse Services (GIBS). NDVI and EVI provide complementary measures of vegetation greenness and photosynthetic activity from 2000 to present at 250m-1km resolution.</p>
 </div>
 
@@ -56,7 +77,7 @@
 In the viewer, mid-July composites are shown by default for each year, representing peak Northern Hemisphere growing season. GIBS serves pre-rendered map tiles at global coverage.</p>
 
 <h2>Provenance</h2>
-<p>MODIS Terra satellite (launched 1999), operated by NASA. Level 3 vegetation index products processed by the Land Processes Distributed Active Archive Center (LP DAAC) at USGS EROS. 16-day Maximum Value Composites from daily observations. GIBS tile service operated by NASA's Earth Observing System Data and Information System (EOSDIS).</p>
+<p>MODIS Terra satellite (launched 1999), operated by NASA. Level 3 vegetation index products processed by the Land Processes Distributed Active Archive Center (LP DAAC) at USGS EROS. 16-day Maximum Value Composites from daily observations. GIBS tile service operated by NASA EOSDIS.</p>
 
 <h2>Classification System</h2>
 <p>Continuous indices: NDVI range -0.2 to 1.0 (typical vegetation 0.2-0.9); EVI range -0.2 to 1.0 (typical vegetation 0.2-0.7)</p>
@@ -68,16 +89,27 @@ In the viewer, mid-July composites are shown by default for each year, represent
   <tr><td><span class="badge badge-download">Data Download</span></td><td><a href="https://lpdaac.usgs.gov/products/mod13a2v061/" target="_blank">https://lpdaac.usgs.gov/products/mod13a2v061/</a></td></tr>
 </table>
 
-<h2>Accuracy Assessment</h2>
-<p>MODIS NDVI/EVI are mature, well-validated products with 20+ years of heritage. Radiometric accuracy: ±0.02 for NDVI over stable targets. Known limitations: cloud contamination (mitigated by compositing), atmospheric effects (EVI more robust than NDVI), BRDF effects at high sun/view angles. See MODIS product validation status at LP DAAC.</p>
+<h2>Accuracy &amp; Validation</h2>
+<p>MODIS NDVI/EVI are mature, well-validated products with 20+ years of heritage. Radiometric accuracy: +/-0.02 for NDVI over stable targets. Known limitations: cloud contamination (mitigated by compositing), atmospheric effects (EVI more robust than NDVI), BRDF effects at high sun/view angles.</p>
 
-<h2>Citing Papers</h2>
+<h2>Key References</h2>
 <ul class="papers">
-  <li>Huete et al. (2002). Overview of the radiometric and biophysical performance of the MODIS vegetation indices. Remote Sensing of Environment.</li>
-  <li><a href="https://doi.org/10.1016/S0034-4257(02)00096-2" target="_blank">https://doi.org/10.1016/S0034-4257(02)00096-2</a></li>
+  <li class="paper-ref">Huete et al. (2002). Overview of the radiometric and biophysical performance of the MODIS vegetation indices. Remote Sensing of Environment. <span class="doi"><a href="https://doi.org/10.1016/S0034-4257(02)00096-2" target="_blank">https://doi.org/10.1016/S0034-4257(02)00096-2</a></span> <span class="tag tag-key">key paper</span></li>
 </ul>
 
-<h2>Source & Attribution</h2>
+<h2>Papers Citing This Dataset</h2>
+<ul class="papers">
+  <li class="paper-cite">Among the most cited remote sensing products (>10,000 citations for Huete et al. 2002).</li>
+  <li class="paper-cite">Used in thousands of studies on crop monitoring, drought, phenology, and land cover change.</li>
+</ul>
+
+<h2>Related Datasets</h2>
+<div class="related-grid">
+  <a href="hrvpp-phenology.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>HR-VPP Phenology</strong><span>10m European phenology (higher resolution)</span></a>
+  <a href="crop-calendars.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>SAGE Crop Calendars</strong><span>Crop planting/harvest timing</span></a>
+</div>
+
+<h2>Source &amp; Attribution</h2>
 <p>NASA EOSDIS / LP DAAC / MODIS Science Team</p>
 
 <hr style="margin-top: 2em;">

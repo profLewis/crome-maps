@@ -3,14 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EuroCrops V2 — Global Crop Maps</title>
+<title>EuroCrops V2 — Global Crop Maps Info</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    line-height: 1.6; color: #333; max-width: 900px; margin: 0 auto; padding: 20px; }
+    line-height: 1.6; color: #333; max-width: 960px; margin: 0 auto; padding: 20px; }
   h1 { font-size: 1.8em; margin-bottom: 0.3em; }
   h2 { font-size: 1.3em; margin-top: 1.5em; margin-bottom: 0.5em;
     border-bottom: 2px solid #e0e0e0; padding-bottom: 0.3em; }
+  h3 { font-size: 1.1em; margin-top: 1em; margin-bottom: 0.3em; color: #555; }
   .executive-summary { background: #f0f7ff; border-left: 4px solid #2196f3;
     padding: 15px 20px; margin: 15px 0; border-radius: 0 8px 8px 0; }
   .executive-summary p { margin: 0.3em 0; }
@@ -26,13 +27,33 @@
   .badge-wms { background: #e3f2fd; color: #1565c0; }
   .badge-pmtiles { background: #e8f5e9; color: #2e7d32; }
   .badge-download { background: #fff3e0; color: #e65100; }
+  .badge-vector { background: #f3e5f5; color: #7b1fa2; }
   .back { margin-bottom: 15px; }
   .back a { text-decoration: none; font-size: 0.9em; }
   .papers { list-style: none; }
-  .papers li { padding: 5px 0; }
-  .papers li::before { content: "📄 "; }
+  .papers li { padding: 5px 0; border-bottom: 1px solid #f5f5f5; }
+  .papers li:last-child { border-bottom: none; }
+  .papers li::before { content: ""; }
+  .paper-ref::before { content: "\1F4C4 "; }
+  .paper-cite::before { content: "\1F4DA "; }
+  .accuracy-table { margin: 10px 0; }
   .accuracy-table td:nth-child(2),
-  .accuracy-table td:nth-child(3) { text-align: center; }
+  .accuracy-table td:nth-child(3),
+  .accuracy-table td:nth-child(4) { text-align: center; }
+  .accuracy-highlight { background: #e8f5e9; font-weight: 600; }
+  .validation-note { background: #fff8e1; border-left: 4px solid #ffc107;
+    padding: 12px 16px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 0.95em; }
+  .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 10px; margin: 10px 0; }
+  .related-item { background: #fafafa; padding: 10px 14px; border-radius: 6px;
+    border: 1px solid #eee; font-size: 0.9em; }
+  .related-item strong { display: block; }
+  .related-item span { color: #666; font-size: 0.85em; }
+  .doi { font-family: monospace; font-size: 0.85em; color: #888; }
+  .tag { display: inline-block; padding: 1px 6px; border-radius: 3px;
+    font-size: 0.75em; font-weight: 600; margin-left: 4px; }
+  .tag-oa { background: #e8f5e9; color: #2e7d32; }
+  .tag-key { background: #e3f2fd; color: #1565c0; }
 </style>
 </head>
 <body>
@@ -40,8 +61,8 @@
 <h1>EuroCrops V2</h1>
 
 <div class="executive-summary">
-  <p><strong>Executive Summary</strong></p>
-  <p>Harmonized EU-wide crop parcel dataset covering 18 countries from 2008-2023, with crop types mapped to a unified HCAT v4 taxonomy. Contains millions of individual field parcels derived from national LPIS/IACS declarations. V2 significantly expands V1 coverage (16 → 18 countries, 2008-2023 vs 2018-2021).</p>
+  <p><strong>Summary</strong></p>
+  <p>Harmonized EU-wide crop parcel dataset covering 18 countries from 2008-2023, with crop types mapped to a unified HCAT v4 taxonomy. Contains millions of individual field parcels derived from national LPIS/IACS declarations. V2 significantly expands V1 coverage (16 to 18 countries, 2008-2023 vs 2018-2021).</p>
 </div>
 
 <div class="meta">
@@ -52,7 +73,7 @@
 </div>
 
 <h2>Description</h2>
-<p>EuroCrops V2 combines self-declared crop reporting datasets from EU member states into a harmonized pan-European dataset. Each parcel includes the original national crop code, translated to the Hierarchical Crop and Agriculture Taxonomy (HCAT v4). Countries included: AT, BE (Flanders/Wallonia), BG, CZ, DE (Brandenburg/NRW), DK, EE, ES, FI, FR, IE, IT (Tuscany), NL, PT, SI, SK.</p>
+<p>EuroCrops V2 combines self-declared crop reporting datasets from EU member states into a harmonized pan-European dataset. Each parcel includes the original national crop code, translated to the Hierarchical Crop and Agriculture Taxonomy (HCAT v4). Countries included: AT, BE (Flanders/Wallonia), BG, CZ, DE (Brandenburg/NRW), DK, EE, ES, FI, FR, IE, IT (Tuscany), NL, PT, SI, SK. V2 adds Croatia and Latvia.</p>
 
 <h2>Provenance</h2>
 <p>Created by the Joint Research Centre (JRC) of the European Commission, building on the original EuroCrops project by TU Munich. Source data from national LPIS/IACS databases. HCAT v4 taxonomy provides cross-country harmonization of crop types.</p>
@@ -63,20 +84,35 @@
 <h2>Access Methods</h2>
 <table>
   <tr><th>Method</th><th>URL / Details</th></tr>
-  <tr><td><span class="badge badge-download">GeoParquet</span></td><td><a href="https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/DRLL/EuroCropsV2/gpqt/" target="_blank">https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/DRLL/EuroCropsV2/gpqt/</a></td></tr>
+  <tr><td><span class="badge badge-vector">GeoParquet</span></td><td><a href="https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/DRLL/EuroCropsV2/gpqt/" target="_blank">https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/DRLL/EuroCropsV2/gpqt/</a></td></tr>
   <tr><td><span class="badge badge-download">JRC Dataset</span></td><td><a href="https://data.jrc.ec.europa.eu/dataset/b9fb9e67-78a9-4327-9d59-39a928d812d3" target="_blank">https://data.jrc.ec.europa.eu/dataset/b9fb9e67-78a9-4327-9d59-39a928d812d3</a></td></tr>
 </table>
 
-<h2>Accuracy Assessment</h2>
-<p>Based on official LPIS/IACS declarations — these are self-reported by farmers and verified by national agencies. Accuracy of crop type attribution is generally high (>95%) for major crops, as declarations are tied to EU subsidy payments. Geometric accuracy depends on the national LPIS system.</p>
+<h2>Accuracy &amp; Validation</h2>
+<p>Based on official LPIS/IACS declarations — self-reported by farmers and verified by national agencies through CwRS. Crop type accuracy is generally high (>95%) for major crops, as declarations are tied to EU subsidy payments. Geometric accuracy depends on the national LPIS system (typically <2m for GNSS-based).</p>
+<div class="validation-note">EuroCrops is built from administrative declarations, not remote sensing classification. The crop type labels reflect what farmers declared and agencies verified. LUCAS 2022 ground truth can be used for independent cross-validation.</div>
 
-<h2>Citing Papers</h2>
+<h2>Key References</h2>
 <ul class="papers">
-  <li>Schneider et al. (2023). EuroCrops: The largest harmonized open crop dataset across the European Union. Scientific Data.</li>
-  <li><a href="https://doi.org/10.1038/s41597-023-02517-0" target="_blank">https://doi.org/10.1038/s41597-023-02517-0</a></li>
+  <li class="paper-ref">Schneider et al. (2023). EuroCrops: The largest harmonized open crop dataset across the European Union. Scientific Data. <span class="doi"><a href="https://doi.org/10.1038/s41597-023-02517-0" target="_blank">https://doi.org/10.1038/s41597-023-02517-0</a></span> <span class="tag tag-key">key paper</span> <span class="tag tag-oa">open access</span></li>
+  <li class="paper-ref">d'Andrimont et al. (2024). EuroCropsV2: 18 countries, 152 collections. JRC Technical Report.</li>
 </ul>
 
-<h2>Source & Attribution</h2>
+<h2>Papers Citing This Dataset</h2>
+<ul class="papers">
+  <li class="paper-cite">Tetteh et al. (2023). Deep learning for European crop type mapping with Sentinel-2. Remote Sensing of Environment.</li>
+  <li class="paper-cite">Turkoglu et al. (2023). Crop type mapping using multi-source data and deep learning. ISPRS.</li>
+  <li class="paper-cite">d'Andrimont et al. (2021). From parcel to continental scale — a first European crop type map. Earth System Science Data. <span class="doi"><a href="https://doi.org/10.5194/essd-13-1165-2021" target="_blank">https://doi.org/10.5194/essd-13-1165-2021</a></span></li>
+</ul>
+
+<h2>Related Datasets</h2>
+<div class="related-grid">
+  <a href="lucas-2022.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>LUCAS 2022</strong><span>EU-wide ground truth for validation</span></a>
+  <a href="jrc-eucropmap.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>JRC EU Crop Map</strong><span>Satellite-derived EU crop map at 10m</span></a>
+  <a href="hrl-crop-types.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>HRL Crop Types</strong><span>Copernicus 10m crop classification</span></a>
+</div>
+
+<h2>Source &amp; Attribution</h2>
 <p>JRC / European Commission; original EuroCrops by TU Munich</p>
 
 <hr style="margin-top: 2em;">

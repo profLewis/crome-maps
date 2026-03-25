@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{title}} — Global Crop Maps Info</title>
+<title>Argentina (GeoINTA) — Global Crop Maps Info</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -58,54 +58,54 @@
 </head>
 <body>
 <div class="back"><a href="../index.html">&larr; Back to Map Viewer</a></div>
-<h1>{{title}}</h1>
+<h1>Argentina (GeoINTA)</h1>
 
 <div class="executive-summary">
   <p><strong>Summary</strong></p>
-  <p>{{executive_summary}}</p>
+  <p>Agricultural land use maps for Argentina from INTA (Instituto Nacional de Tecnologia Agropecuaria) via the GeoINTA platform. Maps major crop types in the Pampas and other agricultural regions using satellite imagery.</p>
 </div>
 
 <div class="meta">
-  <div class="meta-item"><strong>Coverage</strong>{{coverage}}</div>
-  <div class="meta-item"><strong>Resolution</strong>{{resolution}}</div>
-  <div class="meta-item"><strong>Temporal</strong>{{temporal}}</div>
-  <div class="meta-item"><strong>License</strong>{{license}}</div>
+  <div class="meta-item"><strong>Coverage</strong>Argentina</div>
+  <div class="meta-item"><strong>Resolution</strong>Various (30m-250m)</div>
+  <div class="meta-item"><strong>Temporal</strong>Various years</div>
+  <div class="meta-item"><strong>License</strong>Open (INTA)</div>
 </div>
 
 <h2>Description</h2>
-<p>{{description}}</p>
+<p>GeoINTA provides geospatial agricultural data for Argentina including crop type maps, land use change, and agro-climatic data. Argentina is a major global producer of soybeans, maize, wheat, and sunflower.</p>
 
 <h2>Provenance</h2>
-<p>{{provenance}}</p>
+<p>INTA (Instituto Nacional de Tecnologia Agropecuaria), Argentina's national agricultural research institute.</p>
 
 <h2>Classification System</h2>
-{{classification_html}}
+<p>Major crops: Soybean, Maize, Wheat, Sunflower, Sorghum, plus grassland and forest</p>
 
 <h2>Access Methods</h2>
 <table>
   <tr><th>Method</th><th>URL / Details</th></tr>
-  {{access_rows}}
+  <tr><td><span class="badge badge-wms">WMS</span></td><td><a href="https://geointa.inta.gob.ar/" target="_blank">https://geointa.inta.gob.ar/</a></td></tr>
 </table>
 
 <h2>Accuracy &amp; Validation</h2>
-{{accuracy_html}}
+<p>Varies by product and year. Major crop accuracy typically >80%.</p>
 
 <h2>Key References</h2>
 <ul class="papers">
-  {{papers_html}}
+  <li class="paper-ref">INTA (various). GeoINTA technical documentation. <span class="tag tag-key">key paper</span></li>
 </ul>
 
-{{citing_section}}
 
-{{related_section}}
+
+
 
 <h2>Source &amp; Attribution</h2>
-<p>{{attribution}}</p>
+<p>INTA / Government of Argentina</p>
 
 <hr style="margin-top: 2em;">
 <p style="font-size: 0.8em; color: #999; margin-top: 1em;">
   Generated for <a href="../index.html">Global Crop Maps</a> viewer.
-  Data provided by {{provider}}.
+  Data provided by INTA.
 </p>
 </body>
 </html>

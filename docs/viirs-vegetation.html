@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{title}} — Global Crop Maps Info</title>
+<title>VIIRS Vegetation Indices (NDVI & EVI) — Global Crop Maps Info</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -58,54 +58,58 @@
 </head>
 <body>
 <div class="back"><a href="../index.html">&larr; Back to Map Viewer</a></div>
-<h1>{{title}}</h1>
+<h1>VIIRS Vegetation Indices (NDVI & EVI)</h1>
 
 <div class="executive-summary">
   <p><strong>Summary</strong></p>
-  <p>{{executive_summary}}</p>
+  <p>Global 8-day composite vegetation indices from the VIIRS sensor on Suomi NPP, providing NDVI and EVI at 375m resolution. Successor to MODIS vegetation products with improved spatial resolution and radiometric quality.</p>
 </div>
 
 <div class="meta">
-  <div class="meta-item"><strong>Coverage</strong>{{coverage}}</div>
-  <div class="meta-item"><strong>Resolution</strong>{{resolution}}</div>
-  <div class="meta-item"><strong>Temporal</strong>{{temporal}}</div>
-  <div class="meta-item"><strong>License</strong>{{license}}</div>
+  <div class="meta-item"><strong>Coverage</strong>Global</div>
+  <div class="meta-item"><strong>Resolution</strong>375m</div>
+  <div class="meta-item"><strong>Temporal</strong>2025–present (8-day composites)</div>
+  <div class="meta-item"><strong>License</strong>Public domain (US Government work)</div>
 </div>
 
 <h2>Description</h2>
-<p>{{description}}</p>
+<p>VIIRS (Visible Infrared Imaging Radiometer Suite) vegetation index products continue the legacy of MODIS vegetation monitoring with improved capabilities. NDVI (Normalized Difference Vegetation Index) measures overall vegetation greenness. EVI (Enhanced Vegetation Index) provides improved sensitivity in high-biomass tropical regions and reduces atmospheric and soil background effects. Both are 8-day composites using maximum value compositing.</p>
 
 <h2>Provenance</h2>
-<p>{{provenance}}</p>
+<p>NASA EOSDIS via GIBS (Global Imagery Browse Services). Sensor: VIIRS on Suomi NPP satellite.</p>
 
 <h2>Classification System</h2>
-{{classification_html}}
+<p>Continuous index values: NDVI (-1 to 1), EVI (-1 to 1). Higher values indicate denser vegetation.</p>
 
 <h2>Access Methods</h2>
 <table>
   <tr><th>Method</th><th>URL / Details</th></tr>
-  {{access_rows}}
+  <tr><td><span class="badge badge-download">WMS (GIBS)</span></td><td><a href="https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi" target="_blank">https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi</a><br><code>Layer: VIIRS_SNPP_NDVI_8Day / VIIRS_SNPP_EVI_8Day</code></td></tr>
 </table>
 
 <h2>Accuracy &amp; Validation</h2>
-{{accuracy_html}}
+<p>VIIRS vegetation indices are validated to Stage 2 maturity with global accuracy comparable to MODIS.</p>
 
 <h2>Key References</h2>
 <ul class="papers">
-  {{papers_html}}
+  <li class="paper-ref">Didan K et al. (2018). VIIRS Vegetation Index Product Suite Algorithm Theoretical Basis Document. <span class="tag tag-key">key paper</span></li>
 </ul>
 
-{{citing_section}}
 
-{{related_section}}
+
+<h2>Related Datasets</h2>
+<div class="related-grid">
+  <div class="related-item"><strong>MODIS NDVI/EVI</strong><span>Predecessor vegetation index products at 250m–1km</span></div>
+  <div class="related-item"><strong>HR-VPP Phenology</strong><span>Sentinel-2 phenology at 10m (Europe only)</span></div>
+</div>
 
 <h2>Source &amp; Attribution</h2>
-<p>{{attribution}}</p>
+<p>NASA EOSDIS / LPDAAC</p>
 
 <hr style="margin-top: 2em;">
 <p style="font-size: 0.8em; color: #999; margin-top: 1em;">
   Generated for <a href="../index.html">Global Crop Maps</a> viewer.
-  Data provided by {{provider}}.
+  Data provided by NASA.
 </p>
 </body>
 </html>

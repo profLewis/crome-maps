@@ -1,0 +1,25 @@
+Traceback (most recent call last):
+  File "/Users/plewis/Documents/GitHub/crome-maps/update_datasets.py", line 597, in <module>
+    main()
+  File "/Users/plewis/Documents/GitHub/crome-maps/update_datasets.py", line 511, in main
+    datasets = load_datasets()
+               ^^^^^^^^^^^^^^^
+  File "/Users/plewis/Documents/GitHub/crome-maps/update_datasets.py", line 71, in load_datasets
+    return yaml.safe_load(f)
+           ^^^^^^^^^^^^^^^^^
+  File "/Users/plewis/anaconda3/lib/python3.11/site-packages/yaml/__init__.py", line 125, in safe_load
+    return load(stream, SafeLoader)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/plewis/anaconda3/lib/python3.11/site-packages/yaml/__init__.py", line 79, in load
+    loader = Loader(stream)
+             ^^^^^^^^^^^^^^
+  File "/Users/plewis/anaconda3/lib/python3.11/site-packages/yaml/loader.py", line 34, in __init__
+    Reader.__init__(self, stream)
+  File "/Users/plewis/anaconda3/lib/python3.11/site-packages/yaml/reader.py", line 85, in __init__
+    self.determine_encoding()
+  File "/Users/plewis/anaconda3/lib/python3.11/site-packages/yaml/reader.py", line 124, in determine_encoding
+    self.update_raw()
+  File "/Users/plewis/anaconda3/lib/python3.11/site-packages/yaml/reader.py", line 178, in update_raw
+    data = self.stream.read(size)
+           ^^^^^^^^^^^^^^^^^^^^^^
+OSError: [Errno 11] Resource deadlock avoided

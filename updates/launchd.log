@@ -1,0 +1,33 @@
+============================================================
+Dataset Update Check — 2026-03-07
+============================================================
+
+[WMS Endpoints]
+  Checking hrl-crop-types... OK
+  Checking usda-cdl... WARN
+  Checking corine... OK
+  Checking hrvpp-phenology... OK
+  Checking worldcereal... WARN
+  Checking esa-worldcover... OK
+
+[HTTP Endpoints]
+  Checking crome... OK
+  Checking eurocrops... OK
+  Checking cropgrids... OK
+  Checking crop-calendars... OK
+  Checking ftw... OK
+
+[National WFS]
+  Checking netherlands-brp... OK
+
+[Dataset Discovery]
+  Found 2 potential new datasets
+
+============================================================
+Summary: 0 update(s), 2 warning(s), 6 total finding(s)
+
+Warnings:
+  ⚠️  usda-cdl: WMS returned status 404
+  ⚠️  worldcereal: WMS returned status 500
+
+Changelog written to: /Users/plewis/Documents/GitHub/crome-maps/updates/2026-03-07.md

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{title}} — Global Crop Maps Info</title>
+<title>MODIS LAI, FPAR & GPP — Global Crop Maps Info</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -58,54 +58,60 @@
 </head>
 <body>
 <div class="back"><a href="../index.html">&larr; Back to Map Viewer</a></div>
-<h1>{{title}}</h1>
+<h1>MODIS LAI, FPAR & GPP</h1>
 
 <div class="executive-summary">
   <p><strong>Summary</strong></p>
-  <p>{{executive_summary}}</p>
+  <p>Global biophysical parameters from MODIS: Leaf Area Index (LAI), Fraction of Photosynthetically Active Radiation (FPAR), and Gross Primary Productivity (GPP). These complement vegetation indices by quantifying canopy structure, light interception, and carbon fixation rates at 500m–1km resolution.</p>
 </div>
 
 <div class="meta">
-  <div class="meta-item"><strong>Coverage</strong>{{coverage}}</div>
-  <div class="meta-item"><strong>Resolution</strong>{{resolution}}</div>
-  <div class="meta-item"><strong>Temporal</strong>{{temporal}}</div>
-  <div class="meta-item"><strong>License</strong>{{license}}</div>
+  <div class="meta-item"><strong>Coverage</strong>Global</div>
+  <div class="meta-item"><strong>Resolution</strong>500m (LAI/FPAR), 500m (GPP)</div>
+  <div class="meta-item"><strong>Temporal</strong>2000–present (8-day composites)</div>
+  <div class="meta-item"><strong>License</strong>Public domain (US Government work)</div>
 </div>
 
 <h2>Description</h2>
-<p>{{description}}</p>
+<p>LAI (Leaf Area Index) quantifies the one-sided green leaf area per unit ground surface area — a key structural parameter for crop growth models. FPAR measures the fraction of incoming solar radiation (400–700nm) absorbed by vegetation canopies for photosynthesis. GPP (Gross Primary Productivity) estimates the total amount of carbon fixed by vegetation through photosynthesis, critical for carbon cycle monitoring and crop yield estimation.</p>
 
 <h2>Provenance</h2>
-<p>{{provenance}}</p>
+<p>NASA EOSDIS products MCD15A2H (LAI/FPAR) and MOD17A2H (GPP). LAI/FPAR: MODIS Combined Terra+Aqua 8-day composite. GPP: MODIS Terra 8-day composite using the Biome Properties Look-Up Table approach.</p>
 
 <h2>Classification System</h2>
-{{classification_html}}
+<p>Continuous values. LAI: 0–10 m²/m² (cropland typically 1–6). FPAR: 0–1.0 (fraction). GPP: 0–3000 g C/m²/yr.
+</p>
 
 <h2>Access Methods</h2>
 <table>
   <tr><th>Method</th><th>URL / Details</th></tr>
-  {{access_rows}}
+  <tr><td><span class="badge badge-download">WMS (GIBS)</span></td><td><a href="https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi" target="_blank">https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi</a><br><code>Layer: MODIS_Combined_L4_LAI_8Day / MODIS_Combined_L4_FPAR_8Day / MODIS_Terra_L4_Gross_Primary_Productivity_8Day</code></td></tr>
 </table>
 
 <h2>Accuracy &amp; Validation</h2>
-{{accuracy_html}}
+<p>LAI/FPAR validated to Stage 3 maturity. Uncertainty: LAI ±0.66 m²/m², FPAR ±0.12 for broadleaf crops. GPP validated against FLUXNET eddy covariance towers.</p>
 
 <h2>Key References</h2>
 <ul class="papers">
-  {{papers_html}}
+  <li class="paper-ref">Myneni RB et al. (2002). Global products of vegetation leaf area and fraction absorbed PAR from year one of MODIS data. Remote Sensing of Environment 83(1-2):214-231. <span class="doi"><a href="10.1016/S0034-4257(02)00074-3" target="_blank">10.1016/S0034-4257(02)00074-3</a></span> <span class="tag tag-key">key paper</span></li>
+  <li class="paper-ref">Running SW et al. (2004). A Continuous Satellite-Derived Measure of Global Terrestrial Primary Production. BioScience 54(6):547-560. <span class="doi"><a href="10.1641/0006-3568(2004)054[0547:ACSMOG]2.0.CO;2" target="_blank">10.1641/0006-3568(2004)054[0547:ACSMOG]2.0.CO;2</a></span></li>
 </ul>
 
-{{citing_section}}
 
-{{related_section}}
+
+<h2>Related Datasets</h2>
+<div class="related-grid">
+  <div class="related-item"><strong>MODIS NDVI/EVI</strong><span>Vegetation indices from the same sensor</span></div>
+  <div class="related-item"><strong>VIIRS NDVI/EVI</strong><span>Next-generation vegetation indices at improved resolution</span></div>
+</div>
 
 <h2>Source &amp; Attribution</h2>
-<p>{{attribution}}</p>
+<p>NASA EOSDIS / LPDAAC</p>
 
 <hr style="margin-top: 2em;">
 <p style="font-size: 0.8em; color: #999; margin-top: 1em;">
   Generated for <a href="../index.html">Global Crop Maps</a> viewer.
-  Data provided by {{provider}}.
+  Data provided by NASA.
 </p>
 </body>
 </html>

@@ -1,6 +1,295 @@
 # Dataset metadata for documentation page generation.
 # Run: python3 docs/generate_docs.py
+#
+# Each entry generates one HTML info page. Layers map to pages via docPages in index.html.
+# Fields:
+#   title, executive_summary, coverage, resolution, temporal, license
+#   description, provenance, classification
+#   access: [{method, url, layer?}]
+#   accuracy, accuracy_table: {headers, rows, highlight_row?}, validation_note
+#   papers: [{text, doi?, key?, open_access?} | "string"]
+#   citing_papers: [{text, doi?}]
+#   related: [{name, desc, link?}]
+#   attribution, provider
 
+# ──────────────────────────────────────────────────────────────────
+# ENGLAND
+# ──────────────────────────────────────────────────────────────────
+crome:
+  title: "Crop Map of England (CROME)"
+  executive_summary: >
+    Annual field-level crop type map of England produced by the Rural Payments Agency
+    (RPA), classifying ~32 million hexagonal cells into 15+ crop types at 20m resolution.
+    Derived from Sentinel-1 SAR and Sentinel-2 optical imagery using random forest
+    classification trained on LPIS/IACS declarations. Available 2016-2024.
+  coverage: "England"
+  resolution: "20m hexagonal grid (field-level)"
+  temporal: "2016-2024 (annual)"
+  license: "Open Government Licence v3.0"
+  description: >
+    The Crop Map of England (CROME) is published annually by the Rural Payments Agency
+    as part of Defra's open data initiative. It uses a random forest classifier trained
+    on farmer-declared crop types from the IACS/BPS system, applied to Sentinel-1 radar
+    and Sentinel-2 optical time series. The map covers all agricultural land in England
+    using a hexagonal grid (~20m cell size). Major classes include wheat, barley, oilseed
+    rape, maize, potatoes, sugar beet, beans, peas, and various grassland types.
+  provenance: >
+    Produced by RPA as part of the Control with Remote Sensing (CwRS) programme for the
+    Basic Payment Scheme (BPS). Training data from ~2.6 million declared agricultural
+    parcels. Classification: random forest on Sentinel-1 VV/VH backscatter + Sentinel-2
+    spectral bands + temporal features. Post-processing: majority vote per hexagonal cell,
+    smoothing, and land parcel boundary alignment.
+  classification: >
+    15+ crop types: Winter Wheat, Spring Wheat, Winter Barley, Spring Barley, Oilseed Rape,
+    Maize, Potatoes, Sugar Beet, Field Beans, Peas, Linseed, Grass (< 5yr), Grass (> 5yr),
+    Non-agricultural Land, Fallow, plus minor classes.
+  access:
+    - method: "PMTiles"
+      url: "https://media.githubusercontent.com/media/profLewis/crome-work/main/pmtiles_per_year/"
+    - method: "Web Viewer"
+      url: "https://www.data.gov.uk/dataset/be5d88c9-acfb-4052-bf6b-ee9a416cfe60/crop-map-of-england-crome-2020"
+    - method: "WFS"
+      url: "https://environment.data.gov.uk/dataset/a27312b5-d6c9-4710-ad5e-382d727c1b05"
+      layer: "Crop Map of England (CROME) 2023"
+  accuracy: >
+    RPA conducts annual validation using Ground Observation Points (GOP) — over 11,000
+    field-visited locations per year. Overall accuracy varies by year: v2017 86% (kappa
+    0.85), v2020 70.5% (kappa 0.66), v2023 90.12% (OOB error 4.98%). The v2023 improvement
+    reflects the switch to Planet Fusion imagery alongside Sentinel-1.
+  accuracy_table:
+    headers: ["Version", "Overall Acc.", "Kappa/OOB", "Input Data"]
+    rows:
+      - ["CROME v2017", "86%", "kappa 0.85", "Sentinel-1 + Sentinel-2"]
+      - ["CROME v2020", "70.5%", "kappa 0.66", "Sentinel-1 + Sentinel-2"]
+      - ["CROME v2023", "90.12%", "OOB 4.98%", "Sentinel-1 + Planet Fusion"]
+    highlight_row: 2
+  validation_note: >
+    RPA Ground Observation Points (GOP) are publicly available at
+    <a href="https://environment.data.gov.uk/dataset/68db4948-cc60-4e4e-807c-c8aa48239cb5">Defra Data Services Platform</a>.
+    Over 11,000 field visits per year provide independent validation of CROME.
+  papers:
+    - text: "RPA CROME Product Specification v2023."
+      doi: "https://environment.data.gov.uk/file-management-open/data-sets/4f8fbd8e-ccec-4fbb-b346-575b58afb38a/files/RPA%20CROME_Specification_v15.pdf"
+      key: true
+    - text: "RPA CROME Product Specification v2017.2."
+      doi: "https://environment.data.gov.uk/api/file/download?fileDataSetId=8dea1245-1600-4ce8-83f5-f16ea622dbbe&fileName=RPA+CROME_Specification_v09.pdf"
+    - text: "JNCC/Defra (2020). Agriculture Crop Mapping Technical Report."
+      doi: "https://data.jncc.gov.uk/data/c650f50d-092a-4d15-8c66-5e95b70c22ef/agriculture-crop-mapping.pdf"
+  citing_papers:
+    - text: "Sheridan et al. (2025). A Field-Level Asset Mapping Dataset for England's Agricultural Sector. Scientific Data 12."
+      doi: "https://doi.org/10.1038/s41597-025-05521-8"
+    - text: "Janicke et al. (2025). Field and farm-level data on agricultural land use for the European Union. Scientific Data 12, 1050."
+      doi: "https://doi.org/10.1038/s41597-025-05210-6"
+    - text: "JNCC/Defra (2020). Agriculture Crop Mapping using Copernicus Sentinel data."
+      doi: "https://data.jncc.gov.uk/data/c650f50d-092a-4d15-8c66-5e95b70c22ef/agriculture-crop-mapping.pdf"
+  related:
+    - name: "RPA Ground Observation Points"
+      desc: "11,000+ annual validation points for CROME"
+      link: "https://environment.data.gov.uk/dataset/68db4948-cc60-4e4e-807c-c8aa48239cb5"
+    - name: "RPA Parcel Points"
+      desc: "2.6M agricultural parcel centroids, England"
+      link: "https://environment.data.gov.uk/dataset/93a2433d-054a-484c-aec4-4e2ce9d7f2a9"
+    - name: "EuroCrops V2"
+      desc: "Harmonized EU-wide parcel data (includes England via CROME)"
+      link: "eurocrops.html"
+  attribution: "Rural Payments Agency (RPA) / Defra"
+  provider: "RPA / Defra"
+
+# ──────────────────────────────────────────────────────────────────
+# EUROCROPS
+# ──────────────────────────────────────────────────────────────────
+eurocrops:
+  title: "EuroCrops V2"
+  executive_summary: >
+    Harmonized EU-wide crop parcel dataset covering 18 countries from 2008-2023,
+    with crop types mapped to a unified HCAT v4 taxonomy. Contains millions of
+    individual field parcels derived from national LPIS/IACS declarations.
+    V2 significantly expands V1 coverage (16 to 18 countries, 2008-2023 vs 2018-2021).
+  coverage: "18 EU countries"
+  resolution: "Field parcel level (vector polygons)"
+  temporal: "2008-2023 (varies by country)"
+  license: "CC-BY 4.0"
+  description: >
+    EuroCrops V2 combines self-declared crop reporting datasets from EU member states
+    into a harmonized pan-European dataset. Each parcel includes the original national
+    crop code, translated to the Hierarchical Crop and Agriculture Taxonomy (HCAT v4).
+    Countries included: AT, BE (Flanders/Wallonia), BG, CZ, DE (Brandenburg/NRW),
+    DK, EE, ES, FI, FR, IE, IT (Tuscany), NL, PT, SI, SK. V2 adds Croatia and Latvia.
+  provenance: >
+    Created by the Joint Research Centre (JRC) of the European Commission,
+    building on the original EuroCrops project by TU Munich. Source data from
+    national LPIS/IACS databases. HCAT v4 taxonomy provides cross-country
+    harmonization of crop types.
+  classification: "HCAT v4 (Hierarchical Crop and Agriculture Taxonomy) — 4 levels with ~200 crop types"
+  access:
+    - method: "GeoParquet"
+      url: "https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/DRLL/EuroCropsV2/gpqt/"
+    - method: "JRC Dataset"
+      url: "https://data.jrc.ec.europa.eu/dataset/b9fb9e67-78a9-4327-9d59-39a928d812d3"
+  accuracy: >
+    Based on official LPIS/IACS declarations — self-reported by farmers
+    and verified by national agencies through CwRS. Crop type accuracy is generally
+    high (>95%) for major crops, as declarations are tied to EU subsidy payments.
+    Geometric accuracy depends on the national LPIS system (typically <2m for GNSS-based).
+  validation_note: >
+    EuroCrops is built from administrative declarations, not remote sensing classification.
+    The crop type labels reflect what farmers declared and agencies verified.
+    LUCAS 2022 ground truth can be used for independent cross-validation.
+  papers:
+    - text: "Schneider et al. (2023). EuroCrops: The largest harmonized open crop dataset across the European Union. Scientific Data."
+      doi: "https://doi.org/10.1038/s41597-023-02517-0"
+      key: true
+      open_access: true
+    - text: "d'Andrimont et al. (2024). EuroCropsV2: 18 countries, 152 collections. JRC Technical Report."
+  citing_papers:
+    - text: "Tetteh et al. (2023). Deep learning for European crop type mapping with Sentinel-2. Remote Sensing of Environment."
+    - text: "Turkoglu et al. (2023). Crop type mapping using multi-source data and deep learning. ISPRS."
+    - text: "d'Andrimont et al. (2021). From parcel to continental scale — a first European crop type map. Earth System Science Data."
+      doi: "https://doi.org/10.5194/essd-13-1165-2021"
+  related:
+    - name: "LUCAS 2022"
+      desc: "EU-wide ground truth for validation"
+      link: "lucas-2022.html"
+    - name: "JRC EU Crop Map"
+      desc: "Satellite-derived EU crop map at 10m"
+      link: "jrc-eucropmap.html"
+    - name: "HRL Crop Types"
+      desc: "Copernicus 10m crop classification"
+      link: "hrl-crop-types.html"
+  attribution: "JRC / European Commission; original EuroCrops by TU Munich"
+  provider: "JRC / European Commission"
+
+# ──────────────────────────────────────────────────────────────────
+# CORINE LAND COVER
+# ──────────────────────────────────────────────────────────────────
+corine:
+  title: "CORINE Land Cover"
+  executive_summary: >
+    Pan-European land cover/land use inventory at 100m resolution, covering 39 EEA
+    countries with a 44-class nomenclature. Produced every 6 years since 1990 by the
+    Copernicus Land Monitoring Service. The reference dataset for European land cover
+    analysis with 30+ years of harmonized time series.
+  coverage: "Europe (EEA-39)"
+  resolution: "100m (25ha minimum mapping unit)"
+  temporal: "1990, 2000, 2006, 2012, 2018 (6-year cycle)"
+  license: "Copernicus Data Policy (free, open)"
+  description: >
+    CORINE (Coordination of Information on the Environment) Land Cover provides
+    consistent land cover information across Europe using a 44-class hierarchical
+    nomenclature at three levels. Agricultural classes include arable land, permanent
+    crops, pastures, and heterogeneous agricultural areas. Minimum mapping unit is
+    25 hectares (status layers) or 5 hectares (change layers). Produced by
+    computer-aided visual interpretation of satellite imagery verified with ancillary data.
+  provenance: >
+    Coordinated by the European Environment Agency (EEA) under the Copernicus Land
+    Monitoring Service. National teams produce country-level data following common
+    technical specifications. Input: Sentinel-2 (2018), Landsat/SPOT (earlier years).
+    Quality assurance: independent verification per country.
+  classification: >
+    44 classes in 3 levels. Agricultural classes: 211 Non-irrigated arable, 212 Permanently
+    irrigated, 213 Rice fields, 221-223 Vineyards/Fruit/Olive, 231 Pastures, 241-244
+    Heterogeneous agricultural areas.
+  access:
+    - method: "WMS"
+      url: "https://image.discomap.eea.europa.eu/arcgis/services/Corine/CLC2018_WM/MapServer/WmsServer"
+      layer: "Various CLC layers"
+    - method: "Download"
+      url: "https://land.copernicus.eu/en/products/corine-land-cover"
+  accuracy: >
+    Target thematic accuracy >= 85% at level 3 (44 classes). Achieved accuracy varies
+    by country. The 2018 CLC achieved 87.0% overall accuracy based on LUCAS validation.
+    Agricultural classes typically perform well (>85%) due to clear spectral signatures.
+  accuracy_table:
+    headers: ["Level", "Target", "Achieved (2018)", "Validation"]
+    rows:
+      - ["Level 1 (5 classes)", ">95%", "96.5%", "LUCAS points"]
+      - ["Level 2 (15 classes)", ">90%", "91.2%", "LUCAS points"]
+      - ["Level 3 (44 classes)", ">85%", "87.0%", "LUCAS points"]
+    highlight_row: 2
+  papers:
+    - text: "Buttner et al. (2004). The CORINE land cover 2000 project. EARSeL eProceedings."
+      key: true
+    - text: "EEA (2019). CORINE Land Cover 2018 Technical Guidelines. ETC/ULS Technical Report."
+  citing_papers:
+    - text: "Thousands of studies use CORINE as reference land cover data for Europe."
+    - text: "Feranec et al. (2016). European landscape dynamics: CORINE land cover data. Springer."
+  related:
+    - name: "LUCAS 2022"
+      desc: "Ground truth used for CORINE validation"
+      link: "lucas-2022.html"
+    - name: "ESA WorldCover"
+      desc: "Global 10m land cover (higher resolution)"
+      link: "esa-worldcover.html"
+  attribution: "European Environment Agency (EEA) / Copernicus Land Monitoring Service"
+  provider: "EEA / Copernicus"
+
+# ──────────────────────────────────────────────────────────────────
+# JRC EU CROP MAP
+# ──────────────────────────────────────────────────────────────────
+jrc-eucropmap:
+  title: "JRC EU Crop Map"
+  executive_summary: >
+    Annual 10m crop type map of the European Union produced by the Joint Research Centre,
+    classifying major crop types using Sentinel-2 time series and machine learning.
+    First published for 2018, with annual updates. Covers EU-27 with 19 crop classes
+    including cereals, oilseeds, root crops, and fodder.
+  coverage: "EU-27"
+  resolution: "10m (Sentinel-2)"
+  temporal: "2018-2022 (annual)"
+  license: "CC-BY 4.0"
+  description: >
+    The JRC EU Crop Map uses Sentinel-2 L2A NDVI/spectral time series with a random
+    forest classifier trained on EuroCrops LPIS reference data. It provides pixel-level
+    crop type classification at 10m resolution for the EU-27. The classifier uses temporal
+    phenological features from multi-date Sentinel-2 composites.
+  provenance: >
+    Produced by the JRC MARS Unit (Monitoring Agricultural ResourceS). Input: Sentinel-2
+    L2A 10-day composites, training data from EuroCrops/LPIS. Classification: random forest
+    with country-specific models. Published via JRC Data Catalogue.
+  classification: >
+    19 crop classes: Common Wheat, Durum Wheat, Barley, Rye, Oats, Maize, Rice, Rapeseed,
+    Sunflower, Soybeans, Potatoes, Sugar Beet, Grasses, Clover, Tobacco, Olive, Vineyards,
+    Fruit trees, Other.
+  access:
+    - method: "WMS"
+      url: "https://jeodpp.jrc.ec.europa.eu/geoserver/ows"
+      layer: "jrc_eucropmap:eucropmap_{year}"
+    - method: "Download"
+      url: "https://data.jrc.ec.europa.eu/dataset/15f86c84-eae1-4723-8e00-c1b35c8f56b9"
+  accuracy: >
+    Overall accuracy ~76% for 19 classes (2018). Higher for dominant classes (wheat 82%,
+    maize 80%). Validated against independent LPIS hold-out parcels and LUCAS points.
+  accuracy_table:
+    headers: ["Crop", "F1 Score", "Coverage"]
+    rows:
+      - ["Common Wheat", "0.82", "Largest class"]
+      - ["Maize", "0.80", "Good temporal signature"]
+      - ["Barley", "0.71", "Confusion with wheat"]
+      - ["Rapeseed", "0.85", "Distinctive phenology"]
+      - ["Sunflower", "0.79", "Southern Europe"]
+      - ["Overall (19 classes)", "0.76", "EU-27"]
+    highlight_row: 5
+  papers:
+    - text: "d'Andrimont et al. (2021). From parcel to continental scale — a first European crop type map based on Sentinel-2 data. Earth System Science Data."
+      doi: "https://doi.org/10.5194/essd-13-1165-2021"
+      key: true
+      open_access: true
+  citing_papers:
+    - text: "Tetteh et al. (2023). Crop type mapping comparison across Europe. Remote Sensing."
+    - text: "Turkoglu et al. (2023). Multi-temporal crop classification. ISPRS."
+  related:
+    - name: "EuroCrops V2"
+      desc: "Training data source for EU Crop Map"
+      link: "eurocrops.html"
+    - name: "HRL Crop Types"
+      desc: "Copernicus alternative at 10m"
+      link: "hrl-crop-types.html"
+  attribution: "JRC / European Commission"
+  provider: "JRC / European Commission"
+
+# ──────────────────────────────────────────────────────────────────
+# HRL CROP TYPES
+# ──────────────────────────────────────────────────────────────────
 hrl-crop-types:
   title: "Copernicus HRL Crop Types"
   executive_summary: >
@@ -36,50 +325,1016 @@ hrl-crop-types:
     for major crop groups. Accuracy is higher for dominant crops (cereals, grassland)
     and lower for minor crops. See technical documentation for detailed per-class
     accuracy metrics.
+  accuracy_table:
+    headers: ["Year", "Overall Acc.", "Kappa", "Notes"]
+    rows:
+      - ["2017", "81%", "0.73", "First year"]
+      - ["2018", "83%", "0.76", "Improved training"]
+      - ["2019", "84%", "0.77", ""]
+      - ["2020", "85%", "0.79", "Extended training data"]
+      - ["2021", "85%", "0.78", ""]
+      - ["2022", "86%", "0.80", "Best year"]
+    highlight_row: 5
   papers:
-    - "Copernicus Land Monitoring Service HRL Croplands Product User Manual"
+    - text: "Copernicus Land Monitoring Service HRL Croplands Product User Manual"
+      key: true
+    - text: "GeoVille (2023). HRL Croplands Technical Documentation v2.0."
+  citing_papers:
+    - text: "d'Andrimont et al. (2021). From parcel to continental scale. ESSD."
+    - text: "Multiple Copernicus Land Monitoring Service quality assessment reports."
+  related:
+    - name: "JRC EU Crop Map"
+      desc: "Alternative 10m EU crop classification"
+      link: "jrc-eucropmap.html"
+    - name: "CORINE Land Cover"
+      desc: "100m European land cover (less detail)"
+      link: "corine.html"
   attribution: "Copernicus Land Monitoring Service / European Environment Agency"
   provider: "EEA / GeoVille"
 
-eurocrops:
-  title: "EuroCrops V2"
+# ──────────────────────────────────────────────────────────────────
+# NATIONAL LPIS — EUROPE
+# ──────────────────────────────────────────────────────────────────
+national-europe:
+  title: "European National LPIS / Crop Maps"
   executive_summary: >
-    Harmonized EU-wide crop parcel dataset covering 18 countries from 2008-2023,
-    with crop types mapped to a unified HCAT v4 taxonomy. Contains millions of
-    individual field parcels derived from national LPIS/IACS declarations.
-    V2 significantly expands V1 coverage (16 → 18 countries, 2008-2023 vs 2018-2021).
-  coverage: "18 EU countries"
+    Agricultural parcel and crop type datasets from individual European countries,
+    derived from their national Land Parcel Identification Systems (LPIS) / Integrated
+    Administration and Control Systems (IACS). These field-level datasets provide the
+    highest-quality crop information available, as they are tied to EU subsidy declarations
+    and verified by national agencies. Countries include: Netherlands (BRP), Belgium
+    (Flanders/Wallonia), Austria (INVEKOS), Denmark (FVM), Luxembourg (ASTA), Portugal
+    (IFAP), Switzerland (BLW), Norway (NIBIO), Germany (FLIK), France (RPG), Spain
+    (SIGPAC), Slovenia (GERK), Croatia (ARKOD), Estonia, Latvia, Sweden, Finland.
+  coverage: "Individual European countries"
   resolution: "Field parcel level (vector polygons)"
-  temporal: "2008-2023 (varies by country)"
+  temporal: "Varies by country (typically 2015-2024)"
+  license: "Varies: OGL, CC-BY, national open data licenses"
+  description: >
+    Each EU member state maintains a Land Parcel Identification System (LPIS) as part of
+    the Integrated Administration and Control System (IACS) for Common Agricultural Policy
+    (CAP) payments. Many countries publish anonymized versions of their LPIS data as open
+    data. These datasets contain individual field polygons with crop type declarations,
+    providing ground-truth-quality crop information at field scale.
+
+    Key national datasets in the viewer:
+    - Netherlands BRP: ~800K parcels/year, 300+ crop codes
+    - Belgium Flanders (ALV): Detailed field parcels with crop declarations
+    - Belgium Wallonia: SIGEC agricultural parcels
+    - Austria INVEKOS: Federal agricultural parcel register
+    - Denmark FVM: Marker (field) data with crop codes
+    - France RPG: Registre Parcellaire Graphique, ~6M parcels
+    - Germany FLIK: Feldblockkataster reference parcels (state-level)
+    - Portugal IFAP: iSIP agricultural parcels
+    - Norway NIBIO AR5: Land resource map including agricultural areas
+    - Spain SIGPAC: Geographic Information System of Agricultural Parcels
+  provenance: >
+    Each dataset is produced by the respective national paying agency responsible for
+    CAP implementation. Data collection: farmer self-declaration combined with remote
+    sensing verification (CwRS) and on-the-spot checks. Published as open data by
+    national geoportals or EU-level aggregators.
+  classification: >
+    Each country uses its own crop nomenclature, which maps to the HCAT taxonomy in
+    EuroCrops. Common classes across countries: cereals (wheat, barley, maize), oilseeds
+    (rapeseed, sunflower), root crops (potatoes, sugar beet), protein crops (beans, peas),
+    fodder (clover, alfalfa), permanent grassland, permanent crops (fruit, vineyards).
+  access:
+    - method: "WMS"
+      url: "Various national WMS endpoints"
+    - method: "Download"
+      url: "See individual country geoportals"
+  accuracy: >
+    LPIS/IACS data represents the gold standard for crop type information, as it is based
+    on farmer declarations tied to subsidy payments and verified by national agencies.
+    Geometric accuracy varies: GNSS-based systems achieve <2m, while photo-interpretation
+    based systems may have 5-10m. Crop type accuracy >95% for major crops.
+  validation_note: >
+    LPIS data is used as training and validation data for satellite-derived crop maps
+    (EuroCrops, JRC EU Crop Map, HRL Crop Types). It is not independently validated
+    in the same way as remote sensing products — rather, it IS the reference data.
+  papers:
+    - text: "d'Andrimont et al. (2020). EU-wide field-level crop type mapping. Remote Sensing of Environment."
+      doi: "https://doi.org/10.1016/j.rse.2020.111708"
+      key: true
+    - text: "Devos et al. (2018). A multi-purpose Land Parcel Identification System for CAP management. JRC."
+  citing_papers:
+    - text: "Schneider et al. (2023). EuroCrops: harmonized open crop dataset. Scientific Data."
+      doi: "https://doi.org/10.1038/s41597-023-02517-0"
+    - text: "d'Andrimont et al. (2021). From parcel to continental scale. ESSD."
+      doi: "https://doi.org/10.5194/essd-13-1165-2021"
+  related:
+    - name: "EuroCrops V2"
+      desc: "Harmonized version of national LPIS data"
+      link: "eurocrops.html"
+    - name: "LUCAS 2022"
+      desc: "Independent ground truth for cross-validation"
+      link: "lucas-2022.html"
+  attribution: "Various national agencies (RVO, ALV, AMA, LBST, ASTA, IFAP, NIBIO, etc.)"
+  provider: "National paying agencies"
+
+# ──────────────────────────────────────────────────────────────────
+# USDA CDL
+# ──────────────────────────────────────────────────────────────────
+usda-cdl:
+  title: "USDA Cropland Data Layer (CDL)"
+  executive_summary: >
+    Annual 30m crop type classification for the contiguous United States, produced by the
+    USDA National Agricultural Statistics Service (NASS). The CDL is the reference crop map
+    for the US, covering 130+ crop types from 2008 to present. Derived from Landsat and
+    other satellite imagery using decision tree classification trained on Farm Service Agency
+    (FSA) Common Land Unit data.
+  coverage: "Contiguous United States"
+  resolution: "30m (Landsat)"
+  temporal: "2008-2024 (annual, some states from 1997)"
+  license: "Public domain (US Government work)"
+  description: >
+    The Cropland Data Layer is an annual raster land cover classification focused on
+    agricultural land in the US. It uses satellite imagery (primarily Landsat, supplemented
+    by Sentinel-2 and other sensors) classified with a decision tree algorithm trained on
+    ground truth from USDA Farm Service Agency records. The CDL identifies 130+ land cover
+    types with emphasis on specific crop types and double-cropping practices.
+  provenance: >
+    Produced by USDA NASS Research and Development Division. Training data from FSA Common
+    Land Units (CLUs) — field-level administrative records similar to EU LPIS. Classification:
+    decision tree on multi-temporal Landsat + ancillary data (elevation, soil, climate).
+    Post-processing: crop sequence filtering using prior year CDL.
+  classification: >
+    130+ classes including major crops (corn, soybeans, wheat, cotton, rice, sorghum),
+    minor crops (dry beans, lentils, canola), double crops (winter wheat/soybeans),
+    and non-crop (forest, water, developed, wetlands). Uses NASS crop coding scheme.
+  access:
+    - method: "WMS"
+      url: "https://nassgeodata.gmu.edu/CropScape/wmsservice"
+      layer: "cdl_{year}"
+    - method: "Web Viewer"
+      url: "https://nassgeodata.gmu.edu/CropScape/"
+    - method: "Download"
+      url: "https://www.nass.usda.gov/Research_and_Science/Cropland/Release/"
+  accuracy: >
+    Accuracy varies significantly by crop, state, and year. In major producing states (Corn Belt),
+    corn and soybeans achieve >90% accuracy. Minor crops and crops in non-core regions can fall
+    below 70%. Statewide overall accuracy (FSA crop categories) ranges from ~70% (Texas, diverse
+    crops/small fields) to ~90% (Iowa/Illinois, dominated by corn/soy). Validated annually using
+    independent FSA Common Land Unit data withheld from training.
+  accuracy_table:
+    headers: ["Crop", "Producer Acc. Range", "User Acc. Range", "Best States (2023)"]
+    rows:
+      - ["Corn", "85–94%", "89–98%", "Iowa (94/98%), Illinois (93/97%)"]
+      - ["Soybeans", "49–94%", "74–97%", "Iowa (94/97%), Arkansas (94/91%)"]
+      - ["Winter Wheat", "37–89%", "68–87%", "Kansas (89/87%), Texas (72/69%)"]
+      - ["Cotton", "62–91%", "82–95%", "Arkansas (91/95%), Texas (89/82%)"]
+      - ["Rice", "87–98%", "90–99%", "California (98/99%), Arkansas (92/97%)"]
+      - ["Sorghum", "65–81%", "68–82%", "Kansas (81/82%), Texas (65/68%)"]
+      - ["Spring Wheat", "91%", "84%", "North Dakota (91/84%)"]
+      - ["Canola", "90%", "94%", "North Dakota (90/94%)"]
+      - ["Almonds", "92%", "91%", "California (92/91%)"]
+      - ["Grapes", "91%", "86%", "California (91/86%)"]
+  validation_note: >
+    <strong>State-level overall accuracy (2023 CDL):</strong><br>
+    Iowa: 90.5% (κ=0.83) · Illinois: 90.2% (κ=0.83) · Arkansas: 89.3% (κ=0.85) ·
+    Kansas: 81.5% (κ=0.78) · California: 80.7% (κ=0.79) · North Dakota: 77.5% (κ=0.74) ·
+    Texas: 70.0% (κ=0.64).<br><br>
+    <strong>Key patterns:</strong> Accuracy is highest in the Corn Belt where corn and soy
+    dominate; lowest in diverse-crop states (Texas, California). Winter wheat is consistently
+    the hardest major crop to classify (37–89% producer's accuracy) due to spectral similarity
+    with grassland. Rice achieves near-perfect accuracy in California (98/99%).<br><br>
+    State-level accuracy reports for all 50 states (1997–2023) available at
+    <a href="https://www.nass.usda.gov/Research_and_Science/Cropland/metadata/meta.php">NASS CDL Metadata</a>.
+    Individual state pages:
+    <code>metadata_{state}{yy}.htm</code> (e.g.,
+    <a href="https://www.nass.usda.gov/Research_and_Science/Cropland/metadata/metadata_ia23.htm">Iowa 2023</a>,
+    <a href="https://www.nass.usda.gov/Research_and_Science/Cropland/metadata/metadata_ks23.htm">Kansas 2023</a>).
+  papers:
+    - text: "Boryan et al. (2011). Monitoring US agriculture: the US Department of Agriculture, National Agricultural Statistics Service, Cropland Data Layer Program. Geocarto International."
+      doi: "https://doi.org/10.1080/10106049.2011.562309"
+      key: true
+    - text: "Johnson & Mueller (2010). Cropland Data Layer accuracy assessment. Agronomy Journal."
+  citing_papers:
+    - text: "Widely cited in >500 publications on US crop monitoring, land use change, water resources."
+    - text: "Lark et al. (2020). Cropland expansion in the US and biofuel policy. PNAS."
+    - text: "Deines et al. (2019). Annual irrigation maps in the US High Plains. Water Resources Research."
+  related:
+    - name: "GFSAD Croplands"
+      desc: "Global cropland extent map"
+      link: "gfsad-croplands.html"
+    - name: "MODIS Land Cover"
+      desc: "Global 500m land cover"
+      link: "modis-landcover.html"
+  attribution: "USDA National Agricultural Statistics Service (NASS)"
+  provider: "USDA NASS"
+
+# ──────────────────────────────────────────────────────────────────
+# CANADA AAFC
+# ──────────────────────────────────────────────────────────────────
+canada-aafc:
+  title: "Canada Annual Crop Inventory (AAFC)"
+  executive_summary: >
+    Annual 30m crop type map of Canada's agricultural extent, produced by Agriculture
+    and Agri-Food Canada (AAFC). Covers the main agricultural regions using Sentinel-2
+    and RADARSAT-2 imagery. Identifies 70+ crop types from 2009 to present.
+  coverage: "Canada (agricultural extent)"
+  resolution: "30m"
+  temporal: "2009-2024 (annual)"
+  license: "Open Government Licence - Canada"
+  description: >
+    The Annual Crop Inventory (ACI) classifies agricultural land across Canada using
+    multi-temporal satellite imagery. The classification combines optical (Sentinel-2,
+    Landsat) and SAR (RADARSAT-2) data with a decision tree classifier trained on
+    ground truth collected by AAFC field staff and provincial crop insurance data.
+  provenance: >
+    Produced by AAFC's Science and Technology Branch. Ground truth from crop insurance
+    records, field visits, and provincial agencies. Multi-sensor approach using
+    optical + SAR fusion for cloud-prone regions.
+  classification: >
+    70+ crop types including spring/winter wheat, canola, barley, corn, soybeans, lentils,
+    peas, flax, oats, and specialty crops. Provincial detail varies.
+  access:
+    - method: "WMS"
+      url: "https://www.agr.gc.ca/atlas/ows"
+      layer: "aci_{year}"
+    - method: "Download"
+      url: "https://open.canada.ca/data/en/dataset/ba2645d5-4458-414d-b196-6303ac06c1c9"
+  accuracy: >
+    Overall accuracy typically 82-88% for major crops. Canola and cereals perform well
+    (>85%). Lower accuracy in mixed farming regions and for minor crops.
+  papers:
+    - text: "Davidson et al. (2017). Crop type mapping from optical and SAR imagery. Canadian Journal of Remote Sensing."
+      key: true
+  related:
+    - name: "USDA CDL"
+      desc: "US crop map (similar methodology)"
+      link: "usda-cdl.html"
+  attribution: "Agriculture and Agri-Food Canada (AAFC)"
+  provider: "AAFC"
+
+# ──────────────────────────────────────────────────────────────────
+# ESA WORLDCOVER
+# ──────────────────────────────────────────────────────────────────
+esa-worldcover:
+  title: "ESA WorldCover"
+  executive_summary: >
+    Global 10m land cover map from ESA, classifying 11 land cover types using
+    Sentinel-1 and Sentinel-2 imagery. Available for 2020 and 2021. The highest
+    resolution global land cover product freely available, providing crucial
+    cropland extent information worldwide.
+  coverage: "Global"
+  resolution: "10m (Sentinel-1 + Sentinel-2)"
+  temporal: "2020, 2021"
   license: "CC-BY 4.0"
   description: >
-    EuroCrops V2 combines self-declared crop reporting datasets from EU member states
-    into a harmonized pan-European dataset. Each parcel includes the original national
-    crop code, translated to the Hierarchical Crop and Agriculture Taxonomy (HCAT v4).
-    Countries included: AT, BE (Flanders/Wallonia), BG, CZ, DE (Brandenburg/NRW),
-    DK, EE, ES, FI, FR, IE, IT (Tuscany), NL, PT, SI, SK.
+    ESA WorldCover provides global land cover classification at 10m resolution using
+    both Sentinel-1 SAR and Sentinel-2 optical data. The 11 classes include cropland,
+    tree cover, shrubland, grassland, built-up, bare/sparse vegetation, snow/ice,
+    water, wetland, mangroves, and moss/lichen. Produced by a consortium led by VITO.
   provenance: >
-    Created by the Joint Research Centre (JRC) of the European Commission,
-    building on the original EuroCrops project by TU Munich. Source data from
-    national LPIS/IACS databases. HCAT v4 taxonomy provides cross-country
-    harmonization of crop types.
-  classification: "HCAT v4 (Hierarchical Crop and Agriculture Taxonomy) — 4 levels with ~200 crop types"
+    Produced by VITO/Brockmann Consult/CS/Gamma/IIASA/WUR for ESA. Classification
+    uses a catboost classifier trained on ~50,000 global training samples from
+    IIASA's LACO-Wiki platform. Input: annual Sentinel-1/2 composites.
+  classification: >
+    11 classes: Tree cover (10), Shrubland (20), Grassland (30), Cropland (40),
+    Built-up (50), Bare/sparse vegetation (60), Snow/ice (70), Water (80),
+    Wetland (90), Mangroves (95), Moss/lichen (100).
   access:
-    - method: "GeoParquet"
-      url: "https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/DRLL/EuroCropsV2/gpqt/"
-    - method: "JRC Dataset"
-      url: "https://data.jrc.ec.europa.eu/dataset/b9fb9e67-78a9-4327-9d59-39a928d812d3"
+    - method: "WMS"
+      url: "https://services.terrascope.be/wms/v2"
+      layer: "WORLDCOVER_2021_MAP"
+    - method: "Download"
+      url: "https://esa-worldcover.org/en/data-access"
   accuracy: >
-    Based on official LPIS/IACS declarations — these are self-reported by farmers
-    and verified by national agencies. Accuracy of crop type attribution is generally
-    high (>95%) for major crops, as declarations are tied to EU subsidy payments.
-    Geometric accuracy depends on the national LPIS system.
+    Global overall accuracy of 74.4% (2020 v100). Cropland class achieves 78.2%
+    producer accuracy and 84.3% user accuracy globally. Higher accuracy in regions
+    with large, homogeneous fields (North America, Europe).
+  accuracy_table:
+    headers: ["Class", "Producer Acc.", "User Acc."]
+    rows:
+      - ["Cropland", "78.2%", "84.3%"]
+      - ["Tree cover", "87.5%", "85.1%"]
+      - ["Grassland", "56.7%", "59.1%"]
+      - ["Built-up", "79.8%", "73.2%"]
+      - ["Overall", "74.4%", ""]
+    highlight_row: 4
   papers:
-    - "Schneider et al. (2023). EuroCrops: The largest harmonized open crop dataset across the European Union. Scientific Data."
-    - "https://doi.org/10.1038/s41597-023-02517-0"
-  attribution: "JRC / European Commission; original EuroCrops by TU Munich"
-  provider: "JRC / European Commission"
+    - text: "Zanaga et al. (2022). ESA WorldCover 10m 2021 v200. Zenodo."
+      doi: "https://doi.org/10.5281/zenodo.7254221"
+      key: true
+      open_access: true
+  citing_papers:
+    - text: "Potapov et al. (2022). Global maps of cropland extent and change. Nature Food."
+    - text: "Widely used as baseline in crop mapping studies globally."
+  related:
+    - name: "MODIS Land Cover"
+      desc: "Global 500m land cover (longer time series)"
+      link: "modis-landcover.html"
+    - name: "GFSAD Croplands"
+      desc: "Dedicated global cropland product"
+      link: "gfsad-croplands.html"
+  attribution: "ESA / VITO / Brockmann Consult"
+  provider: "ESA"
 
+# ──────────────────────────────────────────────────────────────────
+# MODIS LAND COVER
+# ──────────────────────────────────────────────────────────────────
+modis-landcover:
+  title: "MODIS Land Cover (MCD12Q1)"
+  executive_summary: >
+    Global 500m annual land cover classification from the MODIS instrument, providing
+    the longest consistent satellite land cover time series (2001-present). Uses the
+    IGBP classification with 17 land cover types including croplands and cropland/natural
+    vegetation mosaic. The reference dataset for global land cover change analysis.
+  coverage: "Global"
+  resolution: "500m"
+  temporal: "2001-2023 (annual)"
+  license: "Public domain (US Government work)"
+  description: >
+    The MODIS Land Cover Type product (MCD12Q1) provides annual global land cover
+    maps at 500m resolution. The product includes five classification schemes;
+    the IGBP scheme (default) includes croplands (class 12) and cropland/natural
+    vegetation mosaic (class 14). Uses supervised classification of MODIS
+    reflectance data with ancillary information.
+  provenance: >
+    Produced by Boston University under NASA funding. Input: MODIS Terra+Aqua
+    reflectance, land surface temperature, and EVI time series. Classification:
+    ensemble decision tree (C5.0) trained on global training sites. Post-processing:
+    temporal consistency filtering using prior-year map.
+  classification: >
+    IGBP 17 classes including: Croplands (12), Cropland/Natural Vegetation Mosaic (14),
+    plus forest, shrubland, grassland, wetland, urban, barren, water, snow/ice classes.
+  access:
+    - method: "WMS"
+      url: "https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi"
+      layer: "MODIS_Terra_Land_Cover_Type_1_IGBP"
+    - method: "Download"
+      url: "https://lpdaac.usgs.gov/products/mcd12q1v061/"
+  accuracy: >
+    Overall accuracy ~75% for IGBP 17-class scheme. Cropland class achieves
+    ~82% accuracy. Higher accuracy at coarser aggregation levels. Well-validated
+    through multiple independent assessments over 20+ years.
+  papers:
+    - text: "Friedl et al. (2010). MODIS Collection 5 global land cover. Remote Sensing of Environment."
+      doi: "https://doi.org/10.1016/j.rse.2009.08.016"
+      key: true
+    - text: "Sulla-Menashe et al. (2019). User guide to Collection 6 MODIS Land Cover (MCD12Q1). USGS."
+  related:
+    - name: "ESA WorldCover"
+      desc: "Higher resolution (10m) global land cover"
+      link: "esa-worldcover.html"
+    - name: "GFSAD Croplands"
+      desc: "Dedicated cropland product"
+      link: "gfsad-croplands.html"
+  attribution: "NASA / Boston University / LP DAAC"
+  provider: "NASA EOSDIS"
+
+# ──────────────────────────────────────────────────────────────────
+# GFSAD CROPLANDS
+# ──────────────────────────────────────────────────────────────────
+gfsad-croplands:
+  title: "Global Food Security Analysis — Croplands (GFSAD)"
+  executive_summary: >
+    Global cropland extent and watering status at 30m resolution from NASA/USGS.
+    Maps irrigated vs rainfed cropland worldwide using Landsat data. Part of the
+    Global Food Security-support Analysis Data project (GFSAD30). Provides the most
+    detailed global view of where crops are grown and how they are watered.
+  coverage: "Global"
+  resolution: "30m (Landsat)"
+  temporal: "Nominal 2015"
+  license: "Public domain (US Government work)"
+  description: >
+    The GFSAD30 product classifies global land into cropland/non-cropland with
+    irrigation status. Seven classes: irrigated cropland (major/minor), rainfed
+    cropland, rangeland, open water, urban, and other non-cropland. Produced using
+    Landsat-8 data with automated classification algorithms trained on ground truth.
+  provenance: >
+    Led by USGS EROS, with NASA and international partners. Input: Landsat 8 OLI
+    imagery, SRTM elevation, climate data. Classification: pixel-based supervised
+    classification with regional models. Ground truth from field campaigns and
+    national agricultural statistics.
+  classification: >
+    7 classes: Irrigated Cropland (major), Irrigated Cropland (minor), Rainfed
+    Cropland, Rainfed Pasture/Rangeland, Open Water, Urban/Built-up, Other.
+  access:
+    - method: "WMS"
+      url: "https://catalogue.ceos.org/gfsad"
+    - method: "Download"
+      url: "https://lpdaac.usgs.gov/products/gfsad30afcev001/"
+  accuracy: >
+    Global overall accuracy ~83% for cropland/non-cropland. Regional variations:
+    North America >90%, South Asia ~80%, Sub-Saharan Africa ~75%.
+  papers:
+    - text: "Teluguntla et al. (2015). A 30-m Landsat-derived cropland extent product of Australia and China. Remote Sensing."
+      doi: "https://doi.org/10.3390/rs7010075"
+      key: true
+    - text: "Thenkabail et al. (2021). Global food security support analysis data (GFSAD). NASA/USGS."
+  related:
+    - name: "ESA WorldCover"
+      desc: "10m global land cover including cropland"
+      link: "esa-worldcover.html"
+    - name: "CROPGRIDS"
+      desc: "1km gridded crop areas"
+      link: "cropgrids.html"
+  attribution: "USGS EROS / NASA"
+  provider: "USGS / NASA"
+
+# ──────────────────────────────────────────────────────────────────
+# WORLDCEREAL
+# ──────────────────────────────────────────────────────────────────
+worldcereal:
+  title: "WorldCereal"
+  executive_summary: >
+    Global 10m crop type maps from ESA, specifically mapping temporary cropland,
+    maize, winter cereals, and spring cereals. Uses Sentinel-1/2 imagery with a
+    deep learning approach. Designed for food security monitoring with seasonal
+    updates. First global 10m crop-specific maps.
+  coverage: "Global"
+  resolution: "10m (Sentinel-1 + Sentinel-2)"
+  temporal: "2021 (seasonal)"
+  license: "CC-BY 4.0"
+  description: >
+    WorldCereal produces global crop type maps at 10m resolution, focusing on
+    temporary crops (as a group), maize, winter cereals, and spring cereals.
+    Uses a combination of Sentinel-1 SAR and Sentinel-2 optical time series
+    processed through a deep learning classifier. Maps are produced per
+    agro-ecological zone per growing season.
+  provenance: >
+    Produced by a consortium led by VITO for ESA. Classification uses a
+    convolutional neural network trained on global reference data from
+    multiple sources including LPIS, CDL, and crowd-sourced labels.
+  classification: >
+    4 products: Temporary Crops (all annual crops), Maize, Winter Cereals
+    (wheat, barley, rye, triticale), Spring Cereals.
+  access:
+    - method: "WMS"
+      url: "https://ewoc-rdm-api.iiasa.ac.at/geoserver/ows"
+      layer: "worldcereal_temporarycrops_{year}"
+    - method: "Download"
+      url: "https://worldcereal.github.io/"
+  accuracy: >
+    Temporary crops: 88% overall accuracy globally. Maize: 82% F1 score.
+    Winter cereals: 80% F1 score. Performance varies by region — highest
+    in Europe and North America, lower in tropical smallholder systems.
+  accuracy_table:
+    headers: ["Product", "Overall Acc.", "F1 Score", "Region"]
+    rows:
+      - ["Temporary Crops", "88%", "0.85", "Global"]
+      - ["Maize", "84%", "0.82", "Global"]
+      - ["Winter Cereals", "83%", "0.80", "Global"]
+      - ["Spring Cereals", "81%", "0.78", "Global"]
+    highlight_row: 0
+  papers:
+    - text: "Van Tricht et al. (2023). WorldCereal: a dynamic open-source system for global-scale, seasonal, and reproducible crop and irrigation mapping. Earth System Science Data."
+      doi: "https://doi.org/10.5194/essd-15-5491-2023"
+      key: true
+      open_access: true
+  citing_papers:
+    - text: "Growing body of work using WorldCereal for food security assessments."
+  related:
+    - name: "ESA WorldCover"
+      desc: "Global 10m land cover (broader classes)"
+      link: "esa-worldcover.html"
+    - name: "GFSAD Croplands"
+      desc: "30m global cropland extent"
+      link: "gfsad-croplands.html"
+  attribution: "ESA / VITO / IIASA"
+  provider: "ESA / VITO"
+
+# ──────────────────────────────────────────────────────────────────
+# CROPGRIDS
+# ──────────────────────────────────────────────────────────────────
+cropgrids:
+  title: "CROPGRIDS — Global Gridded Crop Areas"
+  executive_summary: >
+    Global gridded dataset of crop harvested areas at ~5km resolution (2.5 arc-min)
+    for 173 crops. CROPGRIDSv1.08 provides the most comprehensive global view of
+    where each crop is grown, combining national statistics with satellite-derived
+    cropland maps. Covers 15 key crops in the viewer: wheat, maize, rice, soybean,
+    barley, potato, sugarcane, cotton, rapeseed, sunflower, cassava, sorghum,
+    millet, groundnut, and coffee.
+  coverage: "Global"
+  resolution: "~5km (2.5 arc-minutes, 7200x3600 grid)"
+  temporal: "Nominal year 2020"
+  license: "CC-BY 4.0"
+  description: >
+    CROPGRIDS disaggregates national and subnational crop production statistics onto
+    a global grid using satellite-derived cropland extent maps as spatial weights.
+    For each grid cell, it provides the harvested area (in hectares) for 173 individual
+    crops. The dataset harmonizes data from FAO, national statistical agencies, and
+    satellite observations.
+  provenance: >
+    Produced by IIASA (International Institute for Applied Systems Analysis). Combines
+    FAO national statistics, subnational statistics from SPAM, and satellite-derived
+    cropland extent from MODIS/ESA CCI. Spatial disaggregation uses an entropy-based
+    cross-entropy optimization approach.
+  classification: >
+    173 individual crops grouped into categories: cereals (wheat, maize, rice, barley,
+    sorghum, millet, oats, rye), oilseeds (soybean, rapeseed, sunflower, groundnut),
+    roots/tubers (potato, cassava, sweet potato), fiber (cotton), stimulants (coffee, tea,
+    cocoa), sugar (sugarcane, sugar beet), and more.
+  access:
+    - method: "Download"
+      url: "https://zenodo.org/records/7814458"
+    - method: "NetCDF"
+      url: "https://zenodo.org/records/7814458"
+  accuracy: >
+    National-level crop areas match FAOSTAT closely: R²=0.97 for national crop-specific area,
+    R²=0.99 for global totals (48 crops within ±10%). Major crops (wheat, maize, rice,
+    soybean, barley, rapeseed, cotton, cassava, sunflower, sugarcane, oil palm) have
+    R²>0.95 and NRMSE≤0.05 vs national/subnational statistics. Total world harvested
+    area: ~1.5 billion hectares covering 173 crops.
+  accuracy_table:
+    headers: ["Metric", "Value", "Comparison"]
+    rows:
+      - ["Global crop areas vs FAOSTAT", "R²=0.99", "48 crops within ±10%"]
+      - ["National crop areas vs FAOSTAT", "R²=0.97", "Country-level"]
+      - ["Temporary crop areas (national)", "R²=0.87, NRMSE=0.04", "vs FAOSTAT"]
+      - ["Major crops (11)", "R²>0.95, NRMSE≤0.05", "vs subnational stats"]
+    highlight_row: 0
+  validation_note: >
+    CROPGRIDS should be interpreted as a statistical disaggregation, not a direct
+    observation. Individual grid cells may not perfectly reflect local conditions,
+    but regional aggregates are constrained to official statistics.
+  papers:
+    - text: "Tang et al. (2024). CROPGRIDS: a global geo-referenced dataset of 173 crops. Scientific Data 11, 413."
+      doi: "https://doi.org/10.1038/s41597-024-03247-7"
+      key: true
+      open_access: true
+    - text: "Monfreda et al. (2008). Farming the planet: 2. Global Biogeochemical Cycles 22, GB1022."
+      doi: "https://doi.org/10.1029/2007GB002947"
+  citing_papers:
+    - text: "Crop Statistic to Annual Map: Tracking spatiotemporal dynamics (2025). Scientific Data."
+      doi: "https://doi.org/10.1038/s41597-025-05572-x"
+    - text: "GGCP10: Global Gridded Crop Production Dataset (2024). Scientific Data."
+      doi: "https://doi.org/10.1038/s41597-024-04248-2"
+    - text: "Mapping global yields of four major crops (2025). Scientific Data."
+      doi: "https://doi.org/10.1038/s41597-025-04650-4"
+  related:
+    - name: "SAGE Crop Calendars"
+      desc: "Planting and harvest dates per crop"
+      link: "crop-calendars.html"
+    - name: "GGCP10 Production"
+      desc: "Gridded crop production data"
+      link: "ggcp10.html"
+    - name: "GFSAD Croplands"
+      desc: "30m global cropland extent"
+      link: "gfsad-croplands.html"
+  attribution: "IIASA (International Institute for Applied Systems Analysis)"
+  provider: "IIASA"
+
+# ──────────────────────────────────────────────────────────────────
+# CROP CALENDARS (SAGE)
+# ──────────────────────────────────────────────────────────────────
+crop-calendars:
+  title: "SAGE Global Crop Calendars"
+  executive_summary: >
+    Global gridded planting and harvest dates at 0.5° resolution for 19 major crops.
+    Compiled by the Center for Sustainability and the Global Environment (SAGE) at
+    the University of Wisconsin-Madison from national and subnational agricultural
+    calendars. Provides median planting and harvest day-of-year for each grid cell.
+    The standard reference for global crop phenology.
+  coverage: "Global"
+  resolution: "0.5° (~50km)"
+  temporal: "Static (compiled ~2010, represents typical dates)"
+  license: "Free for research use"
+  description: >
+    The SAGE crop calendars provide spatially explicit planting and harvest dates for
+    19 crops globally. For each crop and grid cell, the dataset gives the median
+    planting date and harvest date as day-of-year (1-365). Data was compiled from
+    national agricultural ministry reports, FAO country briefs, USDA crop calendars,
+    and regional agronomic literature. The dataset represents "typical" or "average"
+    planting/harvest timing, not year-specific dates.
+  provenance: >
+    Compiled by Sacks et al. at SAGE, University of Wisconsin-Madison. Sources include
+    USDA FAS Crop Calendars, FAO GIEWS Country Briefs, national agricultural extension
+    services, and published agronomic literature. Spatial interpolation fills gaps
+    between source observations.
+  classification: >
+    19 crops: Wheat, Winter Wheat, Maize, Rice, Soybeans, Barley, Cotton, Sorghum,
+    Potatoes, Winter Rapeseed, plus others. Each crop has planting date and harvest
+    date maps shown as day-of-year (1 = January 1, 365 = December 31).
+  access:
+    - method: "Download"
+      url: "https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/"
+    - method: "NetCDF"
+      url: "https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/netcdf-files-for-download/"
+  accuracy: >
+    Planting/harvest dates are compiled from authoritative sources and represent
+    typical timing. Accuracy varies by region: well-constrained in countries with
+    detailed agronomic data (US, Europe, Australia), less certain in tropical
+    developing countries with multiple growing seasons. Typical uncertainty is
+    ±2-4 weeks in well-documented regions, potentially ±4-8 weeks in data-sparse areas.
+  papers:
+    - text: "Sacks et al. (2010). Crop planting dates: an analysis of global patterns. Global Ecology and Biogeography."
+      doi: "https://doi.org/10.1111/j.1466-8238.2010.00551.x"
+      key: true
+  citing_papers:
+    - text: "Widely cited (>1000 citations) in crop modeling, climate impact, and food security studies."
+    - text: "Mueller et al. (2012). Closing yield gaps through nutrient and water management. Nature."
+    - text: "Ray et al. (2015). Climate variation explains a third of global crop yield variability. Nature Communications."
+  related:
+    - name: "CROPGRIDS"
+      desc: "Where crops are grown (area)"
+      link: "cropgrids.html"
+    - name: "HR-VPP Phenology"
+      desc: "Satellite-derived phenology (10m, Europe)"
+      link: "hrvpp-phenology.html"
+    - name: "MODIS NDVI/EVI"
+      desc: "Satellite vegetation indices"
+      link: "gibs-vegetation.html"
+  attribution: "SAGE / University of Wisconsin-Madison"
+  provider: "SAGE / UW-Madison"
+
+# ──────────────────────────────────────────────────────────────────
+# GGCP10
+# ──────────────────────────────────────────────────────────────────
+ggcp10:
+  title: "GGCP10 — Global Gridded Crop Production"
+  executive_summary: >
+    Global gridded crop production data at 10km resolution for major crops including
+    maize, wheat, rice, and soybean. Provides spatially explicit production quantities
+    (tonnes) by combining harvested area, yield, and satellite data. Useful for
+    understanding global food production patterns and hotspots.
+  coverage: "Global"
+  resolution: "10km (5 arc-minutes)"
+  temporal: "Nominal 2010-2020"
+  license: "CC-BY 4.0"
+  description: >
+    GGCP10 provides gridded estimates of crop production (in tonnes per grid cell)
+    for major crops worldwide. The dataset combines national/subnational production
+    statistics with satellite-derived cropland maps to spatially distribute production.
+    Useful for identifying production hotspots, food security analysis, and trade modeling.
+  provenance: >
+    Derived from FAO statistics, national data, and satellite-derived crop distribution
+    maps. Production = Harvested Area × Yield, spatially disaggregated using MODIS-derived
+    crop masks as allocation weights.
+  classification: "4 crops in viewer: Maize, Wheat, Rice, Soybean. Production in tonnes per grid cell."
+  access:
+    - method: "Download"
+      url: "https://zenodo.org/records/10803992"
+  accuracy: >
+    National totals are constrained to FAO statistics. Subnational accuracy depends on
+    input data quality. Grid-cell estimates are more reliable in data-rich regions
+    (North America, Europe) than in data-sparse areas.
+  papers:
+    - text: "GGCP10 dataset documentation (Zenodo)."
+      doi: "https://doi.org/10.5281/zenodo.10803992"
+      key: true
+  related:
+    - name: "CROPGRIDS"
+      desc: "Global crop areas (173 crops)"
+      link: "cropgrids.html"
+    - name: "SAGE Crop Calendars"
+      desc: "When crops are planted/harvested"
+      link: "crop-calendars.html"
+  attribution: "Various (see Zenodo record)"
+  provider: "Zenodo / Open Data"
+
+# ──────────────────────────────────────────────────────────────────
+# FIELDS OF THE WORLD
+# ──────────────────────────────────────────────────────────────────
+ftw:
+  title: "Fields of The World (FTW)"
+  executive_summary: >
+    Global field boundary dataset covering 24 countries, providing individual
+    agricultural field delineations for machine learning training and benchmarking.
+    Contains ~1.6 million field polygons from diverse agricultural systems worldwide.
+    Designed as a benchmark dataset for field boundary detection from satellite imagery.
+  coverage: "24 countries (global sample)"
+  resolution: "Field parcel level (vector polygons)"
+  temporal: "Various (2018-2023)"
+  license: "CC-BY 4.0"
+  description: >
+    Fields of The World aggregates field boundary data from national open data
+    sources across 24 countries spanning diverse agricultural landscapes. The
+    dataset is designed for training and evaluating machine learning models for
+    automatic field boundary delineation from satellite imagery. Countries range
+    from large-field systems (USA, Argentina) to smallholder agriculture (Vietnam,
+    Rwanda, Kenya).
+  provenance: >
+    Compiled by Clark University and partners. Source data from national LPIS/cadastral
+    systems, open geospatial platforms, and crowd-sourced mapping. Each country's data
+    is standardized to a common schema with field boundary polygons.
+  classification: "Binary: field boundary / non-boundary. No crop type information."
+  access:
+    - method: "PMTiles"
+      url: "https://data.source.coop/fiboa/ftw/ftw-sources.pmtiles"
+    - method: "Download"
+      url: "https://beta.source.coop/repositories/kerner-lab/fields-of-the-world/"
+  accuracy: >
+    FTW is a reference/benchmark dataset, not a classification product. The field
+    boundaries are derived from authoritative national sources (LPIS, cadastral data).
+    Boundary accuracy depends on the source country's system — typically <5m in
+    European LPIS data, variable in developing country datasets.
+  papers:
+    - text: "Kerner et al. (2024). Fields of The World: A Machine Learning Benchmark Dataset for Global Agricultural Field Boundary Delineation."
+      doi: "https://doi.org/10.48550/arXiv.2409.16252"
+      key: true
+      open_access: true
+  related:
+    - name: "EuroCrops V2"
+      desc: "EU field boundaries with crop types"
+      link: "eurocrops.html"
+    - name: "National LPIS"
+      desc: "Country-specific field boundary data"
+      link: "national-europe.html"
+  attribution: "Clark University / Kerner Lab"
+  provider: "Clark University"
+
+# ──────────────────────────────────────────────────────────────────
+# PROBABILISTIC CROP MAP
+# ──────────────────────────────────────────────────────────────────
+prob-crop:
+  title: "Probabilistic Crop Type Map (1km)"
+  executive_summary: >
+    Global 1km maps showing the probability of each major crop type being grown in
+    each grid cell. Provides crop type shares (%) for wheat, maize, barley, rapeseed,
+    sunflower, and grassland, plus a dominant crop type layer. Derived from statistical
+    disaggregation of agricultural census data weighted by satellite observations.
+  coverage: "Global (best in Europe)"
+  resolution: "1km"
+  temporal: "Circa 2018"
+  license: "CC-BY 4.0"
+  description: >
+    The probabilistic crop type maps show the fractional area of each crop type within
+    each 1km grid cell. Unlike binary classification maps, these capture the mixed nature
+    of agricultural landscapes. The dominant crop layer shows which crop has the highest
+    share in each cell. Share layers show the percentage (0-100%) of each individual crop.
+  provenance: >
+    Derived from national LPIS/IACS data and CORINE Land Cover, disaggregated onto a
+    1km grid using entropy maximization. Method similar to CROPGRIDS but focused on
+    European crop types at higher resolution.
+  classification: >
+    6 crop types: Wheat (SWHE), Maize (MAIZ), Barley (BARL), Rapeseed (RAPE),
+    Sunflower (SUNF), Grassland (GRAS). Values represent share (0-100%) per grid cell.
+  access:
+    - method: "PMTiles"
+      url: "Served via the viewer"
+  accuracy: >
+    Validated against LPIS data in selected countries. R² values of 0.7-0.9 for
+    dominant crops at 1km scale. Best performance for wheat and grassland (large,
+    widespread crops), lower for minor crops.
+  papers:
+    - text: "d'Andrimont et al. (2021). From parcel to continental scale. ESSD."
+      doi: "https://doi.org/10.5194/essd-13-1165-2021"
+      key: true
+  related:
+    - name: "CROPGRIDS"
+      desc: "Similar concept at 5km global scale"
+      link: "cropgrids.html"
+    - name: "JRC EU Crop Map"
+      desc: "Pixel-level classification (not probabilistic)"
+      link: "jrc-eucropmap.html"
+  attribution: "JRC / European Commission"
+  provider: "JRC"
+
+# ──────────────────────────────────────────────────────────────────
+# AFRICA AFCD
+# ──────────────────────────────────────────────────────────────────
+africa-afcd:
+  title: "Africa Cropland 30m (AFCD)"
+  executive_summary: >
+    Continental-scale 30m cropland map of Africa derived from Sentinel-2 imagery.
+    The African Field Crop Dataset provides binary cropland/non-cropland classification
+    across the entire African continent, capturing both large-scale and smallholder
+    agricultural systems. Critical for food security monitoring in sub-Saharan Africa.
+  coverage: "Africa"
+  resolution: "30m"
+  temporal: "2019"
+  license: "CC-BY 4.0"
+  description: >
+    The AFCD maps cropland extent across Africa using Sentinel-2 optical imagery.
+    The classification focuses on distinguishing cultivated areas from natural
+    vegetation, a challenging task in Africa due to the prevalence of smallholder
+    farming, intercropping, and agroforestry systems.
+  provenance: >
+    Produced using machine learning applied to Sentinel-2 time series. Training data
+    from field campaigns, very high resolution imagery, and national agricultural surveys.
+  classification: "Binary: Cropland / Non-cropland"
+  access:
+    - method: "PMTiles"
+      url: "Served via the viewer"
+    - method: "Download"
+      url: "https://zenodo.org/records/7643460"
+  accuracy: >
+    Overall accuracy ~85% for cropland/non-cropland. Higher accuracy in East Africa
+    (Kenya, Ethiopia) where training data is more abundant. Lower accuracy in
+    semi-arid transition zones (Sahel) and complex agroforestry systems (West Africa).
+  papers:
+    - text: "Luo et al. (2023). Africa Cropland 30m Map 2019. Zenodo."
+      doi: "https://doi.org/10.5281/zenodo.7643460"
+      key: true
+  related:
+    - name: "DE Africa Cropland"
+      desc: "Digital Earth Africa cropland extent"
+      link: "deafrica-crop.html"
+    - name: "ESA WorldCover"
+      desc: "10m global land cover"
+      link: "esa-worldcover.html"
+  attribution: "Various (see Zenodo)"
+  provider: "Zenodo / Open Data"
+
+# ──────────────────────────────────────────────────────────────────
+# DE AFRICA CROPLAND
+# ──────────────────────────────────────────────────────────────────
+deafrica-crop:
+  title: "Digital Earth Africa — Cropland Extent"
+  executive_summary: >
+    Annual cropland extent map for the African continent at 10m resolution from
+    Digital Earth Africa. Uses Sentinel-2 imagery to map where crops are grown,
+    supporting food security monitoring across sub-Saharan Africa.
+  coverage: "Africa"
+  resolution: "10m (Sentinel-2)"
+  temporal: "2019-present (annual)"
+  license: "CC-BY 4.0"
+  description: >
+    Digital Earth Africa's cropland extent map provides annual continental-scale
+    mapping of agricultural areas using Sentinel-2 time series. The product
+    focuses on binary cropland/non-cropland classification with emphasis on
+    capturing smallholder farming systems prevalent in sub-Saharan Africa.
+  provenance: >
+    Produced by Digital Earth Africa (DEA), an initiative of the Group on Earth
+    Observations (GEO). Uses the Open Data Cube platform for processing Sentinel-2
+    Analysis Ready Data.
+  classification: "Binary: Cropland / Non-cropland"
+  access:
+    - method: "WMS"
+      url: "https://ows.digitalearth.africa/wms"
+      layer: "crop_mask"
+    - method: "Download"
+      url: "https://www.digitalearthafrica.org/products/cropland-extent"
+  accuracy: >
+    Overall accuracy ~83%. Validated using field observations and very high
+    resolution satellite imagery across multiple African countries.
+  papers:
+    - text: "Digital Earth Africa (2022). Cropland Extent Map - Technical Report."
+      key: true
+  related:
+    - name: "Africa AFCD"
+      desc: "Alternative 30m African cropland map"
+      link: "africa-afcd.html"
+    - name: "ESA WorldCover"
+      desc: "Global 10m land cover"
+      link: "esa-worldcover.html"
+  attribution: "Digital Earth Africa / GEO"
+  provider: "Digital Earth Africa"
+
+# ──────────────────────────────────────────────────────────────────
+# NE CHINA CROPS
+# ──────────────────────────────────────────────────────────────────
+ne-china-crops:
+  title: "Northeast China Crop Types (30m)"
+  executive_summary: >
+    30m crop type map of Northeast China (Heilongjiang, Jilin, Liaoning) —
+    China's most important grain production region. Classifies maize, rice,
+    soybeans, and other crops using Sentinel-2 and Landsat imagery.
+  coverage: "Northeast China (3 provinces)"
+  resolution: "30m"
+  temporal: "2020"
+  license: "CC-BY 4.0"
+  description: >
+    Detailed crop type classification for China's "breadbasket" region, which
+    produces ~30% of China's grain. Uses multi-temporal satellite imagery to
+    distinguish major crops including maize, rice (paddy), soybeans, and wheat.
+  provenance: >
+    Produced by Chinese Academy of Sciences using Sentinel-2 and Landsat-8
+    data with random forest classification. Training data from field surveys
+    and government agricultural statistics.
+  classification: "Major crops: Maize, Rice (paddy), Soybeans, Wheat, Other crops"
+  access:
+    - method: "PMTiles"
+      url: "Served via the viewer"
+  accuracy: >
+    Overall accuracy ~88%. Maize and rice achieve >90% accuracy due to distinctive
+    phenological patterns. Soybean accuracy ~82%.
+  papers:
+    - text: "You et al. (2021). Examining the impacts of land use on net primary productivity. Remote Sensing of Environment."
+      key: true
+  related:
+    - name: "China CLCD"
+      desc: "National land cover classification"
+      link: "china-clcd.html"
+    - name: "MODIS Land Cover"
+      desc: "Global 500m land cover"
+      link: "modis-landcover.html"
+  attribution: "Chinese Academy of Sciences"
+  provider: "CAS"
+
+# ──────────────────────────────────────────────────────────────────
+# CHINA CLCD
+# ──────────────────────────────────────────────────────────────────
+china-clcd:
+  title: "China Land Cover Dataset (CLCD)"
+  executive_summary: >
+    Annual 30m land cover classification for all of China from 1985 to present.
+    Uses Landsat imagery to map 9 land cover types including cropland.
+    The longest high-resolution land cover time series for China, enabling
+    analysis of 30+ years of agricultural land use change.
+  coverage: "China"
+  resolution: "30m (Landsat)"
+  temporal: "1985-2022 (annual)"
+  license: "CC-BY 4.0"
+  description: >
+    CLCD provides annual 30m land cover maps for China using all available
+    Landsat imagery (5/7/8). Nine classes include cropland, forest, shrub,
+    grassland, water, snow/ice, barren, impervious, and wetland. The long
+    time series enables tracking of cropland expansion, urbanization, and
+    reforestation in China.
+  provenance: >
+    Produced by Wuhan University using Google Earth Engine. Classification:
+    random forest on Landsat spectral-temporal features. Training data from
+    field surveys and very high resolution imagery.
+  classification: >
+    9 classes: Cropland, Forest, Shrub, Grassland, Water, Snow/Ice,
+    Barren, Impervious (urban), Wetland.
+  access:
+    - method: "WMS"
+      url: "https://zenodo.org/records/8176941"
+    - method: "Download"
+      url: "https://zenodo.org/records/8176941"
+  accuracy: >
+    Overall accuracy 79.3% (2020). Cropland: 85.7% producer accuracy,
+    83.2% user accuracy. Validated against independent test samples and
+    comparison with ESA WorldCover.
+  papers:
+    - text: "Yang & Huang (2021). The 30m annual land cover dataset and its dynamics in China from 1990 to 2019. Earth System Science Data."
+      doi: "https://doi.org/10.5194/essd-13-3907-2021"
+      key: true
+      open_access: true
+  related:
+    - name: "NE China Crops"
+      desc: "Detailed crop types for NE China"
+      link: "ne-china-crops.html"
+    - name: "ESA WorldCover"
+      desc: "Global 10m land cover"
+      link: "esa-worldcover.html"
+  attribution: "Wuhan University"
+  provider: "Wuhan University"
+
+# ──────────────────────────────────────────────────────────────────
+# BRAZIL MAPBIOMAS
+# ──────────────────────────────────────────────────────────────────
+brazil-mapbiomas:
+  title: "Brazil MapBiomas"
+  executive_summary: >
+    Annual 30m land cover and land use maps of Brazil from 1985 to present,
+    produced by the MapBiomas collaborative network. Covers all Brazilian biomes
+    with detailed agricultural classes including soybeans, sugarcane, coffee,
+    cotton, rice, and pasture. The reference dataset for monitoring deforestation
+    and agricultural expansion in Brazil.
+  coverage: "Brazil"
+  resolution: "30m (Landsat)"
+  temporal: "1985-2023 (annual)"
+  license: "CC-BY-SA 4.0"
+  description: >
+    MapBiomas uses the Google Earth Engine platform to process all available Landsat
+    imagery for Brazil, producing annual land cover maps with 30+ classes. Agricultural
+    classes include temporary crops (soybean, maize, cotton, rice), semi-perennial crops
+    (sugarcane), perennial crops (coffee, citrus, oil palm), and pasture. The project
+    also monitors deforestation alerts and water surface changes.
+  provenance: >
+    Collaborative network including universities, NGOs, and technology companies
+    (SEEG/OC, IPAM, IMAZON, ISA, others). Uses random forest classification in
+    Google Earth Engine with extensive training data from field campaigns and
+    high-resolution imagery.
+  classification: >
+    30+ classes including: Soy Beans, Sugar Cane, Rice, Cotton, Coffee, Citrus,
+    Other Temporary Crops, Other Perennial Crops, Pasture, Forest, Savanna,
+    Mangrove, Wetland, Urban, Mining, Water, plus biome-specific classes.
+  access:
+    - method: "WMS"
+      url: "https://storage.googleapis.com/mapbiomas-public/initiatives/brasil/collection_8/"
+    - method: "Web Viewer"
+      url: "https://mapbiomas.org/"
+  accuracy: >
+    Overall accuracy 89.8% (Collection 8, 2021). Agricultural classes perform well:
+    Soy 92%, Sugarcane 90%, Pasture 87%. Forest/non-forest distinction >95%.
+  accuracy_table:
+    headers: ["Class", "Area Agreement", "Allocation Disagreement"]
+    rows:
+      - ["Soy Beans", "92%", "5%"]
+      - ["Sugarcane", "90%", "6%"]
+      - ["Pasture", "87%", "8%"]
+      - ["Forest", "95%", "3%"]
+      - ["Overall", "89.8%", ""]
+    highlight_row: 4
+  papers:
+    - text: "Souza et al. (2020). Reconstructing Three Decades of Land Use and Land Cover Changes in Brazilian Biomes with Landsat Archive and Earth Engine. Remote Sensing."
+      doi: "https://doi.org/10.3390/rs12172735"
+      key: true
+      open_access: true
+  citing_papers:
+    - text: "Widely cited in deforestation monitoring and land use change studies for Brazil."
+    - text: "Song et al. (2021). Massive soybean expansion in South America. Nature Sustainability."
+  related:
+    - name: "ESA WorldCover"
+      desc: "Global 10m land cover"
+      link: "esa-worldcover.html"
+    - name: "GFSAD Croplands"
+      desc: "Global cropland extent"
+      link: "gfsad-croplands.html"
+  attribution: "MapBiomas / SEEG / Brazilian institutions"
+  provider: "MapBiomas"
+
+# ──────────────────────────────────────────────────────────────────
+# HR-VPP PHENOLOGY
+# ──────────────────────────────────────────────────────────────────
 hrvpp-phenology:
   title: "Copernicus HR-VPP Vegetation Phenology"
   executive_summary: >
@@ -108,8 +1363,8 @@ hrvpp-phenology:
     Produced by VITO (Flemish Institute for Technological Research) under contract
     to the European Environment Agency (EEA) as part of the Copernicus Land Monitoring
     Service. Input: Sentinel-2 L2A atmospherically corrected surface reflectance.
-    Processing chain: PPI computation → cloud/shadow filtering → dekadal compositing →
-    Whittaker smoothing → phenological parameter extraction.
+    Processing chain: PPI computation, cloud/shadow filtering, dekadal compositing,
+    Whittaker smoothing, phenological parameter extraction.
   classification: "Continuous phenological metrics (dates as day-of-year, PPI values 0-6, productivity as integrated PPI)"
   access:
     - method: "WMS"
@@ -121,15 +1376,34 @@ hrvpp-phenology:
     Validation based on comparison with BBCH phenological observations from PEP725
     network across Europe. Start-of-season date RMSE typically 10-20 days depending
     on crop type and region. Peak greenness timing accuracy ~5-10 days. Higher
-    accuracy for cropland and grassland than for forest understory. See CLMS
-    quality assessment reports for detailed validation.
+    accuracy for cropland and grassland than for forest understory.
+  accuracy_table:
+    headers: ["Metric", "RMSE (days)", "Bias", "Validation Source"]
+    rows:
+      - ["Start of Season", "12-18", "-3 to +5", "PEP725 BBCH"]
+      - ["End of Season", "15-22", "-5 to +8", "PEP725 BBCH"]
+      - ["Peak Date", "5-10", "-2 to +3", "PEP725 BBCH"]
+      - ["Season Length", "20-30", "", "Derived"]
   papers:
-    - "Tian et al. (2021). Calibrating vegetation phenology from Sentinel-2 using eddy covariance, PhenoCam, and PEP725 networks across Europe. Remote Sensing of Environment."
-    - "https://doi.org/10.1016/j.rse.2020.112275"
-    - "Copernicus Land Monitoring Service HR-VPP Product User Manual"
+    - text: "Tian et al. (2021). Calibrating vegetation phenology from Sentinel-2 using eddy covariance, PhenoCam, and PEP725 networks across Europe. Remote Sensing of Environment."
+      doi: "https://doi.org/10.1016/j.rse.2020.112275"
+      key: true
+    - text: "Copernicus Land Monitoring Service HR-VPP Product User Manual"
+  citing_papers:
+    - text: "Growing use in crop monitoring and agricultural drought assessment across Europe."
+  related:
+    - name: "MODIS NDVI/EVI"
+      desc: "Global vegetation indices (coarser, longer record)"
+      link: "gibs-vegetation.html"
+    - name: "SAGE Crop Calendars"
+      desc: "Statistical crop phenology (coarse, global)"
+      link: "crop-calendars.html"
   attribution: "Copernicus Land Monitoring Service / European Environment Agency / VITO"
   provider: "EEA / VITO"
 
+# ──────────────────────────────────────────────────────────────────
+# GIBS VEGETATION INDICES
+# ──────────────────────────────────────────────────────────────────
 gibs-vegetation:
   title: "MODIS NDVI & EVI (NASA GIBS)"
   executive_summary: >
@@ -155,8 +1429,7 @@ gibs-vegetation:
     MODIS Terra satellite (launched 1999), operated by NASA. Level 3 vegetation
     index products processed by the Land Processes Distributed Active Archive Center
     (LP DAAC) at USGS EROS. 16-day Maximum Value Composites from daily observations.
-    GIBS tile service operated by NASA's Earth Observing System Data and Information
-    System (EOSDIS).
+    GIBS tile service operated by NASA EOSDIS.
   classification: "Continuous indices: NDVI range -0.2 to 1.0 (typical vegetation 0.2-0.9); EVI range -0.2 to 1.0 (typical vegetation 0.2-0.7)"
   access:
     - method: "WMS"
@@ -166,16 +1439,29 @@ gibs-vegetation:
       url: "https://lpdaac.usgs.gov/products/mod13a2v061/"
   accuracy: >
     MODIS NDVI/EVI are mature, well-validated products with 20+ years of heritage.
-    Radiometric accuracy: ±0.02 for NDVI over stable targets. Known limitations:
+    Radiometric accuracy: +/-0.02 for NDVI over stable targets. Known limitations:
     cloud contamination (mitigated by compositing), atmospheric effects (EVI more
-    robust than NDVI), BRDF effects at high sun/view angles. See MODIS product
-    validation status at LP DAAC.
+    robust than NDVI), BRDF effects at high sun/view angles.
   papers:
-    - "Huete et al. (2002). Overview of the radiometric and biophysical performance of the MODIS vegetation indices. Remote Sensing of Environment."
-    - "https://doi.org/10.1016/S0034-4257(02)00096-2"
+    - text: "Huete et al. (2002). Overview of the radiometric and biophysical performance of the MODIS vegetation indices. Remote Sensing of Environment."
+      doi: "https://doi.org/10.1016/S0034-4257(02)00096-2"
+      key: true
+  citing_papers:
+    - text: "Among the most cited remote sensing products (>10,000 citations for Huete et al. 2002)."
+    - text: "Used in thousands of studies on crop monitoring, drought, phenology, and land cover change."
+  related:
+    - name: "HR-VPP Phenology"
+      desc: "10m European phenology (higher resolution)"
+      link: "hrvpp-phenology.html"
+    - name: "SAGE Crop Calendars"
+      desc: "Crop planting/harvest timing"
+      link: "crop-calendars.html"
   attribution: "NASA EOSDIS / LP DAAC / MODIS Science Team"
   provider: "NASA EOSDIS"
 
+# ──────────────────────────────────────────────────────────────────
+# LUCAS 2022
+# ──────────────────────────────────────────────────────────────────
 lucas-2022:
   title: "LUCAS 2022 Copernicus"
   executive_summary: >
@@ -198,7 +1484,7 @@ lucas-2022:
     stratified random sample points across the EU, recording land cover,
     land use, and environmental variables. The 2022 campaign added a Copernicus
     module with radial polygon delineation around survey points.
-  classification: "LUCAS 82-class land cover classification (hierarchical: 8 L1 classes → 35 L2 → 82 L3)"
+  classification: "LUCAS 82-class land cover classification (hierarchical: 8 L1 classes, 35 L2, 82 L3)"
   access:
     - method: "GeoPackage"
       url: "https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/LUCAS/LUCAS_2022_Copernicus/l2022_survey_cop_radpoly_attr.gpkg"
@@ -206,11 +1492,282 @@ lucas-2022:
       url: "https://data.jrc.ec.europa.eu/dataset/e3fe3cd0-44db-470e-8769-172a8b9e8874"
   accuracy: >
     LUCAS is itself a ground truth dataset used to validate other products.
-    Positional accuracy of survey points is ±2m (GNSS). Classification accuracy
+    Positional accuracy of survey points is +/-2m (GNSS). Classification accuracy
     depends on surveyor training and accessibility of sites. Quality control
     includes re-surveys at 5-10% of points.
+  validation_note: >
+    LUCAS serves as the primary independent validation source for European
+    land cover products including CORINE Land Cover, ESA WorldCover, and
+    Copernicus HRL products. Not a product to be validated, but the validator.
   papers:
-    - "d'Andrimont et al. (2020). Harmonised LUCAS in-situ land cover and use database for field surveys from 2006 to 2018 in the European Union. Scientific Data."
-    - "https://doi.org/10.1038/s41597-020-00675-z"
+    - text: "d'Andrimont et al. (2020). Harmonised LUCAS in-situ land cover and use database for field surveys from 2006 to 2018 in the European Union. Scientific Data."
+      doi: "https://doi.org/10.1038/s41597-020-00675-z"
+      key: true
+      open_access: true
+    - text: "Eurostat (2022). LUCAS 2022 Technical Reference Document."
+  citing_papers:
+    - text: "Used as validation in most European land cover mapping studies."
+    - text: "Brovelli et al. (2020). User-based accuracy assessment of CORINE Land Cover using LUCAS. Int. J. Geo-Information."
+  related:
+    - name: "CORINE Land Cover"
+      desc: "European land cover validated by LUCAS"
+      link: "corine.html"
+    - name: "RPA Ground Observation Points"
+      desc: "England-specific ground truth (11,000+ points)"
+      link: "https://environment.data.gov.uk/dataset/68db4948-cc60-4e4e-807c-c8aa48239cb5"
   attribution: "Eurostat / JRC / European Commission"
   provider: "Eurostat / JRC"
+
+# ──────────────────────────────────────────────────────────────────
+# OVERLAY DATASETS
+# ──────────────────────────────────────────────────────────────────
+overlays:
+  title: "Environmental Overlays"
+  executive_summary: >
+    Contextual environmental datasets from JRC and other sources that complement
+    crop and land cover data. Includes Land Productivity Dynamics (vegetation
+    productivity trends), River Flood Hazard (100-year return period flood extent),
+    and INCA ecosystem service indicators (crop provision capacity, crop pollination
+    potential). These overlays provide environmental context for agricultural analysis.
+  coverage: "Europe (varies by dataset)"
+  resolution: "Varies (300m-1km)"
+  temporal: "Varies (2015-2023)"
+  license: "Various (JRC open data, Copernicus)"
+  description: >
+    The overlay datasets provide environmental context that is relevant to crop
+    production but is not itself a land cover classification. These datasets help
+    answer questions like: Is vegetation productivity increasing or declining? What
+    areas face flood risk? Where are ecosystem services like pollination strongest?
+
+    - Land Productivity Dynamics (LPD): Trends in vegetation productivity from
+      NDVI time series. Classifies areas as increasing, stable, or declining.
+    - River Flood Hazard: 100-year return period flood extent from hydrological modeling.
+    - INCA Crop Provision: Ecosystem capacity to provide crops, from the MAES/INCA framework.
+    - INCA Crop Pollination: Pollination service potential for agriculture.
+  provenance: >
+    LPD: JRC, derived from SPOT-VGT/PROBA-V NDVI time series.
+    Flood Hazard: JRC LISFLOOD model under EFAS (European Flood Awareness System).
+    INCA: JRC MAES (Mapping and Assessment of Ecosystem Services) initiative.
+  classification: "Various continuous/categorical indicators (see individual layer descriptions)"
+  access:
+    - method: "PMTiles"
+      url: "Served via the viewer"
+    - method: "Download (LPD)"
+      url: "https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/LPD/"
+    - method: "Download (Flood)"
+      url: "https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/CEMS-EFAS/flood_hazard/"
+    - method: "Download (INCA)"
+      url: "https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/MAES/INCA/LATEST/"
+  accuracy: >
+    LPD: Based on well-established NDVI trend analysis; validated against ground
+    observations and national statistics. Flood Hazard: Calibrated against historical
+    flood events. INCA: Modeled indicators, validated against field measurements where available.
+  papers:
+    - text: "Cherlet et al. (2018). World Atlas of Desertification. JRC (includes LPD methodology)."
+      key: true
+    - text: "Alfieri et al. (2014). Advances in pan-European flood hazard mapping. Hydrological Processes."
+    - text: "Maes et al. (2020). Mapping and Assessment of Ecosystems and their Services (MAES). JRC."
+  related:
+    - name: "HR-VPP Phenology"
+      desc: "10m vegetation phenology (complementary)"
+      link: "hrvpp-phenology.html"
+    - name: "MODIS NDVI/EVI"
+      desc: "Global vegetation indices"
+      link: "gibs-vegetation.html"
+  attribution: "JRC / European Commission / Copernicus"
+  provider: "JRC / Copernicus"
+
+# ──────────────────────────────────────────────────────────────────
+# AUSTRALIA/NZ
+# ──────────────────────────────────────────────────────────────────
+australia:
+  title: "Australia Land Use (ABARES) & DEA Land Cover"
+  executive_summary: >
+    Australian agricultural land use and land cover datasets from ABARES (Australian
+    Bureau of Agricultural and Resource Economics and Sciences) and Digital Earth
+    Australia (DEA). ABARES provides detailed land use classification including crop
+    types, while DEA provides annual 25m land cover from Landsat. Together they map
+    Australia's diverse agricultural landscape from extensive grazing to intensive cropping.
+  coverage: "Australia"
+  resolution: "Various (25m DEA, 50m+ ABARES)"
+  temporal: "DEA: 1988-present; ABARES: periodic updates"
+  license: "CC-BY 4.0"
+  description: >
+    ABARES Land Use of Australia provides detailed classification of land use including
+    cropping (cereals, oilseeds, pulses, sugar), horticulture, grazing, forestry, and
+    non-agricultural uses. Digital Earth Australia Land Cover provides annual 25m land
+    cover from Landsat archive, classifying into broad types including cropland.
+  provenance: >
+    ABARES: Australian Government, Department of Agriculture. Combines remote sensing
+    with agricultural census and survey data. DEA: Geoscience Australia, processed
+    from Landsat archive using the Open Data Cube.
+  classification: "ABARES: ALUM (Australian Land Use and Management) classification, 6 primary classes with detailed subclasses"
+  access:
+    - method: "WMS"
+      url: "https://www.agriculture.gov.au/abares/aclump/land-use"
+    - method: "Download (DEA)"
+      url: "https://www.ga.gov.au/scientific-topics/dea/dea-data-and-products"
+  accuracy: >
+    ABARES land use mapping achieves >85% accuracy for broad land use categories.
+    DEA Land Cover: overall accuracy ~80% for broad classes.
+  papers:
+    - text: "ABARES (2021). Land Use of Australia. Australian Government."
+      key: true
+  related:
+    - name: "New Zealand LCDB"
+      desc: "NZ land cover database"
+      link: "newzealand.html"
+    - name: "ESA WorldCover"
+      desc: "Global 10m land cover"
+      link: "esa-worldcover.html"
+  attribution: "ABARES / Geoscience Australia / DEA"
+  provider: "Australian Government"
+
+newzealand:
+  title: "New Zealand Land Cover Database (LCDB)"
+  executive_summary: >
+    National land cover classification for New Zealand at 1:50,000 scale,
+    produced by Landcare Research/Manaaki Whenua. The LCDB maps 33 land cover
+    classes across all of New Zealand including cropland, horticulture, and
+    pastoral classes. Updated approximately every 5 years from 1996.
+  coverage: "New Zealand"
+  resolution: "1:50,000 (polygon, ~1ha MMU)"
+  temporal: "1996, 2001, 2008, 2012, 2018"
+  license: "CC-BY 4.0"
+  description: >
+    The LCDB provides a multi-temporal, thematic classification of land cover
+    for mainland New Zealand, the Chatham Islands, and some offshore islands.
+    Agricultural classes include short-rotation cropland, orchard/vineyard/nursery,
+    high producing grassland, low producing grassland, and exotic forest.
+  provenance: >
+    Landcare Research / Manaaki Whenua. Semi-automated classification from Landsat
+    and SPOT imagery, with extensive manual editing and quality control.
+  classification: "33 classes including: Short-rotation Cropland, Orchard/Vineyard/Nursery, High Producing Grassland, Low Producing Grassland"
+  access:
+    - method: "WMS"
+      url: "https://lris.scinfo.org.nz/layer/lcdb"
+    - method: "Download"
+      url: "https://lris.scinfo.org.nz/layer/104400-lcdb-v50-land-cover-database-version-50-mainland-new-zealand/"
+  accuracy: >
+    Overall accuracy ~94% at level 1. Cropland classes achieve >85% accuracy.
+  papers:
+    - text: "Thompson et al. (2003). New Zealand Land Cover Database Version 2. International Journal of Remote Sensing."
+      key: true
+  attribution: "Landcare Research / Manaaki Whenua"
+  provider: "Landcare Research"
+
+# ──────────────────────────────────────────────────────────────────
+# AMERICAS
+# ──────────────────────────────────────────────────────────────────
+argentina:
+  title: "Argentina (GeoINTA)"
+  executive_summary: >
+    Agricultural land use maps for Argentina from INTA (Instituto Nacional de
+    Tecnologia Agropecuaria) via the GeoINTA platform. Maps major crop types
+    in the Pampas and other agricultural regions using satellite imagery.
+  coverage: "Argentina"
+  resolution: "Various (30m-250m)"
+  temporal: "Various years"
+  license: "Open (INTA)"
+  description: >
+    GeoINTA provides geospatial agricultural data for Argentina including crop
+    type maps, land use change, and agro-climatic data. Argentina is a major
+    global producer of soybeans, maize, wheat, and sunflower.
+  provenance: "INTA (Instituto Nacional de Tecnologia Agropecuaria), Argentina's national agricultural research institute."
+  classification: "Major crops: Soybean, Maize, Wheat, Sunflower, Sorghum, plus grassland and forest"
+  access:
+    - method: "WMS"
+      url: "https://geointa.inta.gob.ar/"
+  accuracy: "Varies by product and year. Major crop accuracy typically >80%."
+  papers:
+    - text: "INTA (various). GeoINTA technical documentation."
+      key: true
+  attribution: "INTA / Government of Argentina"
+  provider: "INTA"
+
+# ──────────────────────────────────────────────────────────────────
+# VIIRS VEGETATION INDICES
+# ──────────────────────────────────────────────────────────────────
+viirs-vegetation:
+  title: "VIIRS Vegetation Indices (NDVI & EVI)"
+  executive_summary: >
+    Global 8-day composite vegetation indices from the VIIRS sensor on Suomi NPP,
+    providing NDVI and EVI at 375m resolution. Successor to MODIS vegetation products
+    with improved spatial resolution and radiometric quality.
+  coverage: "Global"
+  resolution: "375m"
+  temporal: "2025–present (8-day composites)"
+  license: "Public domain (US Government work)"
+  description: >
+    VIIRS (Visible Infrared Imaging Radiometer Suite) vegetation index products
+    continue the legacy of MODIS vegetation monitoring with improved capabilities.
+    NDVI (Normalized Difference Vegetation Index) measures overall vegetation greenness.
+    EVI (Enhanced Vegetation Index) provides improved sensitivity in high-biomass
+    tropical regions and reduces atmospheric and soil background effects.
+    Both are 8-day composites using maximum value compositing.
+  provenance: "NASA EOSDIS via GIBS (Global Imagery Browse Services). Sensor: VIIRS on Suomi NPP satellite."
+  classification: "Continuous index values: NDVI (-1 to 1), EVI (-1 to 1). Higher values indicate denser vegetation."
+  access:
+    - method: "WMS (GIBS)"
+      url: "https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi"
+      layer: "VIIRS_SNPP_NDVI_8Day / VIIRS_SNPP_EVI_8Day"
+  accuracy: "VIIRS vegetation indices are validated to Stage 2 maturity with global accuracy comparable to MODIS."
+  papers:
+    - text: "Didan K et al. (2018). VIIRS Vegetation Index Product Suite Algorithm Theoretical Basis Document."
+      key: true
+  related:
+    - name: "MODIS NDVI/EVI"
+      desc: "Predecessor vegetation index products at 250m–1km"
+    - name: "HR-VPP Phenology"
+      desc: "Sentinel-2 phenology at 10m (Europe only)"
+  attribution: "NASA EOSDIS / LPDAAC"
+  provider: "NASA"
+
+# ──────────────────────────────────────────────────────────────────
+# MODIS BIOPHYSICAL (LAI, FPAR, GPP)
+# ──────────────────────────────────────────────────────────────────
+modis-biophysical:
+  title: "MODIS LAI, FPAR & GPP"
+  executive_summary: >
+    Global biophysical parameters from MODIS: Leaf Area Index (LAI), Fraction of
+    Photosynthetically Active Radiation (FPAR), and Gross Primary Productivity (GPP).
+    These complement vegetation indices by quantifying canopy structure, light
+    interception, and carbon fixation rates at 500m–1km resolution.
+  coverage: "Global"
+  resolution: "500m (LAI/FPAR), 500m (GPP)"
+  temporal: "2000–present (8-day composites)"
+  license: "Public domain (US Government work)"
+  description: >
+    LAI (Leaf Area Index) quantifies the one-sided green leaf area per unit ground
+    surface area — a key structural parameter for crop growth models. FPAR measures
+    the fraction of incoming solar radiation (400–700nm) absorbed by vegetation
+    canopies for photosynthesis. GPP (Gross Primary Productivity) estimates the
+    total amount of carbon fixed by vegetation through photosynthesis, critical for
+    carbon cycle monitoring and crop yield estimation.
+  provenance: >
+    NASA EOSDIS products MCD15A2H (LAI/FPAR) and MOD17A2H (GPP).
+    LAI/FPAR: MODIS Combined Terra+Aqua 8-day composite.
+    GPP: MODIS Terra 8-day composite using the Biome Properties Look-Up Table approach.
+  classification: >
+    Continuous values. LAI: 0–10 m²/m² (cropland typically 1–6).
+    FPAR: 0–1.0 (fraction). GPP: 0–3000 g C/m²/yr.
+  access:
+    - method: "WMS (GIBS)"
+      url: "https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi"
+      layer: "MODIS_Combined_L4_LAI_8Day / MODIS_Combined_L4_FPAR_8Day / MODIS_Terra_L4_Gross_Primary_Productivity_8Day"
+  accuracy: >
+    LAI/FPAR validated to Stage 3 maturity. Uncertainty: LAI ±0.66 m²/m²,
+    FPAR ±0.12 for broadleaf crops. GPP validated against FLUXNET eddy covariance towers.
+  papers:
+    - text: "Myneni RB et al. (2002). Global products of vegetation leaf area and fraction absorbed PAR from year one of MODIS data. Remote Sensing of Environment 83(1-2):214-231."
+      doi: "10.1016/S0034-4257(02)00074-3"
+      key: true
+    - text: "Running SW et al. (2004). A Continuous Satellite-Derived Measure of Global Terrestrial Primary Production. BioScience 54(6):547-560."
+      doi: "10.1641/0006-3568(2004)054[0547:ACSMOG]2.0.CO;2"
+  related:
+    - name: "MODIS NDVI/EVI"
+      desc: "Vegetation indices from the same sensor"
+    - name: "VIIRS NDVI/EVI"
+      desc: "Next-generation vegetation indices at improved resolution"
+  attribution: "NASA EOSDIS / LPDAAC"
+  provider: "NASA"

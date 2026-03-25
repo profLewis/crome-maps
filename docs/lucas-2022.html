@@ -3,14 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LUCAS 2022 Copernicus — Global Crop Maps</title>
+<title>LUCAS 2022 Copernicus — Global Crop Maps Info</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    line-height: 1.6; color: #333; max-width: 900px; margin: 0 auto; padding: 20px; }
+    line-height: 1.6; color: #333; max-width: 960px; margin: 0 auto; padding: 20px; }
   h1 { font-size: 1.8em; margin-bottom: 0.3em; }
   h2 { font-size: 1.3em; margin-top: 1.5em; margin-bottom: 0.5em;
     border-bottom: 2px solid #e0e0e0; padding-bottom: 0.3em; }
+  h3 { font-size: 1.1em; margin-top: 1em; margin-bottom: 0.3em; color: #555; }
   .executive-summary { background: #f0f7ff; border-left: 4px solid #2196f3;
     padding: 15px 20px; margin: 15px 0; border-radius: 0 8px 8px 0; }
   .executive-summary p { margin: 0.3em 0; }
@@ -26,13 +27,33 @@
   .badge-wms { background: #e3f2fd; color: #1565c0; }
   .badge-pmtiles { background: #e8f5e9; color: #2e7d32; }
   .badge-download { background: #fff3e0; color: #e65100; }
+  .badge-vector { background: #f3e5f5; color: #7b1fa2; }
   .back { margin-bottom: 15px; }
   .back a { text-decoration: none; font-size: 0.9em; }
   .papers { list-style: none; }
-  .papers li { padding: 5px 0; }
-  .papers li::before { content: "📄 "; }
+  .papers li { padding: 5px 0; border-bottom: 1px solid #f5f5f5; }
+  .papers li:last-child { border-bottom: none; }
+  .papers li::before { content: ""; }
+  .paper-ref::before { content: "\1F4C4 "; }
+  .paper-cite::before { content: "\1F4DA "; }
+  .accuracy-table { margin: 10px 0; }
   .accuracy-table td:nth-child(2),
-  .accuracy-table td:nth-child(3) { text-align: center; }
+  .accuracy-table td:nth-child(3),
+  .accuracy-table td:nth-child(4) { text-align: center; }
+  .accuracy-highlight { background: #e8f5e9; font-weight: 600; }
+  .validation-note { background: #fff8e1; border-left: 4px solid #ffc107;
+    padding: 12px 16px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 0.95em; }
+  .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 10px; margin: 10px 0; }
+  .related-item { background: #fafafa; padding: 10px 14px; border-radius: 6px;
+    border: 1px solid #eee; font-size: 0.9em; }
+  .related-item strong { display: block; }
+  .related-item span { color: #666; font-size: 0.85em; }
+  .doi { font-family: monospace; font-size: 0.85em; color: #888; }
+  .tag { display: inline-block; padding: 1px 6px; border-radius: 3px;
+    font-size: 0.75em; font-weight: 600; margin-left: 4px; }
+  .tag-oa { background: #e8f5e9; color: #2e7d32; }
+  .tag-key { background: #e3f2fd; color: #1565c0; }
 </style>
 </head>
 <body>
@@ -40,7 +61,7 @@
 <h1>LUCAS 2022 Copernicus</h1>
 
 <div class="executive-summary">
-  <p><strong>Executive Summary</strong></p>
+  <p><strong>Summary</strong></p>
   <p>EU-wide ground truth land cover survey with ~150,000 in-situ observation polygons across all 27 member states. Provides 82 detailed land cover classes verified by field surveyors, making it the primary validation dataset for European land cover mapping. Key reference for accuracy assessment of satellite- derived crop maps.</p>
 </div>
 
@@ -58,25 +79,38 @@
 <p>Conducted by Eurostat with JRC technical support. Field surveyors visit stratified random sample points across the EU, recording land cover, land use, and environmental variables. The 2022 campaign added a Copernicus module with radial polygon delineation around survey points.</p>
 
 <h2>Classification System</h2>
-<p>LUCAS 82-class land cover classification (hierarchical: 8 L1 classes → 35 L2 → 82 L3)</p>
+<p>LUCAS 82-class land cover classification (hierarchical: 8 L1 classes, 35 L2, 82 L3)</p>
 
 <h2>Access Methods</h2>
 <table>
   <tr><th>Method</th><th>URL / Details</th></tr>
-  <tr><td><span class="badge badge-download">GeoPackage</span></td><td><a href="https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/LUCAS/LUCAS_2022_Copernicus/l2022_survey_cop_radpoly_attr.gpkg" target="_blank">https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/LUCAS/LUCAS_2022_Copernicus/l2022_survey_cop_radpoly_attr.gpkg</a></td></tr>
+  <tr><td><span class="badge badge-vector">GeoPackage</span></td><td><a href="https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/LUCAS/LUCAS_2022_Copernicus/l2022_survey_cop_radpoly_attr.gpkg" target="_blank">https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/LUCAS/LUCAS_2022_Copernicus/l2022_survey_cop_radpoly_attr.gpkg</a></td></tr>
   <tr><td><span class="badge badge-download">JRC Dataset</span></td><td><a href="https://data.jrc.ec.europa.eu/dataset/e3fe3cd0-44db-470e-8769-172a8b9e8874" target="_blank">https://data.jrc.ec.europa.eu/dataset/e3fe3cd0-44db-470e-8769-172a8b9e8874</a></td></tr>
 </table>
 
-<h2>Accuracy Assessment</h2>
-<p>LUCAS is itself a ground truth dataset used to validate other products. Positional accuracy of survey points is ±2m (GNSS). Classification accuracy depends on surveyor training and accessibility of sites. Quality control includes re-surveys at 5-10% of points.</p>
+<h2>Accuracy &amp; Validation</h2>
+<p>LUCAS is itself a ground truth dataset used to validate other products. Positional accuracy of survey points is +/-2m (GNSS). Classification accuracy depends on surveyor training and accessibility of sites. Quality control includes re-surveys at 5-10% of points.</p>
+<div class="validation-note">LUCAS serves as the primary independent validation source for European land cover products including CORINE Land Cover, ESA WorldCover, and Copernicus HRL products. Not a product to be validated, but the validator.</div>
 
-<h2>Citing Papers</h2>
+<h2>Key References</h2>
 <ul class="papers">
-  <li>d'Andrimont et al. (2020). Harmonised LUCAS in-situ land cover and use database for field surveys from 2006 to 2018 in the European Union. Scientific Data.</li>
-  <li><a href="https://doi.org/10.1038/s41597-020-00675-z" target="_blank">https://doi.org/10.1038/s41597-020-00675-z</a></li>
+  <li class="paper-ref">d'Andrimont et al. (2020). Harmonised LUCAS in-situ land cover and use database for field surveys from 2006 to 2018 in the European Union. Scientific Data. <span class="doi"><a href="https://doi.org/10.1038/s41597-020-00675-z" target="_blank">https://doi.org/10.1038/s41597-020-00675-z</a></span> <span class="tag tag-key">key paper</span> <span class="tag tag-oa">open access</span></li>
+  <li class="paper-ref">Eurostat (2022). LUCAS 2022 Technical Reference Document.</li>
 </ul>
 
-<h2>Source & Attribution</h2>
+<h2>Papers Citing This Dataset</h2>
+<ul class="papers">
+  <li class="paper-cite">Used as validation in most European land cover mapping studies.</li>
+  <li class="paper-cite">Brovelli et al. (2020). User-based accuracy assessment of CORINE Land Cover using LUCAS. Int. J. Geo-Information.</li>
+</ul>
+
+<h2>Related Datasets</h2>
+<div class="related-grid">
+  <a href="corine.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>CORINE Land Cover</strong><span>European land cover validated by LUCAS</span></a>
+  <a href="https://environment.data.gov.uk/dataset/68db4948-cc60-4e4e-807c-c8aa48239cb5" class="related-item" style="text-decoration:none;color:inherit;"><strong>RPA Ground Observation Points</strong><span>England-specific ground truth (11,000+ points)</span></a>
+</div>
+
+<h2>Source &amp; Attribution</h2>
 <p>Eurostat / JRC / European Commission</p>
 
 <hr style="margin-top: 2em;">

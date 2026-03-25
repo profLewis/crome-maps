@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SAGE Global Crop Calendars — Global Crop Maps Info</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6; color: #333; max-width: 960px; margin: 0 auto; padding: 20px; }
+  h1 { font-size: 1.8em; margin-bottom: 0.3em; }
+  h2 { font-size: 1.3em; margin-top: 1.5em; margin-bottom: 0.5em;
+    border-bottom: 2px solid #e0e0e0; padding-bottom: 0.3em; }
+  h3 { font-size: 1.1em; margin-top: 1em; margin-bottom: 0.3em; color: #555; }
+  .executive-summary { background: #f0f7ff; border-left: 4px solid #2196f3;
+    padding: 15px 20px; margin: 15px 0; border-radius: 0 8px 8px 0; }
+  .executive-summary p { margin: 0.3em 0; }
+  .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+  .meta-item { background: #fafafa; padding: 10px 15px; border-radius: 6px; border: 1px solid #eee; }
+  .meta-item strong { display: block; font-size: 0.85em; color: #666; text-transform: uppercase; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+  th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #eee; }
+  th { background: #f5f5f5; font-weight: 600; }
+  a { color: #1565c0; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 0.8em; font-weight: 600; }
+  .badge-wms { background: #e3f2fd; color: #1565c0; }
+  .badge-pmtiles { background: #e8f5e9; color: #2e7d32; }
+  .badge-download { background: #fff3e0; color: #e65100; }
+  .badge-vector { background: #f3e5f5; color: #7b1fa2; }
+  .back { margin-bottom: 15px; }
+  .back a { text-decoration: none; font-size: 0.9em; }
+  .papers { list-style: none; }
+  .papers li { padding: 5px 0; border-bottom: 1px solid #f5f5f5; }
+  .papers li:last-child { border-bottom: none; }
+  .papers li::before { content: ""; }
+  .paper-ref::before { content: "\1F4C4 "; }
+  .paper-cite::before { content: "\1F4DA "; }
+  .accuracy-table { margin: 10px 0; }
+  .accuracy-table td:nth-child(2),
+  .accuracy-table td:nth-child(3),
+  .accuracy-table td:nth-child(4) { text-align: center; }
+  .accuracy-highlight { background: #e8f5e9; font-weight: 600; }
+  .validation-note { background: #fff8e1; border-left: 4px solid #ffc107;
+    padding: 12px 16px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 0.95em; }
+  .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 10px; margin: 10px 0; }
+  .related-item { background: #fafafa; padding: 10px 14px; border-radius: 6px;
+    border: 1px solid #eee; font-size: 0.9em; }
+  .related-item strong { display: block; }
+  .related-item span { color: #666; font-size: 0.85em; }
+  .doi { font-family: monospace; font-size: 0.85em; color: #888; }
+  .tag { display: inline-block; padding: 1px 6px; border-radius: 3px;
+    font-size: 0.75em; font-weight: 600; margin-left: 4px; }
+  .tag-oa { background: #e8f5e9; color: #2e7d32; }
+  .tag-key { background: #e3f2fd; color: #1565c0; }
+</style>
+</head>
+<body>
+<div class="back"><a href="../index.html">&larr; Back to Map Viewer</a></div>
+<h1>SAGE Global Crop Calendars</h1>
+
+<div class="executive-summary">
+  <p><strong>Summary</strong></p>
+  <p>Global gridded planting and harvest dates at 0.5° resolution for 19 major crops. Compiled by the Center for Sustainability and the Global Environment (SAGE) at the University of Wisconsin-Madison from national and subnational agricultural calendars. Provides median planting and harvest day-of-year for each grid cell. The standard reference for global crop phenology.</p>
+</div>
+
+<div class="meta">
+  <div class="meta-item"><strong>Coverage</strong>Global</div>
+  <div class="meta-item"><strong>Resolution</strong>0.5° (~50km)</div>
+  <div class="meta-item"><strong>Temporal</strong>Static (compiled ~2010, represents typical dates)</div>
+  <div class="meta-item"><strong>License</strong>Free for research use</div>
+</div>
+
+<h2>Description</h2>
+<p>The SAGE crop calendars provide spatially explicit planting and harvest dates for 19 crops globally. For each crop and grid cell, the dataset gives the median planting date and harvest date as day-of-year (1-365). Data was compiled from national agricultural ministry reports, FAO country briefs, USDA crop calendars, and regional agronomic literature. The dataset represents "typical" or "average" planting/harvest timing, not year-specific dates.</p>
+
+<h2>Provenance</h2>
+<p>Compiled by Sacks et al. at SAGE, University of Wisconsin-Madison. Sources include USDA FAS Crop Calendars, FAO GIEWS Country Briefs, national agricultural extension services, and published agronomic literature. Spatial interpolation fills gaps between source observations.</p>
+
+<h2>Classification System</h2>
+<p>19 crops: Wheat, Winter Wheat, Maize, Rice, Soybeans, Barley, Cotton, Sorghum, Potatoes, Winter Rapeseed, plus others. Each crop has planting date and harvest date maps shown as day-of-year (1 = January 1, 365 = December 31).
+</p>
+
+<h2>Access Methods</h2>
+<table>
+  <tr><th>Method</th><th>URL / Details</th></tr>
+  <tr><td><span class="badge badge-download">Download</span></td><td><a href="https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/" target="_blank">https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/</a></td></tr>
+  <tr><td><span class="badge badge-download">NetCDF</span></td><td><a href="https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/netcdf-files-for-download/" target="_blank">https://sage.nelson.wisc.edu/data-and-models/datasets/crop-calendar-dataset/netcdf-files-for-download/</a></td></tr>
+</table>
+
+<h2>Accuracy &amp; Validation</h2>
+<p>Planting/harvest dates are compiled from authoritative sources and represent typical timing. Accuracy varies by region: well-constrained in countries with detailed agronomic data (US, Europe, Australia), less certain in tropical developing countries with multiple growing seasons. Typical uncertainty is ±2-4 weeks in well-documented regions, potentially ±4-8 weeks in data-sparse areas.</p>
+
+<h2>Key References</h2>
+<ul class="papers">
+  <li class="paper-ref">Sacks et al. (2010). Crop planting dates: an analysis of global patterns. Global Ecology and Biogeography. <span class="doi"><a href="https://doi.org/10.1111/j.1466-8238.2010.00551.x" target="_blank">https://doi.org/10.1111/j.1466-8238.2010.00551.x</a></span> <span class="tag tag-key">key paper</span></li>
+</ul>
+
+<h2>Papers Citing This Dataset</h2>
+<ul class="papers">
+  <li class="paper-cite">Widely cited (>1000 citations) in crop modeling, climate impact, and food security studies.</li>
+  <li class="paper-cite">Mueller et al. (2012). Closing yield gaps through nutrient and water management. Nature.</li>
+  <li class="paper-cite">Ray et al. (2015). Climate variation explains a third of global crop yield variability. Nature Communications.</li>
+</ul>
+
+<h2>Related Datasets</h2>
+<div class="related-grid">
+  <a href="cropgrids.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>CROPGRIDS</strong><span>Where crops are grown (area)</span></a>
+  <a href="hrvpp-phenology.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>HR-VPP Phenology</strong><span>Satellite-derived phenology (10m, Europe)</span></a>
+  <a href="gibs-vegetation.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>MODIS NDVI/EVI</strong><span>Satellite vegetation indices</span></a>
+</div>
+
+<h2>Source &amp; Attribution</h2>
+<p>SAGE / University of Wisconsin-Madison</p>
+
+<hr style="margin-top: 2em;">
+<p style="font-size: 0.8em; color: #999; margin-top: 1em;">
+  Generated for <a href="../index.html">Global Crop Maps</a> viewer.
+  Data provided by SAGE / UW-Madison.
+</p>
+</body>
+</html>

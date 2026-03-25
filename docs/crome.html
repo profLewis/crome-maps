@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crop Map of England (CROME) — Global Crop Maps Info</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6; color: #333; max-width: 960px; margin: 0 auto; padding: 20px; }
+  h1 { font-size: 1.8em; margin-bottom: 0.3em; }
+  h2 { font-size: 1.3em; margin-top: 1.5em; margin-bottom: 0.5em;
+    border-bottom: 2px solid #e0e0e0; padding-bottom: 0.3em; }
+  h3 { font-size: 1.1em; margin-top: 1em; margin-bottom: 0.3em; color: #555; }
+  .executive-summary { background: #f0f7ff; border-left: 4px solid #2196f3;
+    padding: 15px 20px; margin: 15px 0; border-radius: 0 8px 8px 0; }
+  .executive-summary p { margin: 0.3em 0; }
+  .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+  .meta-item { background: #fafafa; padding: 10px 15px; border-radius: 6px; border: 1px solid #eee; }
+  .meta-item strong { display: block; font-size: 0.85em; color: #666; text-transform: uppercase; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+  th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #eee; }
+  th { background: #f5f5f5; font-weight: 600; }
+  a { color: #1565c0; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 0.8em; font-weight: 600; }
+  .badge-wms { background: #e3f2fd; color: #1565c0; }
+  .badge-pmtiles { background: #e8f5e9; color: #2e7d32; }
+  .badge-download { background: #fff3e0; color: #e65100; }
+  .badge-vector { background: #f3e5f5; color: #7b1fa2; }
+  .back { margin-bottom: 15px; }
+  .back a { text-decoration: none; font-size: 0.9em; }
+  .papers { list-style: none; }
+  .papers li { padding: 5px 0; border-bottom: 1px solid #f5f5f5; }
+  .papers li:last-child { border-bottom: none; }
+  .papers li::before { content: ""; }
+  .paper-ref::before { content: "\1F4C4 "; }
+  .paper-cite::before { content: "\1F4DA "; }
+  .accuracy-table { margin: 10px 0; }
+  .accuracy-table td:nth-child(2),
+  .accuracy-table td:nth-child(3),
+  .accuracy-table td:nth-child(4) { text-align: center; }
+  .accuracy-highlight { background: #e8f5e9; font-weight: 600; }
+  .validation-note { background: #fff8e1; border-left: 4px solid #ffc107;
+    padding: 12px 16px; margin: 10px 0; border-radius: 0 6px 6px 0; font-size: 0.95em; }
+  .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 10px; margin: 10px 0; }
+  .related-item { background: #fafafa; padding: 10px 14px; border-radius: 6px;
+    border: 1px solid #eee; font-size: 0.9em; }
+  .related-item strong { display: block; }
+  .related-item span { color: #666; font-size: 0.85em; }
+  .doi { font-family: monospace; font-size: 0.85em; color: #888; }
+  .tag { display: inline-block; padding: 1px 6px; border-radius: 3px;
+    font-size: 0.75em; font-weight: 600; margin-left: 4px; }
+  .tag-oa { background: #e8f5e9; color: #2e7d32; }
+  .tag-key { background: #e3f2fd; color: #1565c0; }
+</style>
+</head>
+<body>
+<div class="back"><a href="../index.html">&larr; Back to Map Viewer</a></div>
+<h1>Crop Map of England (CROME)</h1>
+
+<div class="executive-summary">
+  <p><strong>Summary</strong></p>
+  <p>Annual field-level crop type map of England produced by the Rural Payments Agency (RPA), classifying ~32 million hexagonal cells into 15+ crop types at 20m resolution. Derived from Sentinel-1 SAR and Sentinel-2 optical imagery using random forest classification trained on LPIS/IACS declarations. Available 2016-2024.</p>
+</div>
+
+<div class="meta">
+  <div class="meta-item"><strong>Coverage</strong>England</div>
+  <div class="meta-item"><strong>Resolution</strong>20m hexagonal grid (field-level)</div>
+  <div class="meta-item"><strong>Temporal</strong>2016-2024 (annual)</div>
+  <div class="meta-item"><strong>License</strong>Open Government Licence v3.0</div>
+</div>
+
+<h2>Description</h2>
+<p>The Crop Map of England (CROME) is published annually by the Rural Payments Agency as part of Defra's open data initiative. It uses a random forest classifier trained on farmer-declared crop types from the IACS/BPS system, applied to Sentinel-1 radar and Sentinel-2 optical time series. The map covers all agricultural land in England using a hexagonal grid (~20m cell size). Major classes include wheat, barley, oilseed rape, maize, potatoes, sugar beet, beans, peas, and various grassland types.</p>
+
+<h2>Provenance</h2>
+<p>Produced by RPA as part of the Control with Remote Sensing (CwRS) programme for the Basic Payment Scheme (BPS). Training data from ~2.6 million declared agricultural parcels. Classification: random forest on Sentinel-1 VV/VH backscatter + Sentinel-2 spectral bands + temporal features. Post-processing: majority vote per hexagonal cell, smoothing, and land parcel boundary alignment.</p>
+
+<h2>Classification System</h2>
+<p>15+ crop types: Winter Wheat, Spring Wheat, Winter Barley, Spring Barley, Oilseed Rape, Maize, Potatoes, Sugar Beet, Field Beans, Peas, Linseed, Grass (< 5yr), Grass (> 5yr), Non-agricultural Land, Fallow, plus minor classes.
+</p>
+
+<h2>Access Methods</h2>
+<table>
+  <tr><th>Method</th><th>URL / Details</th></tr>
+  <tr><td><span class="badge badge-pmtiles">PMTiles</span></td><td><a href="https://media.githubusercontent.com/media/profLewis/crome-work/main/pmtiles_per_year/" target="_blank">https://media.githubusercontent.com/media/profLewis/crome-work/main/pmtiles_per_year/</a></td></tr>
+  <tr><td><span class="badge badge-download">Web Viewer</span></td><td><a href="https://www.data.gov.uk/dataset/be5d88c9-acfb-4052-bf6b-ee9a416cfe60/crop-map-of-england-crome-2020" target="_blank">https://www.data.gov.uk/dataset/be5d88c9-acfb-4052-bf6b-ee9a416cfe60/crop-map-of-england-crome-2020</a></td></tr>
+  <tr><td><span class="badge badge-download">WFS</span></td><td><a href="https://environment.data.gov.uk/dataset/a27312b5-d6c9-4710-ad5e-382d727c1b05" target="_blank">https://environment.data.gov.uk/dataset/a27312b5-d6c9-4710-ad5e-382d727c1b05</a><br><code>Layer: Crop Map of England (CROME) 2023</code></td></tr>
+</table>
+
+<h2>Accuracy &amp; Validation</h2>
+<p>RPA conducts annual validation using Ground Observation Points (GOP) — over 11,000 field-visited locations per year. Overall accuracy varies by year: v2017 86% (kappa 0.85), v2020 70.5% (kappa 0.66), v2023 90.12% (OOB error 4.98%). The v2023 improvement reflects the switch to Planet Fusion imagery alongside Sentinel-1.</p>
+<table class="accuracy-table">
+<tr><th>Version</th><th>Overall Acc.</th><th>Kappa/OOB</th><th>Input Data</th></tr>
+<tr><td>CROME v2017</td><td>86%</td><td>kappa 0.85</td><td>Sentinel-1 + Sentinel-2</td></tr>
+<tr><td>CROME v2020</td><td>70.5%</td><td>kappa 0.66</td><td>Sentinel-1 + Sentinel-2</td></tr>
+<tr class="accuracy-highlight"><td>CROME v2023</td><td>90.12%</td><td>OOB 4.98%</td><td>Sentinel-1 + Planet Fusion</td></tr>
+</table>
+<div class="validation-note">RPA Ground Observation Points (GOP) are publicly available at <a href="https://environment.data.gov.uk/dataset/68db4948-cc60-4e4e-807c-c8aa48239cb5">Defra Data Services Platform</a>. Over 11,000 field visits per year provide independent validation of CROME.</div>
+
+<h2>Key References</h2>
+<ul class="papers">
+  <li class="paper-ref">RPA CROME Product Specification v2023. <span class="doi"><a href="https://environment.data.gov.uk/file-management-open/data-sets/4f8fbd8e-ccec-4fbb-b346-575b58afb38a/files/RPA%20CROME_Specification_v15.pdf" target="_blank">https://environment.data.gov.uk/file-management-open/data-sets/4f8fbd8e-ccec-4fbb-b346-575b58afb38a/files/RPA%20CROME_Specification_v15.pdf</a></span> <span class="tag tag-key">key paper</span></li>
+  <li class="paper-ref">RPA CROME Product Specification v2017.2. <span class="doi"><a href="https://environment.data.gov.uk/api/file/download?fileDataSetId=8dea1245-1600-4ce8-83f5-f16ea622dbbe&fileName=RPA+CROME_Specification_v09.pdf" target="_blank">https://environment.data.gov.uk/api/file/download?fileDataSetId=8dea1245-1600-4ce8-83f5-f16ea622dbbe&fileName=RPA+CROME_Specification_v09.pdf</a></span></li>
+  <li class="paper-ref">JNCC/Defra (2020). Agriculture Crop Mapping Technical Report. <span class="doi"><a href="https://data.jncc.gov.uk/data/c650f50d-092a-4d15-8c66-5e95b70c22ef/agriculture-crop-mapping.pdf" target="_blank">https://data.jncc.gov.uk/data/c650f50d-092a-4d15-8c66-5e95b70c22ef/agriculture-crop-mapping.pdf</a></span></li>
+</ul>
+
+<h2>Papers Citing This Dataset</h2>
+<ul class="papers">
+  <li class="paper-cite">Sheridan et al. (2025). A Field-Level Asset Mapping Dataset for England's Agricultural Sector. Scientific Data 12. <span class="doi"><a href="https://doi.org/10.1038/s41597-025-05521-8" target="_blank">https://doi.org/10.1038/s41597-025-05521-8</a></span></li>
+  <li class="paper-cite">Janicke et al. (2025). Field and farm-level data on agricultural land use for the European Union. Scientific Data 12, 1050. <span class="doi"><a href="https://doi.org/10.1038/s41597-025-05210-6" target="_blank">https://doi.org/10.1038/s41597-025-05210-6</a></span></li>
+  <li class="paper-cite">JNCC/Defra (2020). Agriculture Crop Mapping using Copernicus Sentinel data. <span class="doi"><a href="https://data.jncc.gov.uk/data/c650f50d-092a-4d15-8c66-5e95b70c22ef/agriculture-crop-mapping.pdf" target="_blank">https://data.jncc.gov.uk/data/c650f50d-092a-4d15-8c66-5e95b70c22ef/agriculture-crop-mapping.pdf</a></span></li>
+</ul>
+
+<h2>Related Datasets</h2>
+<div class="related-grid">
+  <a href="https://environment.data.gov.uk/dataset/68db4948-cc60-4e4e-807c-c8aa48239cb5" class="related-item" style="text-decoration:none;color:inherit;"><strong>RPA Ground Observation Points</strong><span>11,000+ annual validation points for CROME</span></a>
+  <a href="https://environment.data.gov.uk/dataset/93a2433d-054a-484c-aec4-4e2ce9d7f2a9" class="related-item" style="text-decoration:none;color:inherit;"><strong>RPA Parcel Points</strong><span>2.6M agricultural parcel centroids, England</span></a>
+  <a href="eurocrops.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>EuroCrops V2</strong><span>Harmonized EU-wide parcel data (includes England via CROME)</span></a>
+</div>
+
+<h2>Source &amp; Attribution</h2>
+<p>Rural Payments Agency (RPA) / Defra</p>
+
+<hr style="margin-top: 2em;">
+<p style="font-size: 0.8em; color: #999; margin-top: 1em;">
+  Generated for <a href="../index.html">Global Crop Maps</a> viewer.
+  Data provided by RPA / Defra.
+</p>
+</body>
+</html>

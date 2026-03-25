@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{title}} — Global Crop Maps Info</title>
+<title>ESA WorldCover — Global Crop Maps Info</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -58,54 +58,72 @@
 </head>
 <body>
 <div class="back"><a href="../index.html">&larr; Back to Map Viewer</a></div>
-<h1>{{title}}</h1>
+<h1>ESA WorldCover</h1>
 
 <div class="executive-summary">
   <p><strong>Summary</strong></p>
-  <p>{{executive_summary}}</p>
+  <p>Global 10m land cover map from ESA, classifying 11 land cover types using Sentinel-1 and Sentinel-2 imagery. Available for 2020 and 2021. The highest resolution global land cover product freely available, providing crucial cropland extent information worldwide.</p>
 </div>
 
 <div class="meta">
-  <div class="meta-item"><strong>Coverage</strong>{{coverage}}</div>
-  <div class="meta-item"><strong>Resolution</strong>{{resolution}}</div>
-  <div class="meta-item"><strong>Temporal</strong>{{temporal}}</div>
-  <div class="meta-item"><strong>License</strong>{{license}}</div>
+  <div class="meta-item"><strong>Coverage</strong>Global</div>
+  <div class="meta-item"><strong>Resolution</strong>10m (Sentinel-1 + Sentinel-2)</div>
+  <div class="meta-item"><strong>Temporal</strong>2020, 2021</div>
+  <div class="meta-item"><strong>License</strong>CC-BY 4.0</div>
 </div>
 
 <h2>Description</h2>
-<p>{{description}}</p>
+<p>ESA WorldCover provides global land cover classification at 10m resolution using both Sentinel-1 SAR and Sentinel-2 optical data. The 11 classes include cropland, tree cover, shrubland, grassland, built-up, bare/sparse vegetation, snow/ice, water, wetland, mangroves, and moss/lichen. Produced by a consortium led by VITO.</p>
 
 <h2>Provenance</h2>
-<p>{{provenance}}</p>
+<p>Produced by VITO/Brockmann Consult/CS/Gamma/IIASA/WUR for ESA. Classification uses a catboost classifier trained on ~50,000 global training samples from IIASA's LACO-Wiki platform. Input: annual Sentinel-1/2 composites.</p>
 
 <h2>Classification System</h2>
-{{classification_html}}
+<p>11 classes: Tree cover (10), Shrubland (20), Grassland (30), Cropland (40), Built-up (50), Bare/sparse vegetation (60), Snow/ice (70), Water (80), Wetland (90), Mangroves (95), Moss/lichen (100).
+</p>
 
 <h2>Access Methods</h2>
 <table>
   <tr><th>Method</th><th>URL / Details</th></tr>
-  {{access_rows}}
+  <tr><td><span class="badge badge-wms">WMS</span></td><td><a href="https://services.terrascope.be/wms/v2" target="_blank">https://services.terrascope.be/wms/v2</a><br><code>Layer: WORLDCOVER_2021_MAP</code></td></tr>
+  <tr><td><span class="badge badge-download">Download</span></td><td><a href="https://esa-worldcover.org/en/data-access" target="_blank">https://esa-worldcover.org/en/data-access</a></td></tr>
 </table>
 
 <h2>Accuracy &amp; Validation</h2>
-{{accuracy_html}}
+<p>Global overall accuracy of 74.4% (2020 v100). Cropland class achieves 78.2% producer accuracy and 84.3% user accuracy globally. Higher accuracy in regions with large, homogeneous fields (North America, Europe).</p>
+<table class="accuracy-table">
+<tr><th>Class</th><th>Producer Acc.</th><th>User Acc.</th></tr>
+<tr><td>Cropland</td><td>78.2%</td><td>84.3%</td></tr>
+<tr><td>Tree cover</td><td>87.5%</td><td>85.1%</td></tr>
+<tr><td>Grassland</td><td>56.7%</td><td>59.1%</td></tr>
+<tr><td>Built-up</td><td>79.8%</td><td>73.2%</td></tr>
+<tr class="accuracy-highlight"><td>Overall</td><td>74.4%</td><td></td></tr>
+</table>
 
 <h2>Key References</h2>
 <ul class="papers">
-  {{papers_html}}
+  <li class="paper-ref">Zanaga et al. (2022). ESA WorldCover 10m 2021 v200. Zenodo. <span class="doi"><a href="https://doi.org/10.5281/zenodo.7254221" target="_blank">https://doi.org/10.5281/zenodo.7254221</a></span> <span class="tag tag-key">key paper</span> <span class="tag tag-oa">open access</span></li>
 </ul>
 
-{{citing_section}}
+<h2>Papers Citing This Dataset</h2>
+<ul class="papers">
+  <li class="paper-cite">Potapov et al. (2022). Global maps of cropland extent and change. Nature Food.</li>
+  <li class="paper-cite">Widely used as baseline in crop mapping studies globally.</li>
+</ul>
 
-{{related_section}}
+<h2>Related Datasets</h2>
+<div class="related-grid">
+  <a href="modis-landcover.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>MODIS Land Cover</strong><span>Global 500m land cover (longer time series)</span></a>
+  <a href="gfsad-croplands.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>GFSAD Croplands</strong><span>Dedicated global cropland product</span></a>
+</div>
 
 <h2>Source &amp; Attribution</h2>
-<p>{{attribution}}</p>
+<p>ESA / VITO / Brockmann Consult</p>
 
 <hr style="margin-top: 2em;">
 <p style="font-size: 0.8em; color: #999; margin-top: 1em;">
   Generated for <a href="../index.html">Global Crop Maps</a> viewer.
-  Data provided by {{provider}}.
+  Data provided by ESA.
 </p>
 </body>
 </html>

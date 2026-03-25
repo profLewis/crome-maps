@@ -196,6 +196,25 @@ MODIS Terra 16-day composite vegetation indices at 250m–1km resolution:
 
 Years: 2000–2025. Mid-July composites shown by default.
 
+### VIIRS NDVI & EVI (Global)
+**Coverage:** Global | **Source:** [NASA EOSDIS / GIBS](https://earthdata.nasa.gov/) | **Type:** WMS (GIBS)
+
+VIIRS SNPP 8-day composite vegetation indices — successor to MODIS with improved spatial resolution:
+- **NDVI** — 8-day composite at 375m
+- **EVI** — 8-day composite at 375m
+
+Years: 2025–2026.
+
+### MODIS LAI, FPAR & GPP (Global)
+**Coverage:** Global | **Source:** [NASA EOSDIS / GIBS](https://earthdata.nasa.gov/) | **Type:** WMS (GIBS)
+
+Biophysical parameters from MODIS:
+- **LAI** (Leaf Area Index) — canopy leaf density, 8-day composite
+- **FPAR** (Fraction of Photosynthetically Active Radiation) — light absorption by vegetation
+- **GPP** (Gross Primary Productivity) — carbon fixation rate
+
+Years: 2000–2025.
+
 ---
 
 ## Overlays — Environmental

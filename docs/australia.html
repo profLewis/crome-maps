@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{title}} — Global Crop Maps Info</title>
+<title>Australia Land Use (ABARES) & DEA Land Cover — Global Crop Maps Info</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -58,54 +58,59 @@
 </head>
 <body>
 <div class="back"><a href="../index.html">&larr; Back to Map Viewer</a></div>
-<h1>{{title}}</h1>
+<h1>Australia Land Use (ABARES) & DEA Land Cover</h1>
 
 <div class="executive-summary">
   <p><strong>Summary</strong></p>
-  <p>{{executive_summary}}</p>
+  <p>Australian agricultural land use and land cover datasets from ABARES (Australian Bureau of Agricultural and Resource Economics and Sciences) and Digital Earth Australia (DEA). ABARES provides detailed land use classification including crop types, while DEA provides annual 25m land cover from Landsat. Together they map Australia's diverse agricultural landscape from extensive grazing to intensive cropping.</p>
 </div>
 
 <div class="meta">
-  <div class="meta-item"><strong>Coverage</strong>{{coverage}}</div>
-  <div class="meta-item"><strong>Resolution</strong>{{resolution}}</div>
-  <div class="meta-item"><strong>Temporal</strong>{{temporal}}</div>
-  <div class="meta-item"><strong>License</strong>{{license}}</div>
+  <div class="meta-item"><strong>Coverage</strong>Australia</div>
+  <div class="meta-item"><strong>Resolution</strong>Various (25m DEA, 50m+ ABARES)</div>
+  <div class="meta-item"><strong>Temporal</strong>DEA: 1988-present; ABARES: periodic updates</div>
+  <div class="meta-item"><strong>License</strong>CC-BY 4.0</div>
 </div>
 
 <h2>Description</h2>
-<p>{{description}}</p>
+<p>ABARES Land Use of Australia provides detailed classification of land use including cropping (cereals, oilseeds, pulses, sugar), horticulture, grazing, forestry, and non-agricultural uses. Digital Earth Australia Land Cover provides annual 25m land cover from Landsat archive, classifying into broad types including cropland.</p>
 
 <h2>Provenance</h2>
-<p>{{provenance}}</p>
+<p>ABARES: Australian Government, Department of Agriculture. Combines remote sensing with agricultural census and survey data. DEA: Geoscience Australia, processed from Landsat archive using the Open Data Cube.</p>
 
 <h2>Classification System</h2>
-{{classification_html}}
+<p>ABARES: ALUM (Australian Land Use and Management) classification, 6 primary classes with detailed subclasses</p>
 
 <h2>Access Methods</h2>
 <table>
   <tr><th>Method</th><th>URL / Details</th></tr>
-  {{access_rows}}
+  <tr><td><span class="badge badge-wms">WMS</span></td><td><a href="https://www.agriculture.gov.au/abares/aclump/land-use" target="_blank">https://www.agriculture.gov.au/abares/aclump/land-use</a></td></tr>
+  <tr><td><span class="badge badge-download">Download (DEA)</span></td><td><a href="https://www.ga.gov.au/scientific-topics/dea/dea-data-and-products" target="_blank">https://www.ga.gov.au/scientific-topics/dea/dea-data-and-products</a></td></tr>
 </table>
 
 <h2>Accuracy &amp; Validation</h2>
-{{accuracy_html}}
+<p>ABARES land use mapping achieves >85% accuracy for broad land use categories. DEA Land Cover: overall accuracy ~80% for broad classes.</p>
 
 <h2>Key References</h2>
 <ul class="papers">
-  {{papers_html}}
+  <li class="paper-ref">ABARES (2021). Land Use of Australia. Australian Government. <span class="tag tag-key">key paper</span></li>
 </ul>
 
-{{citing_section}}
 
-{{related_section}}
+
+<h2>Related Datasets</h2>
+<div class="related-grid">
+  <a href="newzealand.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>New Zealand LCDB</strong><span>NZ land cover database</span></a>
+  <a href="esa-worldcover.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>ESA WorldCover</strong><span>Global 10m land cover</span></a>
+</div>
 
 <h2>Source &amp; Attribution</h2>
-<p>{{attribution}}</p>
+<p>ABARES / Geoscience Australia / DEA</p>
 
 <hr style="margin-top: 2em;">
 <p style="font-size: 0.8em; color: #999; margin-top: 1em;">
   Generated for <a href="../index.html">Global Crop Maps</a> viewer.
-  Data provided by {{provider}}.
+  Data provided by Australian Government.
 </p>
 </body>
 </html>

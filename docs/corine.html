@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Copernicus HRL Crop Types — Global Crop Maps Info</title>
+<title>CORINE Land Cover — Global Crop Maps Info</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -58,73 +58,71 @@
 </head>
 <body>
 <div class="back"><a href="../index.html">&larr; Back to Map Viewer</a></div>
-<h1>Copernicus HRL Crop Types</h1>
+<h1>CORINE Land Cover</h1>
 
 <div class="executive-summary">
   <p><strong>Summary</strong></p>
-  <p>Pan-European crop type classification at 10m resolution from Sentinel-2, covering EEA-39 countries from 2017-2023. Part of the Copernicus Land Monitoring Service High Resolution Layer (HRL) Croplands product. Provides annual maps distinguishing major crop groups: cereals, root crops, industrial crops, pulses, fodder, vegetables, permanent crops, and grassland.</p>
+  <p>Pan-European land cover/land use inventory at 100m resolution, covering 39 EEA countries with a 44-class nomenclature. Produced every 6 years since 1990 by the Copernicus Land Monitoring Service. The reference dataset for European land cover analysis with 30+ years of harmonized time series.</p>
 </div>
 
 <div class="meta">
   <div class="meta-item"><strong>Coverage</strong>Europe (EEA-39)</div>
-  <div class="meta-item"><strong>Resolution</strong>10m (Sentinel-2)</div>
-  <div class="meta-item"><strong>Temporal</strong>2017-2023 (annual)</div>
+  <div class="meta-item"><strong>Resolution</strong>100m (25ha minimum mapping unit)</div>
+  <div class="meta-item"><strong>Temporal</strong>1990, 2000, 2006, 2012, 2018 (6-year cycle)</div>
   <div class="meta-item"><strong>License</strong>Copernicus Data Policy (free, open)</div>
 </div>
 
 <h2>Description</h2>
-<p>The HRL Crop Types layer classifies agricultural land across Europe into major crop type groups using Sentinel-2 satellite imagery at 10m spatial resolution. It is produced by GeoVille for the Copernicus Land Monitoring Service (CLMS). The classification uses machine learning trained on LPIS (Land Parcel Identification System) reference data from EU member states.</p>
+<p>CORINE (Coordination of Information on the Environment) Land Cover provides consistent land cover information across Europe using a 44-class hierarchical nomenclature at three levels. Agricultural classes include arable land, permanent crops, pastures, and heterogeneous agricultural areas. Minimum mapping unit is 25 hectares (status layers) or 5 hectares (change layers). Produced by computer-aided visual interpretation of satellite imagery verified with ancillary data.</p>
 
 <h2>Provenance</h2>
-<p>Produced by GeoVille GmbH under contract to the European Environment Agency (EEA) as part of the Copernicus Land Monitoring Service. Input data: Sentinel-2 L2A surface reflectance, supplemented by LPIS training data. Processing: annual classification using ensemble machine learning.</p>
+<p>Coordinated by the European Environment Agency (EEA) under the Copernicus Land Monitoring Service. National teams produce country-level data following common technical specifications. Input: Sentinel-2 (2018), Landsat/SPOT (earlier years). Quality assurance: independent verification per country.</p>
 
 <h2>Classification System</h2>
-<p>Major crop groups: Cereals, Root Crops, Non-permanent Industrial, Dry Pulses/Protein, Fodder, Vegetables & Flowers, Permanent Crops, Grassland</p>
+<p>44 classes in 3 levels. Agricultural classes: 211 Non-irrigated arable, 212 Permanently irrigated, 213 Rice fields, 221-223 Vineyards/Fruit/Olive, 231 Pastures, 241-244 Heterogeneous agricultural areas.
+</p>
 
 <h2>Access Methods</h2>
 <table>
   <tr><th>Method</th><th>URL / Details</th></tr>
-  <tr><td><span class="badge badge-wms">WMS</span></td><td><a href="https://geoserver.vlcc.geoville.com/geoserver/ows" target="_blank">https://geoserver.vlcc.geoville.com/geoserver/ows</a><br><code>Layer: HRL_CPL:CTY_S{YEAR}</code></td></tr>
-  <tr><td><span class="badge badge-download">Web Viewer</span></td><td><a href="https://land.copernicus.eu/en/products/high-resolution-layer-croplands" target="_blank">https://land.copernicus.eu/en/products/high-resolution-layer-croplands</a></td></tr>
+  <tr><td><span class="badge badge-wms">WMS</span></td><td><a href="https://image.discomap.eea.europa.eu/arcgis/services/Corine/CLC2018_WM/MapServer/WmsServer" target="_blank">https://image.discomap.eea.europa.eu/arcgis/services/Corine/CLC2018_WM/MapServer/WmsServer</a><br><code>Layer: Various CLC layers</code></td></tr>
+  <tr><td><span class="badge badge-download">Download</span></td><td><a href="https://land.copernicus.eu/en/products/corine-land-cover" target="_blank">https://land.copernicus.eu/en/products/corine-land-cover</a></td></tr>
 </table>
 
 <h2>Accuracy &amp; Validation</h2>
-<p>Overall accuracy varies by year and region. Typical overall accuracy ~80-85% for major crop groups. Accuracy is higher for dominant crops (cereals, grassland) and lower for minor crops. See technical documentation for detailed per-class accuracy metrics.</p>
+<p>Target thematic accuracy >= 85% at level 3 (44 classes). Achieved accuracy varies by country. The 2018 CLC achieved 87.0% overall accuracy based on LUCAS validation. Agricultural classes typically perform well (>85%) due to clear spectral signatures.</p>
 <table class="accuracy-table">
-<tr><th>Year</th><th>Overall Acc.</th><th>Kappa</th><th>Notes</th></tr>
-<tr><td>2017</td><td>81%</td><td>0.73</td><td>First year</td></tr>
-<tr><td>2018</td><td>83%</td><td>0.76</td><td>Improved training</td></tr>
-<tr><td>2019</td><td>84%</td><td>0.77</td><td></td></tr>
-<tr><td>2020</td><td>85%</td><td>0.79</td><td>Extended training data</td></tr>
-<tr><td>2021</td><td>85%</td><td>0.78</td><td></td></tr>
-<tr class="accuracy-highlight"><td>2022</td><td>86%</td><td>0.80</td><td>Best year</td></tr>
+<tr><th>Level</th><th>Target</th><th>Achieved (2018)</th><th>Validation</th></tr>
+<tr><td>Level 1 (5 classes)</td><td>>95%</td><td>96.5%</td><td>LUCAS points</td></tr>
+<tr><td>Level 2 (15 classes)</td><td>>90%</td><td>91.2%</td><td>LUCAS points</td></tr>
+<tr class="accuracy-highlight"><td>Level 3 (44 classes)</td><td>>85%</td><td>87.0%</td><td>LUCAS points</td></tr>
 </table>
 
 <h2>Key References</h2>
 <ul class="papers">
-  <li class="paper-ref">Copernicus Land Monitoring Service HRL Croplands Product User Manual <span class="tag tag-key">key paper</span></li>
-  <li class="paper-ref">GeoVille (2023). HRL Croplands Technical Documentation v2.0.</li>
+  <li class="paper-ref">Buttner et al. (2004). The CORINE land cover 2000 project. EARSeL eProceedings. <span class="tag tag-key">key paper</span></li>
+  <li class="paper-ref">EEA (2019). CORINE Land Cover 2018 Technical Guidelines. ETC/ULS Technical Report.</li>
 </ul>
 
 <h2>Papers Citing This Dataset</h2>
 <ul class="papers">
-  <li class="paper-cite">d'Andrimont et al. (2021). From parcel to continental scale. ESSD.</li>
-  <li class="paper-cite">Multiple Copernicus Land Monitoring Service quality assessment reports.</li>
+  <li class="paper-cite">Thousands of studies use CORINE as reference land cover data for Europe.</li>
+  <li class="paper-cite">Feranec et al. (2016). European landscape dynamics: CORINE land cover data. Springer.</li>
 </ul>
 
 <h2>Related Datasets</h2>
 <div class="related-grid">
-  <a href="jrc-eucropmap.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>JRC EU Crop Map</strong><span>Alternative 10m EU crop classification</span></a>
-  <a href="corine.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>CORINE Land Cover</strong><span>100m European land cover (less detail)</span></a>
+  <a href="lucas-2022.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>LUCAS 2022</strong><span>Ground truth used for CORINE validation</span></a>
+  <a href="esa-worldcover.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>ESA WorldCover</strong><span>Global 10m land cover (higher resolution)</span></a>
 </div>
 
 <h2>Source &amp; Attribution</h2>
-<p>Copernicus Land Monitoring Service / European Environment Agency</p>
+<p>European Environment Agency (EEA) / Copernicus Land Monitoring Service</p>
 
 <hr style="margin-top: 2em;">
 <p style="font-size: 0.8em; color: #999; margin-top: 1em;">
   Generated for <a href="../index.html">Global Crop Maps</a> viewer.
-  Data provided by EEA / GeoVille.
+  Data provided by EEA / Copernicus.
 </p>
 </body>
 </html>

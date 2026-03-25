@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{title}} — Global Crop Maps Info</title>
+<title>Africa Cropland 30m (AFCD) — Global Crop Maps Info</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -58,54 +58,59 @@
 </head>
 <body>
 <div class="back"><a href="../index.html">&larr; Back to Map Viewer</a></div>
-<h1>{{title}}</h1>
+<h1>Africa Cropland 30m (AFCD)</h1>
 
 <div class="executive-summary">
   <p><strong>Summary</strong></p>
-  <p>{{executive_summary}}</p>
+  <p>Continental-scale 30m cropland map of Africa derived from Sentinel-2 imagery. The African Field Crop Dataset provides binary cropland/non-cropland classification across the entire African continent, capturing both large-scale and smallholder agricultural systems. Critical for food security monitoring in sub-Saharan Africa.</p>
 </div>
 
 <div class="meta">
-  <div class="meta-item"><strong>Coverage</strong>{{coverage}}</div>
-  <div class="meta-item"><strong>Resolution</strong>{{resolution}}</div>
-  <div class="meta-item"><strong>Temporal</strong>{{temporal}}</div>
-  <div class="meta-item"><strong>License</strong>{{license}}</div>
+  <div class="meta-item"><strong>Coverage</strong>Africa</div>
+  <div class="meta-item"><strong>Resolution</strong>30m</div>
+  <div class="meta-item"><strong>Temporal</strong>2019</div>
+  <div class="meta-item"><strong>License</strong>CC-BY 4.0</div>
 </div>
 
 <h2>Description</h2>
-<p>{{description}}</p>
+<p>The AFCD maps cropland extent across Africa using Sentinel-2 optical imagery. The classification focuses on distinguishing cultivated areas from natural vegetation, a challenging task in Africa due to the prevalence of smallholder farming, intercropping, and agroforestry systems.</p>
 
 <h2>Provenance</h2>
-<p>{{provenance}}</p>
+<p>Produced using machine learning applied to Sentinel-2 time series. Training data from field campaigns, very high resolution imagery, and national agricultural surveys.</p>
 
 <h2>Classification System</h2>
-{{classification_html}}
+<p>Binary: Cropland / Non-cropland</p>
 
 <h2>Access Methods</h2>
 <table>
   <tr><th>Method</th><th>URL / Details</th></tr>
-  {{access_rows}}
+  <tr><td><span class="badge badge-pmtiles">PMTiles</span></td><td><a href="Served via the viewer" target="_blank">Served via the viewer</a></td></tr>
+  <tr><td><span class="badge badge-download">Download</span></td><td><a href="https://zenodo.org/records/7643460" target="_blank">https://zenodo.org/records/7643460</a></td></tr>
 </table>
 
 <h2>Accuracy &amp; Validation</h2>
-{{accuracy_html}}
+<p>Overall accuracy ~85% for cropland/non-cropland. Higher accuracy in East Africa (Kenya, Ethiopia) where training data is more abundant. Lower accuracy in semi-arid transition zones (Sahel) and complex agroforestry systems (West Africa).</p>
 
 <h2>Key References</h2>
 <ul class="papers">
-  {{papers_html}}
+  <li class="paper-ref">Luo et al. (2023). Africa Cropland 30m Map 2019. Zenodo. <span class="doi"><a href="https://doi.org/10.5281/zenodo.7643460" target="_blank">https://doi.org/10.5281/zenodo.7643460</a></span> <span class="tag tag-key">key paper</span></li>
 </ul>
 
-{{citing_section}}
 
-{{related_section}}
+
+<h2>Related Datasets</h2>
+<div class="related-grid">
+  <a href="deafrica-crop.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>DE Africa Cropland</strong><span>Digital Earth Africa cropland extent</span></a>
+  <a href="esa-worldcover.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>ESA WorldCover</strong><span>10m global land cover</span></a>
+</div>
 
 <h2>Source &amp; Attribution</h2>
-<p>{{attribution}}</p>
+<p>Various (see Zenodo)</p>
 
 <hr style="margin-top: 2em;">
 <p style="font-size: 0.8em; color: #999; margin-top: 1em;">
   Generated for <a href="../index.html">Global Crop Maps</a> viewer.
-  Data provided by {{provider}}.
+  Data provided by Zenodo / Open Data.
 </p>
 </body>
 </html>

@@ -6,3 +6,5 @@
 
 # MBTiles intermediates (generated from PMTiles or WMS downloads)
 *.mbtiles
+*.pmtiles
+*.pmtiles-journal

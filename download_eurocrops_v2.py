@@ -126,43 +126,39 @@ def convert_to_pmtiles(download_dir, output_path, max_zoom=12):
 
     print(f"\nConverting {len(parquet_files)} GeoParquet files to PMTiles...")
 
-    # Step 1: Convert each parquet to GeoJSON lines
-    geojsonl_path = os.path.join(download_dir, "all_eurocrops_v2.geojsonl")
-    if not os.path.exists(geojsonl_path):
-        try:
-            import geopandas as gpd
-        except ImportError:
-            print("ERROR: geopandas required. Install with: pip install geopandas pyarrow")
-            sys.exit(1)
+    # Step 1: Convert each parquet to GeoJSONSeq (.geojsonl) files
+    geojsonl_files = []
+    try:
+        import geopandas as gpd
+    except ImportError:
+        print("ERROR: geopandas required. Install with: pip install geopandas pyarrow")
+        sys.exit(1)
 
-        print("  Reading GeoParquet files...")
-        with open(geojsonl_path, "w") as out:
-            for i, pf in enumerate(parquet_files, 1):
-                print(f"  [{i}/{len(parquet_files)}] {os.path.basename(pf)}...")
-                gdf = gpd.read_parquet(pf)
-                # Reproject to WGS84 if needed
-                if gdf.crs and gdf.crs.to_epsg() != 4326:
-                    gdf = gdf.to_crs("EPSG:4326")
-                # Keep only essential columns
-                keep = [c for c in gdf.columns if c in [
-                    "geometry", "EC_hcat_c", "EC_hcat_n", "EC_trans_n",
-                    "EC_NUTS2", "EC_year", "country"
-                ]]
-                if "geometry" not in keep:
-                    keep.append("geometry")
-                gdf = gdf[keep]
-                for _, row in gdf.iterrows():
-                    feat = {
-                        "type": "Feature",
-                        "geometry": row.geometry.__geo_interface__,
-                        "properties": {k: v for k, v in row.items() if k != "geometry"}
-                    }
-                    out.write(json.dumps(feat) + "\n")
+    KEEP_COLS = {"EC_hcat_c", "EC_hcat_n", "EC_trans_n", "EC_NUTS2", "EC_year", "country"}
 
-        print(f"  GeoJSON lines: {geojsonl_path}")
+    for i, pf in enumerate(parquet_files, 1):
+        geojsonl_path = pf.replace(".parquet", ".geojsonl")
+        geojsonl_files.append(geojsonl_path)
+        if os.path.exists(geojsonl_path):
+            print(f"  [{i}/{len(parquet_files)}] {os.path.basename(pf)} — already converted")
+            continue
 
-    # Step 2: Run tippecanoe
-    print(f"  Running tippecanoe (max zoom {max_zoom})...")
+        print(f"  [{i}/{len(parquet_files)}] {os.path.basename(pf)}...", end="", flush=True)
+        gdf = gpd.read_parquet(pf)
+        # Reproject to WGS84 if needed
+        if gdf.crs and gdf.crs.to_epsg() != 4326:
+            gdf = gdf.to_crs("EPSG:4326")
+        # Keep only essential columns
+        drop = [c for c in gdf.columns if c != "geometry" and c not in KEEP_COLS]
+        if drop:
+            gdf = gdf.drop(columns=drop)
+        # Write using GeoJSONSeq driver (fast, line-delimited GeoJSON)
+        gdf.to_file(geojsonl_path, driver="GeoJSONSeq")
+        print(f" {len(gdf):,} features")
+        del gdf
+
+    # Step 2: Run tippecanoe with all GeoJSONL files
+    print(f"\n  Running tippecanoe (z3-{max_zoom}) on {len(geojsonl_files)} files...")
     subprocess.run([
         "tippecanoe",
         "-o", output_path,
@@ -172,7 +168,7 @@ def convert_to_pmtiles(download_dir, output_path, max_zoom=12):
         "--drop-densest-as-needed",
         "--extend-zooms-if-still-dropping",
         "--force",
-        geojsonl_path
+        *geojsonl_files
     ], check=True)
 
     size = os.path.getsize(output_path)

@@ -1,0 +1,280 @@
+{
+  "timestamp": "2026-03-09T14:28:52.807803",
+  "sources": [
+    {
+      "id": "crome",
+      "name": "England CROME (DEFRA)",
+      "update_frequency": "Annual",
+      "typical_release": "March\u2013June (data from previous growing season)",
+      "status": "active",
+      "sensor": "Sentinel-2, RapidEye",
+      "notes": "Rural Payments Agency publishes annually for England only.",
+      "check_result": {
+        "available_years": [
+          2021,
+          2022,
+          2023,
+          2024
+        ],
+        "latest_year": 2024,
+        "source": "https://environment.data.gov.uk/spatialdata/"
+      }
+    },
+    {
+      "id": "jrc-eucropmap",
+      "name": "JRC EU Crop Map",
+      "update_frequency": "Annual (irregular)",
+      "typical_release": "Variable \u2014 2022 data released Nov 2023",
+      "status": "active",
+      "sensor": "Sentinel-2",
+      "notes": "Published by JRC. Limited to EU27. Processing can lag 1-2 years.",
+      "check_result": {
+        "available_years": [
+          2018,
+          2022
+        ],
+        "latest_year": 2022,
+        "source": "https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/EUCROPMAP/"
+      }
+    },
+    {
+      "id": "hrl-crop-types",
+      "name": "Copernicus HRL Croplands",
+      "update_frequency": "Annual",
+      "typical_release": "Mid-year (data from previous year)",
+      "status": "active",
+      "sensor": "Sentinel-2",
+      "notes": "GeoVille WMS. Part of Copernicus Land Monitoring Service.",
+      "check_result": {
+        "crop_types_years": [],
+        "latest_year": null,
+        "source": "https://land.copernicus.eu/en/products/high-resolution-layer-croplands"
+      }
+    },
+    {
+      "id": "germany",
+      "name": "Germany Crop Types (DLR)",
+      "update_frequency": "Annual",
+      "typical_release": "Spring (data from previous year)",
+      "status": "active",
+      "sensor": "Sentinel-2",
+      "notes": "DLR Earth Observation Center.",
+      "check_result": {
+        "layer_present": false,
+        "wms_available": false,
+        "source": "https://geoservice.dlr.de/eoc/land/wms"
+      }
+    },
+    {
+      "id": "france",
+      "name": "France RPG",
+      "update_frequency": "Annual",
+      "typical_release": "Typically December\u2013March for previous year",
+      "status": "active",
+      "sensor": "LPIS declarations + satellite",
+      "notes": "Registre Parcellaire Graphique from IGN/ASP.",
+      "check_result": {
+        "available_years": [],
+        "latest_year": null,
+        "source": "https://geoservices.ign.fr/rpg"
+      }
+    },
+    {
+      "id": "gibs-ndvi",
+      "name": "MODIS NDVI/EVI (NASA GIBS)",
+      "update_frequency": "16-day composites, continuous",
+      "typical_release": "Near real-time (2-3 week latency)",
+      "status": "active",
+      "sensor": "MODIS Terra (2000\u2013present)",
+      "notes": "Terra satellite operational since 2000. MODIS instrument aging but still functional. Data continuity via VIIRS.",
+      "check_result": {
+        "MODIS_Terra_L3_NDVI_16Day": {
+          "label": "MODIS NDVI 16-day",
+          "available": true
+        },
+        "MODIS_Terra_L3_EVI_16Day": {
+          "label": "MODIS EVI 16-day",
+          "available": true
+        },
+        "MODIS_Combined_L3_IGBP_Land_Cover_Type_Annual": {
+          "label": "MODIS Land Cover",
+          "available": true
+        },
+        "VIIRS_SNPP_NDVI_8Day": {
+          "label": "VIIRS NDVI 8-day",
+          "available": true
+        },
+        "VIIRS_SNPP_EVI_8Day": {
+          "label": "VIIRS EVI 8-day",
+          "available": true
+        },
+        "MODIS_Combined_L4_LAI_8Day": {
+          "label": "MODIS LAI 8-day",
+          "available": true
+        },
+        "MODIS_Combined_L4_FPAR_8Day": {
+          "label": "MODIS FPAR 8-day",
+          "available": true
+        },
+        "MODIS_Terra_L4_Gross_Primary_Productivity_8Day": {
+          "label": "MODIS GPP 8-day",
+          "available": true
+        }
+      }
+    },
+    {
+      "id": "viirs-ndvi",
+      "name": "VIIRS NDVI/EVI (NASA GIBS)",
+      "update_frequency": "8-day composites, continuous",
+      "typical_release": "Near real-time",
+      "status": "active",
+      "sensor": "VIIRS SNPP (2012\u2013present), NOAA-20 (2018\u2013present)",
+      "notes": "Successor to MODIS. GIBS WMS layers only available from mid-2025. Long archive via LP DAAC.",
+      "check_result": {
+        "note": "Checked as part of GIBS"
+      }
+    },
+    {
+      "id": "modis-landcover",
+      "name": "MODIS Land Cover (MCD12Q1)",
+      "update_frequency": "Annual",
+      "typical_release": "Typically 1-2 years after observation year",
+      "status": "active",
+      "sensor": "MODIS Terra+Aqua",
+      "notes": "IGBP classification. Latest: 2023. No VIIRS equivalent yet.",
+      "check_result": {
+        "note": "Checked as part of GIBS"
+      }
+    },
+    {
+      "id": "hrvpp",
+      "name": "HR-VPP Phenology (Copernicus)",
+      "update_frequency": "Annual (VPP) / Dekadal (ST-PPI)",
+      "typical_release": "Seasonal trajectory near real-time; VPP metrics ~6 months after year end",
+      "status": "active",
+      "sensor": "Sentinel-2",
+      "notes": "Copernicus Land Monitoring Service via VITO. 10m resolution Europe only.",
+      "check_result": {
+        "available_layers": [],
+        "layer_count": 0,
+        "wms_available": false,
+        "source": "https://land.copernicus.eu/en/products/vegetation/high-resolution-vegetation-phenology-and-productivity"
+      }
+    },
+    {
+      "id": "eurocrops",
+      "name": "EuroCrops (V1)",
+      "update_frequency": "Irregular",
+      "typical_release": "N/A \u2014 research dataset",
+      "status": "stable",
+      "sensor": "LPIS declarations",
+      "notes": "Community-compiled LPIS data. V1 on source.coop. V2 available on JRC FTP.",
+      "check_result": {
+        "available": true,
+        "size_mb": 1790,
+        "last_modified": "Mon, 19 Jun 2023 17:01:25 GMT",
+        "source": "https://github.com/maja601/EuroCrops"
+      }
+    },
+    {
+      "id": "esa-worldcover",
+      "name": "ESA WorldCover",
+      "update_frequency": "Irregular (2-3 year cycle)",
+      "typical_release": "V100 (2020) released Oct 2021, V200 (2021) released Oct 2022",
+      "status": "active",
+      "sensor": "Sentinel-1 + Sentinel-2",
+      "notes": "10m global land cover. Next update expected when new processing version ready.",
+      "check_result": {
+        "available_layers": [],
+        "wms_available": false,
+        "source": "https://esa-worldcover.org/"
+      }
+    },
+    {
+      "id": "usda-cdl",
+      "name": "USDA Cropland Data Layer",
+      "update_frequency": "Annual",
+      "typical_release": "January\u2013February for previous year",
+      "status": "active",
+      "sensor": "Landsat, MODIS, ground truth",
+      "notes": "USDA NASS. CONUS coverage. Preliminary release ~Jan, final ~Feb.",
+      "check_result": {
+        "available_years": [],
+        "latest_year": null,
+        "source": "https://nassgeodata.gmu.edu/CropScape/"
+      }
+    },
+    {
+      "id": "canada",
+      "name": "Canada AAFC Annual Crop Inventory",
+      "update_frequency": "Annual",
+      "typical_release": "March\u2013April for previous year",
+      "status": "active",
+      "sensor": "RADARSAT-2, Sentinel, Landsat",
+      "notes": "Agriculture and Agri-Food Canada. 30m resolution.",
+      "check_result": {
+        "note": "WMS check not implemented"
+      }
+    },
+    {
+      "id": "brazil-mapbiomas",
+      "name": "MapBiomas (Brazil)",
+      "update_frequency": "Annual collection releases",
+      "typical_release": "August\u2013September",
+      "status": "active",
+      "sensor": "Landsat, Sentinel",
+      "notes": "Annual land cover/land use maps since 1985. Latest: Collection 9.",
+      "check_result": {
+        "note": "WMS check not implemented"
+      }
+    },
+    {
+      "id": "gfsad-croplands",
+      "name": "GFSAD Croplands (Global)",
+      "update_frequency": "None (archived)",
+      "typical_release": "N/A",
+      "status": "archived",
+      "sensor": "MODIS, Landsat",
+      "notes": "Global Food Security-support Analysis Data. One-time release (2010 epoch). NASA project completed.",
+      "check_result": {
+        "note": "Static dataset"
+      }
+    },
+    {
+      "id": "ggcp10",
+      "name": "GGCP10 Crop Production Maps",
+      "update_frequency": "None (research dataset)",
+      "typical_release": "N/A",
+      "status": "archived",
+      "sensor": "Statistical models + remote sensing",
+      "notes": "Static global crop production maps (2020 epoch). Published via Harvard Dataverse.",
+      "check_result": {
+        "note": "Static dataset"
+      }
+    },
+    {
+      "id": "cropgrids",
+      "name": "CROPGRIDS Harvested Area",
+      "update_frequency": "None (research dataset)",
+      "typical_release": "N/A",
+      "status": "archived",
+      "sensor": "Statistical models",
+      "notes": "Static ~2020 epoch. Published via Figshare.",
+      "check_result": {
+        "note": "Static dataset"
+      }
+    },
+    {
+      "id": "crop-calendars",
+      "name": "Crop Calendar (UW-Madison)",
+      "update_frequency": "None",
+      "typical_release": "N/A",
+      "status": "archived",
+      "sensor": "Ground observations + models",
+      "notes": "Sacks et al. 2010 crop calendar. One-time research publication.",
+      "check_result": {
+        "note": "Static dataset"
+      }
+    }
+  ]
+}

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{title}} — Global Crop Maps Info</title>
+<title>GGCP10 — Global Gridded Crop Production — Global Crop Maps Info</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -58,54 +58,58 @@
 </head>
 <body>
 <div class="back"><a href="../index.html">&larr; Back to Map Viewer</a></div>
-<h1>{{title}}</h1>
+<h1>GGCP10 — Global Gridded Crop Production</h1>
 
 <div class="executive-summary">
   <p><strong>Summary</strong></p>
-  <p>{{executive_summary}}</p>
+  <p>Global gridded crop production data at 10km resolution for major crops including maize, wheat, rice, and soybean. Provides spatially explicit production quantities (tonnes) by combining harvested area, yield, and satellite data. Useful for understanding global food production patterns and hotspots.</p>
 </div>
 
 <div class="meta">
-  <div class="meta-item"><strong>Coverage</strong>{{coverage}}</div>
-  <div class="meta-item"><strong>Resolution</strong>{{resolution}}</div>
-  <div class="meta-item"><strong>Temporal</strong>{{temporal}}</div>
-  <div class="meta-item"><strong>License</strong>{{license}}</div>
+  <div class="meta-item"><strong>Coverage</strong>Global</div>
+  <div class="meta-item"><strong>Resolution</strong>10km (5 arc-minutes)</div>
+  <div class="meta-item"><strong>Temporal</strong>Nominal 2010-2020</div>
+  <div class="meta-item"><strong>License</strong>CC-BY 4.0</div>
 </div>
 
 <h2>Description</h2>
-<p>{{description}}</p>
+<p>GGCP10 provides gridded estimates of crop production (in tonnes per grid cell) for major crops worldwide. The dataset combines national/subnational production statistics with satellite-derived cropland maps to spatially distribute production. Useful for identifying production hotspots, food security analysis, and trade modeling.</p>
 
 <h2>Provenance</h2>
-<p>{{provenance}}</p>
+<p>Derived from FAO statistics, national data, and satellite-derived crop distribution maps. Production = Harvested Area × Yield, spatially disaggregated using MODIS-derived crop masks as allocation weights.</p>
 
 <h2>Classification System</h2>
-{{classification_html}}
+<p>4 crops in viewer: Maize, Wheat, Rice, Soybean. Production in tonnes per grid cell.</p>
 
 <h2>Access Methods</h2>
 <table>
   <tr><th>Method</th><th>URL / Details</th></tr>
-  {{access_rows}}
+  <tr><td><span class="badge badge-download">Download</span></td><td><a href="https://zenodo.org/records/10803992" target="_blank">https://zenodo.org/records/10803992</a></td></tr>
 </table>
 
 <h2>Accuracy &amp; Validation</h2>
-{{accuracy_html}}
+<p>National totals are constrained to FAO statistics. Subnational accuracy depends on input data quality. Grid-cell estimates are more reliable in data-rich regions (North America, Europe) than in data-sparse areas.</p>
 
 <h2>Key References</h2>
 <ul class="papers">
-  {{papers_html}}
+  <li class="paper-ref">GGCP10 dataset documentation (Zenodo). <span class="doi"><a href="https://doi.org/10.5281/zenodo.10803992" target="_blank">https://doi.org/10.5281/zenodo.10803992</a></span> <span class="tag tag-key">key paper</span></li>
 </ul>
 
-{{citing_section}}
 
-{{related_section}}
+
+<h2>Related Datasets</h2>
+<div class="related-grid">
+  <a href="cropgrids.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>CROPGRIDS</strong><span>Global crop areas (173 crops)</span></a>
+  <a href="crop-calendars.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>SAGE Crop Calendars</strong><span>When crops are planted/harvested</span></a>
+</div>
 
 <h2>Source &amp; Attribution</h2>
-<p>{{attribution}}</p>
+<p>Various (see Zenodo record)</p>
 
 <hr style="margin-top: 2em;">
 <p style="font-size: 0.8em; color: #999; margin-top: 1em;">
   Generated for <a href="../index.html">Global Crop Maps</a> viewer.
-  Data provided by {{provider}}.
+  Data provided by Zenodo / Open Data.
 </p>
 </body>
 </html>

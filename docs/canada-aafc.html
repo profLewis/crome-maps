@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{title}} — Global Crop Maps Info</title>
+<title>Canada Annual Crop Inventory (AAFC) — Global Crop Maps Info</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -58,54 +58,59 @@
 </head>
 <body>
 <div class="back"><a href="../index.html">&larr; Back to Map Viewer</a></div>
-<h1>{{title}}</h1>
+<h1>Canada Annual Crop Inventory (AAFC)</h1>
 
 <div class="executive-summary">
   <p><strong>Summary</strong></p>
-  <p>{{executive_summary}}</p>
+  <p>Annual 30m crop type map of Canada's agricultural extent, produced by Agriculture and Agri-Food Canada (AAFC). Covers the main agricultural regions using Sentinel-2 and RADARSAT-2 imagery. Identifies 70+ crop types from 2009 to present.</p>
 </div>
 
 <div class="meta">
-  <div class="meta-item"><strong>Coverage</strong>{{coverage}}</div>
-  <div class="meta-item"><strong>Resolution</strong>{{resolution}}</div>
-  <div class="meta-item"><strong>Temporal</strong>{{temporal}}</div>
-  <div class="meta-item"><strong>License</strong>{{license}}</div>
+  <div class="meta-item"><strong>Coverage</strong>Canada (agricultural extent)</div>
+  <div class="meta-item"><strong>Resolution</strong>30m</div>
+  <div class="meta-item"><strong>Temporal</strong>2009-2024 (annual)</div>
+  <div class="meta-item"><strong>License</strong>Open Government Licence - Canada</div>
 </div>
 
 <h2>Description</h2>
-<p>{{description}}</p>
+<p>The Annual Crop Inventory (ACI) classifies agricultural land across Canada using multi-temporal satellite imagery. The classification combines optical (Sentinel-2, Landsat) and SAR (RADARSAT-2) data with a decision tree classifier trained on ground truth collected by AAFC field staff and provincial crop insurance data.</p>
 
 <h2>Provenance</h2>
-<p>{{provenance}}</p>
+<p>Produced by AAFC's Science and Technology Branch. Ground truth from crop insurance records, field visits, and provincial agencies. Multi-sensor approach using optical + SAR fusion for cloud-prone regions.</p>
 
 <h2>Classification System</h2>
-{{classification_html}}
+<p>70+ crop types including spring/winter wheat, canola, barley, corn, soybeans, lentils, peas, flax, oats, and specialty crops. Provincial detail varies.
+</p>
 
 <h2>Access Methods</h2>
 <table>
   <tr><th>Method</th><th>URL / Details</th></tr>
-  {{access_rows}}
+  <tr><td><span class="badge badge-wms">WMS</span></td><td><a href="https://www.agr.gc.ca/atlas/ows" target="_blank">https://www.agr.gc.ca/atlas/ows</a><br><code>Layer: aci_{year}</code></td></tr>
+  <tr><td><span class="badge badge-download">Download</span></td><td><a href="https://open.canada.ca/data/en/dataset/ba2645d5-4458-414d-b196-6303ac06c1c9" target="_blank">https://open.canada.ca/data/en/dataset/ba2645d5-4458-414d-b196-6303ac06c1c9</a></td></tr>
 </table>
 
 <h2>Accuracy &amp; Validation</h2>
-{{accuracy_html}}
+<p>Overall accuracy typically 82-88% for major crops. Canola and cereals perform well (>85%). Lower accuracy in mixed farming regions and for minor crops.</p>
 
 <h2>Key References</h2>
 <ul class="papers">
-  {{papers_html}}
+  <li class="paper-ref">Davidson et al. (2017). Crop type mapping from optical and SAR imagery. Canadian Journal of Remote Sensing. <span class="tag tag-key">key paper</span></li>
 </ul>
 
-{{citing_section}}
 
-{{related_section}}
+
+<h2>Related Datasets</h2>
+<div class="related-grid">
+  <a href="usda-cdl.html" class="related-item" style="text-decoration:none;color:inherit;"><strong>USDA CDL</strong><span>US crop map (similar methodology)</span></a>
+</div>
 
 <h2>Source &amp; Attribution</h2>
-<p>{{attribution}}</p>
+<p>Agriculture and Agri-Food Canada (AAFC)</p>
 
 <hr style="margin-top: 2em;">
 <p style="font-size: 0.8em; color: #999; margin-top: 1em;">
   Generated for <a href="../index.html">Global Crop Maps</a> viewer.
-  Data provided by {{provider}}.
+  Data provided by AAFC.
 </p>
 </body>
 </html>

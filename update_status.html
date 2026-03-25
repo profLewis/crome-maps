@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crop Map Data Sources — Update Status</title>
+<style>
+  body { font: 13px/1.6 system-ui, sans-serif; margin: 20px; max-width: 1400px; }
+  h1 { font-size: 20px; }
+  h2 { font-size: 16px; margin-top: 30px; border-bottom: 2px solid #e0e0e0; padding-bottom: 4px; }
+  table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+  th, td { border: 1px solid #ddd; padding: 6px 10px; text-align: left; vertical-align: top; }
+  th { background: #f5f5f5; font-size: 12px; }
+  tr:hover { background: #f9f9f9; }
+  .timestamp { color: #888; font-size: 11px; }
+  .calendar { columns: 2; column-gap: 30px; }
+  .calendar li { break-inside: avoid; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+<h1>Crop Map Data Sources — Update Status</h1>
+<p class="timestamp">Last checked: 2026-03-09 14:28:52 | Run <code>python3 check_updates.py</code> to refresh</p>
+
+<h2>Active Data Sources</h2>
+<table>
+<tr><th>Source</th><th>Sensor</th><th>Update Freq.</th><th>Typical Release</th><th>Current Status</th><th>Notes</th></tr>
+<tr>
+  <td><span style="background:#28a745;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px">active</span> <b>England CROME (DEFRA)</b></td>
+  <td>Sentinel-2, RapidEye</td>
+  <td>Annual</td>
+  <td>March–June (data from previous growing season)</td>
+  <td>Years: 2021–2024 (4 years) <span style="color:red">&#9888; Latest: 2024</span></td>
+  <td style="font-size:11px;color:#666">Rural Payments Agency publishes annually for England only.</td>
+</tr>
+<tr>
+  <td><span style="background:#28a745;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px">active</span> <b>JRC EU Crop Map</b></td>
+  <td>Sentinel-2</td>
+  <td>Annual (irregular)</td>
+  <td>Variable — 2022 data released Nov 2023</td>
+  <td>Years: 2018–2022 (2 years) <span style="color:red">&#9888; Latest: 2022</span></td>
+  <td style="font-size:11px;color:#666">Published by JRC. Limited to EU27. Processing can lag 1-2 years.</td>
+</tr>
+<tr>
+  <td><span style="background:#28a745;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px">active</span> <b>Copernicus HRL Croplands</b></td>
+  <td>Sentinel-2</td>
+  <td>Annual</td>
+  <td>Mid-year (data from previous year)</td>
+  <td></td>
+  <td style="font-size:11px;color:#666">GeoVille WMS. Part of Copernicus Land Monitoring Service.</td>
+</tr>
+<tr>
+  <td><span style="background:#28a745;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px">active</span> <b>Germany Crop Types (DLR)</b></td>
+  <td>Sentinel-2</td>
+  <td>Annual</td>
+  <td>Spring (data from previous year)</td>
+  <td>Layer not found</td>
+  <td style="font-size:11px;color:#666">DLR Earth Observation Center.</td>
+</tr>
+<tr>
+  <td><span style="background:#28a745;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px">active</span> <b>France RPG</b></td>
+  <td>LPIS declarations + satellite</td>
+  <td>Annual</td>
+  <td>Typically December–March for previous year</td>
+  <td>No years found</td>
+  <td style="font-size:11px;color:#666">Registre Parcellaire Graphique from IGN/ASP.</td>
+</tr>
+<tr>
+  <td><span style="background:#28a745;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px">active</span> <b>MODIS NDVI/EVI (NASA GIBS)</b></td>
+  <td>MODIS Terra (2000–present)</td>
+  <td>16-day composites, continuous</td>
+  <td>Near real-time (2-3 week latency)</td>
+  <td><span style="color:green">&#10003;</span> MODIS NDVI 16-day  <span style="color:green">&#10003;</span> MODIS EVI 16-day  <span style="color:green">&#10003;</span> MODIS Land Cover  <span style="color:green">&#10003;</span> VIIRS NDVI 8-day  <span style="color:green">&#10003;</span> VIIRS EVI 8-day  <span style="color:green">&#10003;</span> MODIS LAI 8-day  <span style="color:green">&#10003;</span> MODIS FPAR 8-day  <span style="color:green">&#10003;</span> MODIS GPP 8-day  </td>
+  <td style="font-size:11px;color:#666">Terra satellite operational since 2000. MODIS instrument aging but still functional. Data continuity via VIIRS.</td>
+</tr>
+<tr>
+  <td><span style="background:#28a745;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px">active</span> <b>VIIRS NDVI/EVI (NASA GIBS)</b></td>
+  <td>VIIRS SNPP (2012–present), NOAA-20 (2018–present)</td>
+  <td>8-day composites, continuous</td>
+  <td>Near real-time</td>
+  <td>Checked as part of GIBS</td>
+  <td style="font-size:11px;color:#666">Successor to MODIS. GIBS WMS layers only available from mid-2025. Long archive via LP DAAC.</td>
+</tr>
+<tr>
+  <td><span style="background:#28a745;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px">active</span> <b>MODIS Land Cover (MCD12Q1)</b></td>
+  <td>MODIS Terra+Aqua</td>
+  <td>Annual</td>
+  <td>Typically 1-2 years after observation year</td>
+  <td>Checked as part of GIBS</td>
+  <td style="font-size:11px;color:#666">IGBP classification. Latest: 2023. No VIIRS equivalent yet.</td>
+</tr>
+<tr>
+  <td><span style="background:#28a745;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px">active</span> <b>HR-VPP Phenology (Copernicus)</b></td>
+  <td>Sentinel-2</td>
+  <td>Annual (VPP) / Dekadal (ST-PPI)</td>
+  <td>Seasonal trajectory near real-time; VPP metrics ~6 months after year end</td>
+  <td>0 layers available</td>
+  <td style="font-size:11px;color:#666">Copernicus Land Monitoring Service via VITO. 10m resolution Europe only.</td>
+</tr>
+<tr>
+  <td><span style="background:#28a745;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px">active</span> <b>ESA WorldCover</b></td>
+  <td>Sentinel-1 + Sentinel-2</td>
+  <td>Irregular (2-3 year cycle)</td>
+  <td>V100 (2020) released Oct 2021, V200 (2021) released Oct 2022</td>
+  <td></td>
+  <td style="font-size:11px;color:#666">10m global land cover. Next update expected when new processing version ready.</td>
+</tr>
+<tr>
+  <td><span style="background:#28a745;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px">active</span> <b>USDA Cropland Data Layer</b></td>
+  <td>Landsat, MODIS, ground truth</td>
+  <td>Annual</td>
+  <td>January–February for previous year</td>
+  <td>No years found</td>
+  <td style="font-size:11px;color:#666">USDA NASS. CONUS coverage. Preliminary release ~Jan, final ~Feb.</td>
+</tr>
+<tr>
+  <td><span style="background:#28a745;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px">active</span> <b>Canada AAFC Annual Crop Inventory</b></td>
+  <td>RADARSAT-2, Sentinel, Landsat</td>
+  <td>Annual</td>
+  <td>March–April for previous year</td>
+  <td>WMS check not implemented</td>
+  <td style="font-size:11px;color:#666">Agriculture and Agri-Food Canada. 30m resolution.</td>
+</tr>
+<tr>
+  <td><span style="background:#28a745;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px">active</span> <b>MapBiomas (Brazil)</b></td>
+  <td>Landsat, Sentinel</td>
+  <td>Annual collection releases</td>
+  <td>August–September</td>
+  <td>WMS check not implemented</td>
+  <td style="font-size:11px;color:#666">Annual land cover/land use maps since 1985. Latest: Collection 9.</td>
+</tr>
+</table>
+
+<h2>Stable / Community Datasets</h2>
+<table>
+<tr><th>Source</th><th>Sensor</th><th>Update Freq.</th><th>Typical Release</th><th>Current Status</th><th>Notes</th></tr>
+<tr>
+  <td><span style="background:#007bff;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px">stable</span> <b>EuroCrops (V1)</b></td>
+  <td>LPIS declarations</td>
+  <td>Irregular</td>
+  <td>N/A — research dataset</td>
+  <td>Available (1790 MB) — Last modified: Mon, 19 Jun 2023 17:01:25 GMT</td>
+  <td style="font-size:11px;color:#666">Community-compiled LPIS data. V1 on source.coop. V2 available on JRC FTP.</td>
+</tr>
+</table>
+
+<h2>Archived / Discontinued</h2>
+<p>These are one-time research datasets or completed projects. No further updates expected.</p>
+<table>
+<tr><th>Source</th><th>Sensor</th><th>Update Freq.</th><th>Typical Release</th><th>Current Status</th><th>Notes</th></tr>
+<tr>
+  <td><span style="background:#6c757d;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px">archived</span> <b>GFSAD Croplands (Global)</b></td>
+  <td>MODIS, Landsat</td>
+  <td>None (archived)</td>
+  <td>N/A</td>
+  <td>Static dataset</td>
+  <td style="font-size:11px;color:#666">Global Food Security-support Analysis Data. One-time release (2010 epoch). NASA project completed.</td>
+</tr>
+<tr>
+  <td><span style="background:#6c757d;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px">archived</span> <b>GGCP10 Crop Production Maps</b></td>
+  <td>Statistical models + remote sensing</td>
+  <td>None (research dataset)</td>
+  <td>N/A</td>
+  <td>Static dataset</td>
+  <td style="font-size:11px;color:#666">Static global crop production maps (2020 epoch). Published via Harvard Dataverse.</td>
+</tr>
+<tr>
+  <td><span style="background:#6c757d;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px">archived</span> <b>CROPGRIDS Harvested Area</b></td>
+  <td>Statistical models</td>
+  <td>None (research dataset)</td>
+  <td>N/A</td>
+  <td>Static dataset</td>
+  <td style="font-size:11px;color:#666">Static ~2020 epoch. Published via Figshare.</td>
+</tr>
+<tr>
+  <td><span style="background:#6c757d;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px">archived</span> <b>Crop Calendar (UW-Madison)</b></td>
+  <td>Ground observations + models</td>
+  <td>None</td>
+  <td>N/A</td>
+  <td>Static dataset</td>
+  <td style="font-size:11px;color:#666">Sacks et al. 2010 crop calendar. One-time research publication.</td>
+</tr>
+</table>
+
+<h2>Expected Update Calendar</h2>
+<p>When new data typically becomes available each year:</p>
+<ul class="calendar">
+<li><b>England CROME (DEFRA)</b>: March–June (data from previous growing season)</li><li><b>JRC EU Crop Map</b>: Variable — 2022 data released Nov 2023</li><li><b>Copernicus HRL Croplands</b>: Mid-year (data from previous year)</li><li><b>Germany Crop Types (DLR)</b>: Spring (data from previous year)</li><li><b>France RPG</b>: Typically December–March for previous year</li><li><b>MODIS NDVI/EVI (NASA GIBS)</b>: Near real-time (2-3 week latency)</li><li><b>VIIRS NDVI/EVI (NASA GIBS)</b>: Near real-time</li><li><b>MODIS Land Cover (MCD12Q1)</b>: Typically 1-2 years after observation year</li><li><b>HR-VPP Phenology (Copernicus)</b>: Seasonal trajectory near real-time; VPP metrics ~6 months after year end</li><li><b>ESA WorldCover</b>: V100 (2020) released Oct 2021, V200 (2021) released Oct 2022</li><li><b>USDA Cropland Data Layer</b>: January–February for previous year</li><li><b>Canada AAFC Annual Crop Inventory</b>: March–April for previous year</li><li><b>MapBiomas (Brazil)</b>: August–September</li><li><b>EuroCrops (V1)</b>: N/A — research dataset</li>
+</ul>
+
+<h2>Sensor Status</h2>
+<table>
+<tr><th>Sensor/Platform</th><th>Status</th><th>Implications</th></tr>
+<tr><td>MODIS Terra</td><td style="color:orange">Aging (launched 1999)</td><td>Orbit drift affecting data quality. VIIRS is successor. Data still produced but will eventually end.</td></tr>
+<tr><td>MODIS Aqua</td><td style="color:orange">Aging (launched 2002)</td><td>Same as Terra. Decommission planning underway.</td></tr>
+<tr><td>VIIRS SNPP</td><td style="color:green">Operational (2012–)</td><td>Primary MODIS successor. Long-term data continuity.</td></tr>
+<tr><td>VIIRS NOAA-20</td><td style="color:green">Operational (2018–)</td><td>Second VIIRS instrument. Redundancy.</td></tr>
+<tr><td>VIIRS NOAA-21</td><td style="color:green">Operational (2023–)</td><td>Latest VIIRS. No GIBS vegetation products yet.</td></tr>
+<tr><td>Sentinel-2A/2B</td><td style="color:green">Operational (2015/2017–)</td><td>Primary source for European 10m products. Sentinel-2C launched 2024.</td></tr>
+<tr><td>Landsat 8/9</td><td style="color:green">Operational (2013/2021–)</td><td>30m global coverage. Used by USDA CDL, MapBiomas.</td></tr>
+<tr><td>RapidEye</td><td style="color:red">Decommissioned (2020)</td><td>Was used by CROME. Replaced by Sentinel-2.</td></tr>
+</table>
+
+</body>
+</html>
