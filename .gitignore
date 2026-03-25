@@ -1,3 +1,6 @@
+# Cloudflare Wrangler
+.wrangler/
+
 # SQLite journals and WAL files
 *.pmtiles-journal
 *.mbtiles-journal
